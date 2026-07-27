@@ -88,4 +88,5 @@ Thumbs.db
 *.tmp
 *.bak
 *.base
+*(*).txt
 ~$*
