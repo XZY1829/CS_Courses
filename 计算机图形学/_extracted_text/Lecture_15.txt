@@ -1,0 +1,974 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 15:
+Ray Tracing 3
+(Light Transport & Global Illumination)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 5 — 240 submissions so far
+• Next two homeworks (1.5 weeks each)
+- Homework 6 — acceleration
+- Homework 7 — path tracing (new!)
+• Course website has been updated
+- Two more lectures, one more homework (hw7)
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Announcements Cont.
+• Why am I always extending the lecture length
+- My CS180 was designed to last 1h to 1.25h
+• On the BBS
+- I’d welcome more questions on concepts
+• My real-time rendering course
+- Unfortunately has to be internal
+- But will deliver it to GAMES later (maybe summer 2020)
+• Again, today’s lecture won’t be easy
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lectures
+• Basic ray tracing
+- Ray generation
+- Ray object intersection
+
+• Acceleration
+- Ray AABB intersection
+- Spatial partitions vs object partitions
+- BVH traversal
+
+• Radiometry
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Radiometry cont.
+• Light transport
+- The reflection equation
+- The rendering equation
+
+• Global illumination
+• Probability review
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Reviewing Concepts
+Radiant energy Q [J = Joule] (barely used in CG)
+
+• the energy of electromagnetic radiation
+dQ
+Radiant flux (power)
+⌘
+[W = Watt] [lm = lumen]
+dt
+• Energy per unit time
+
+
+d
+W lm
+= cd = candela
+Radiant intensity I(!) ⌘
+d! sr
+sr
+• power per unit solid angle
+A
+Solid Angle ⌦ = 2
+r
+• ratio of subtended area on sphere to radius squared
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Differential Solid Angles
+
+dA =(r d✓)(r sin ✓ d )
+=r2 sin ✓ d✓ d
+
+dA
+d! = 2 = sin ✓ d✓ d
+r
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Irradiance
+
+Irradiance
+Definition: The irradiance is the power per unit area incident
+on a surface point.
+
+d (x)
+E(x) ⌘
+dA
+d (x)
+E(x) ⌘
+dA
+
+GAMES101
+
+
+
+W
+m2
+
+
+
+
+
+W
+m2
+
+
+
+lm
+= lux
+2
+m
+
+lm
+=
+lux
+m2
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Lambert’s Cosine Law
+Irradiance at surface is proportional to cosine of angle
+between light direction and surface normal.
+(Note: always use a unit area, the cosine applies on Φ)
+
+l
+
+n
+
+Q
+
+Top face of cube
+receives a certain
+amount of power
+
+E=
+GAMES101
+
+A
+
+Top face of
+60º rotated cube
+receives half power
+
+1
+E=
+2A
+10
+
+In general, power per unit
+area is proportional to
+cos ✓ = l · n
+
+E=
+
+A
+
+cos ✓
+
+Lingqi Yan, UC Santa Barbara
+
+Why Do We Have Seasons?
+
+Summer
+(Northern hemisphere)
+
+Winter
+(Northern hemisphere)
+
+[Image credit: Pearson Prentice Hall]
+
+Sun
+
+Earth’s axis of rotation: ~23.5° off axis
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Correction: Irradiance Falloff
+E=
+r
+
+4⇡
+
+E
+E =
+=
+4⇡r2
+r2
+0
+
+Assume light is emitting
+power in a uniform angular
+distribution
+
+1
+
+Compare irradiance at surface
+of two spheres:
+
+E=
+
+4⇡
+
+E
+E =
+=
+4⇡r2
+r2
+0
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Radiance
+
+Radiance
+Radiance is the fundamental field quantity that describes the
+distribution of light in an environment
+
+• Radiance is the quantity associated with a ray
+• Rendering is all about computing radiance
+
+Light Traveling Along A Ray
+
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Radiance
+Definition: The radiance (luminance) is the power emitted,
+reflected, transmitted or received by a surface, per unit solid
+angle, per projected unit area.
+
+!
+
+✓
+
+d!
+
+dA
+2
+
+2 !)
+d (p,
+cos ✓ accounts for
+d
+(p)
+L(p,L(p,
+!) ⌘
+projected surface area
+!)d!
+⌘ dA cos ✓
+d!
+dA
+cos
+✓
+
+
+W
+cd
+lm
+=
+=
+nit
+sr m2
+m2
+sr m2
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Radiance
+Definition: power per unit solid angle per projected unit area.
+
+d2 (p, !)
+L(p, !) ⌘
+d! dA cos ✓
+Recall
+
+• Irradiance: power per projected unit area
+• Intensity: power per solid angle
+So
+
+• Radiance: Irradiance per solid angle
+• Radiance: Intensity per projected unit area
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Incident Radiance
+Incident radiance is the irradiance per unit solid angle
+arriving at the surface.
+
+!
+
+✓
+
+d!
+
+dA
+
+dE(p)
+L(p, !) =
+d! cos ✓
+i.e. it is the light arriving at the surface along a given ray
+(point on surface and incident direction).
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Exiting Radiance
+Exiting surface radiance is the intensity per unit projected
+area leaving the surface.
+
+!
+
+✓
+
+d!
+
+dA
+
+dI(p, !)
+L(p, !) =
+dA cos ✓
+e.g. for an area light it is the light emitted along a given ray
+(point on surface and exit direction).
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Irradiance vs. Radiance
+Irradiance: total power received by area dA
+Radiance: power received by area dA from “direction” dω
+
+dE(p, !) = Li (p, !) cos ✓ d!
+Z
+E(p) =
+Li (p, !) cos ✓ d!
+H2
+
+d!
+
+Unit Hemisphere: H 2
+
+✓
+
+dA
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Bidirectional Reflectance
+Distribution Function
+(BRDF)
+
+Reflection at a Point
+Radiance from direction ωi turns into the power E that dA receives
+Then power E will become the radiance to any other direction ωo
+
+dE(!i )
+
+Differential irradiance incoming:
+
+dE(!i ) = L(!i ) cos ✓i d!i
+<latexit sha1_base64="RzPYZpR8S6bU45FfxTMiIFDQV0E=">AAACH3icbZDNSgMxFIUz9b/+jbp0EyxChVKmIlQXQlEEFy4UrBU6pWQyt21oZjIkd4RS+ihufBU3LlTEnW9jWitq64XAl3PuJbknSKQw6HkfTmZmdm5+YXEpu7yyurbubmzeGJVqDlWupNK3ATMgRQxVFCjhNtHAokBCLeieDv3aHWgjVHyNvQQaEWvHoiU4Qys13XJ4lvdVBG3WFHv0mF783PwCV4b6BepjB9AqFsNvt+nmvKI3KjoNpTHkyLgum+67HyqeRhAjl8yYeslLsNFnGgWXMMj6qYGE8S5rQ91izCIwjf5owQHdtUpIW0rbEyMdqb8n+iwyphcFtjNi2DGT3lD8z6un2Dps9EWcpAgx/3qolUqKig7ToqHQwFH2LDCuhf0r5R2mGUebadaGUJpceRqq+8Wjond1kKucjNNYJNtkh+RJiZRJhZyTS1IlnNyTR/JMXpwH58l5dd6+WjPOeGaL/Cnn4xO9PaEa</latexit>
+
+Differential radiance exiting (due to dE(!i ) ):= dL(!dL
+i )cos
+r (!✓ri)
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+BRDF
+
+The Bidirectional Reflectance Distribution Function (BRDF)
+dLr (!r ) /
+represents how much light is reflected into each outgoing direction
+from each incoming direction
+
+dLr (!r )
+dLr (!r )
+fr (!i ! !r ) =
+=
+dEi (!i )
+Li (!i ) cos ✓i d!i
+<latexit sha1_base64="iWEelHYbESMhDK7XU1b4OuNIZ/A=">AAACxnichVFba9swFJbdXdrs0nR97ItYGDQwgj0K2x4KhW3QQh86WNZCZIysHCdaJctIxy3BGPob97aX/pYqibdk7WAHCT5953w6t6xU0mEU/QrCjUePnzzd3Oo8e/7i5XZ359V3ZyorYCiMMvYi4w6ULGCIEhVclBa4zhScZ5ef5v7zK7BOmuIbzkpINJ8UMpeCo6fS7m2e2n1mNEx4KimzcjJFbq25pi1p+/SQdlhuuaiZ5ji1uh43pyuV7Tdrji+p/PNdv6GH/1OersczYRxlOAX0L/aWrlS/QxpfiueXR0GOI7pMEK+KcLZp2k6StNuLBtHC6EMQt6BHWjtLuz/Z2IhKQ4FCcedGcVRiUnOLUihoOqxyUHJxyScw8rDgGlxSL/bQ0DeeGdPcWH8LpAt2XVFz7dxMZz5yXqu775uT//KNKsw/JLUsygqhEMtEeaUoGjpfKh1LCwLVzAMurPS1UjHlfi7oV9/xQ4jvt/wQDN8NPg6irwe9o+N2Gptkj7wm+yQm78kROSZnZEhE8Dn4EbgAw5PQhFV4vQwNg1azS/6y8OYOcVPedg==</latexit>
+
+GAMES101
+
+22
+
+
+
+1
+sr
+
+Lingqi Yan, UC Santa Barbara
+
+The Reflection Equation
+
+Lr (p, !r ) =
+GAMES101
+
+Z
+
+H2
+
+fr (p, !i ! !r ) Li (p, !i ) cos ✓i d!i
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Challenge: Recursive Equation
+Reflected radiance depends on incoming radiance
+Z
+Lr (p, !r ) =
+fr (p, !i ! !r ) Li (p, !i ) cos ✓i d!i
+H2
+
+But incoming radiance depends on reflected radiance (at
+another point in the scene)
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+The Rendering Equation
+Re-write the reflection equation:
+
+Lr (p, !r ) =
+
+Z
+
+H2
+
+fr (p, !i ! !r ) Li (p, !i ) cos ✓i d!i
+
+by adding an Emission term to make it general!
+The Rendering Equation
+
+Lo (p, !o ) = Le (p, !o ) +
+<latexit sha1_base64="qlfUq4ICI/tSbeFv8C0BB6pS6pQ=">AAACZXicbVFNaxsxENVuvxy3aZ005JJDRU3BISHslkJ7KYTmkoOhKdRJwOsKrXbWEdHHIs0WzNZ/srdee+nfiNZxEzfpgODNe/PQ6CmvlPSYJL+i+MHDR4+fdNa6T5+tP3/R29g89bZ2AkbCKuvOc+5BSQMjlKjgvHLAda7gLL88avWz7+C8tOYrziqYaD41spSCY6BY78eQ2UG1n1kNU87s7schg9V+L5MGWZN9bvtve/Mhk7ey3C2ZW2lvbXRgMlFYpDeT2X6mOV443RTzvyTr9ZODZFH0PkiXoE+WdcJ6P7PCilqDQaG49+M0qXDScIdSKJh3s9pDxcUln8I4QMM1+EmzSGlO3wSmoKV14RikC3bV0XDt/UznYbLd1N/VWvJ/2rjG8sOkkaaqEYy4vqisFUVL28hpIR0IVLMAuHAy7ErFBXdcYPiYbgghvfvk++D07UEa8Jd3/cNPyzg6ZIe8JgOSkvfkkByTEzIigvyOOtFGtBn9idfjrXj7ejSOlp6X5J+KX10B7g+3Lg==</latexit>
+
+Z
+
+⌦+
+
+Li (p, !i )fr (p, !i , !o )(n · !i ) d!i
+Note: now, we assume that all
+directions are pointing outwards!
+
+How to solve? Next lecture!
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Understanding the rendering equation
+
+Reflection Equation
+
+ω i ωr
+
+x
+Lr (x, !r ) = Le (x, !r ) + Li (x, !i ) f (x, !i , !r ) (!i , n)
+<latexit sha1_base64="AzvapYa/BIM6moQ3yisIu3Pw208=">AAACPnicdVA9SwNBEN3z2/gVtbRZDEKCEu5M0FgIQRuLFApGhVw49jZzyeLe3rG7J4aQX2bjb7CztLFQxNbSvRg1ij5YeO/NDLPz/JgzpW373hobn5icmp6ZzczNLywuZZdXzlSUSAp1GvFIXvhEAWcC6pppDhexBBL6HM79y8O0fn4FUrFInOpuDM2QtAULGCXaWF62XvNk/nrLjUJoE08W9msejOrNmse+NSu4OBiR330uzn+ZouBlc3Zxb7tSKVVwSpxSeS8lpXJ5x8FO0R4gh4Y49rJ3biuiSQhCU06Uajh2rJs9IjWjHPoZN1EQE3pJ2tAwVJAQVLM3OL+PN4zTwkEkzRMaD9zRiR4JleqGvukMie6o37XU/KvWSHRQafaYiBMNgn4sChKOdYTTLHGLSaCadw0hVDLzV0w7RBKqTeIZE8Lnpfh/crZddAw/sXPVg2EcM2gNraM8ctAuqqIjdIzqiKIb9ICe0LN1az1aL9brR+uYNZxZRT9gvb0DVZGtcQ==</latexit>
+sha1_base64="MzgYFwBSeSw35tebwxZimBJNzXI=">AAACPnicdVA9axtBEJ2zncSRk1ixSzeLTEBCQdxJIpELg4kbFypkiD5AJ4691Zy8aG/v2N0zFsL/xf8jTX6Du5RpUsQYty69JyWxYpIHC++9mWF2XpgKro3rfnPW1jeePX+x+bKw9er1m+3i252eTjLFsMsSkahBSDUKLrFruBE4SBXSOBTYD6fHeb1/jkrzRH42sxRHMZ1IHnFGjbWCYrcdqPLFez+JcUIDVTlsB7iqq+2AP2pe8Um0Ih/7fFL+Y8pKUNx3awf1VqvRIjnxGs2DnDSazQ8e8WruAvtHJb96BQCdoHjtjxOWxSgNE1TroeemZjSnynAm8LLgZxpTyqZ0gkNLJY1Rj+aL8y/JO+uMSZQo+6QhC3d1Yk5jrWdxaDtjas7001pu/qs2zEzUGs25TDODki0XRZkgJiF5lmTMFTIjZpZQprj9K2FnVFFmbOIFG8LvS8n/Sa9e8yw/tWl8giU2YQ9KUAYPPsIRnEAHusDgC3yHn3DjfHV+OLfO3bJ1zfk1swt/wbl/AGgQrvo=</latexit>
+sha1_base64="RR1jccuesiBez+oj8ZjxlYryKmw=">AAACPnicdVC7SgNBFJ31bXxFLW0GRUhQwq4JGgshaGORIoJRIRuW2cndODg7u8zMiiH4F/6Njd9gl9LGQhFbS2cTH1H0wMA5597LnXv8mDOlbbtnjYyOjU9MTk1nZmbn5heyi0snKkokhTqNeCTPfKKAMwF1zTSHs1gCCX0Op/7FQVo/vQSpWCSOdSeGZkjaggWMEm0sL1uvejJ3telGIbSJJ/N7VQ+G9UbVY9+a5V0cDMnvPhfnvkyR97JrdmF3q1wulnFKnGJpNyXFUmnbwU7B7mOtsupu3PQqnZqXvXdbEU1CEJpyolTDsWPd7BKpGeVwnXETBTGhF6QNDUMFCUE1u/3zr/G6cVo4iKR5QuO+OzzRJaFSndA3nSHR5+p3LTX/qjUSHZSbXSbiRIOgg0VBwrGOcJolbjEJVPOOIYRKZv6K6TmRhGqTeMaE8Hkp/p+cbBUcw49MGvtogCm0glZRDjloB1XQIaqhOqLoFj2gJ/Rs3VmP1ov1OmgdsT5mltEPWG/vcXqwgA==</latexit>
+
+Reflected Light
+(Output Image)
+
+GAMES101
+
+Emission
+
+Incident
+Light (from
+light source)
+27
+
+BRDF
+
+Cosine of
+Incident angle
+
+Lingqi Yan, UC Santa Barbara
+
+Reflection Equation
+
+ω i ωr
+x
+Sum over all light sources
+
+Lr (x, !r ) = Le (x, !r ) +
+<latexit sha1_base64="f589lc325zwwHz0s3ruN7hRPrzA=">AAACQ3icdVBPSyMxHM3U3bV2/1j16CVYhJZdyowtWg+C6GUPPShsa7FThkz6mxpMMkOSEUvpd/PiF/DmF/DiwUW8LmymrVqX9UHg/d57P5K8MOFMG9e9dXILHz5+WswvFT5/+fptubiy2tZxqii0aMxj1QmJBs4ktAwzHDqJAiJCDifh+WHmn1yA0iyWv8wwgZ4gA8kiRomxUlA8bQaqfPnDjwUMSKAqe80A5ufvvk4FbgbsVWQVH0dz42vYx+UXUVaCYsmt7m41GrUGzohXq+9mpFavb3vYq7oTlNAMR0Hxxu/HNBUgDeVE667nJqY3IsowymFc8FMNCaHnZABdSyURoHujSQdjvGmVPo5iZY80eKLOb4yI0HooQpsUxJzpf71M/J/XTU3U6I2YTFIDkk4vilKOTYyzQnGfKaCGDy0hVDH7VkzPiCLU2NoLtoTnn+L3SXur6ll+7Jb2D2Z15NE62kBl5KEdtI9+oiPUQhRdoTv0gH4718698+g8TaM5Z7azht7A+fMXbfivdA==</latexit>
+sha1_base64="EYOO/56iK+9L0jLX368Ra2W3fFk=">AAACQ3icdVBNSxtBGH7XWj/SVmN77GVQCgktYdcEjYeC2EsPOSgYFbNhmZ28GwdnZpeZWWkI/hd/ipf+AW/9A714aCueBMHZxI+02AcGnvd5npeZeeJMcGN9/4c39WL65czs3Hzp1es3C4vlpbd7Js01wzZLRaoPYmpQcIVty63Ag0wjlbHA/fj4S+Hvn6A2PFW7dpBhV9K+4gln1DopKh+2Il359ilMJfZppKufWxFOzh9Dk0vSiviTyKshSSbGp3BIKo+iqkblFb+2sdps1pukIEG9sVGQeqOxFpCg5o+wslm/+XMGANtR+SLspSyXqCwT1JhO4Ge2O6TacibwtBTmBjPKjmkfO44qKtF0h6MOTskHp/RIkmp3lCUjdXJjSKUxAxm7pKT2yPzrFeJzXie3SbM75CrLLSo2vijJBbEpKQolPa6RWTFwhDLN3VsJO6KaMutqL7kSHn5K/k/2VmuB4zuujS0YYw7ewzJUIIB12ISvsA1tYHAOP+EX/Pa+e5felXc9jk559zvv4C94t3d4ArJy</latexit>
+sha1_base64="Nph7znvgTyIFh7FQ0Am75OrcX5A=">AAACQ3icdVBPSxtBHJ1VazVVG+3Ry6AICZWwa4LGgxDqxUMOCkal2bDMTn6bDM7MLjOzYgj5IH4bL7311Fu/gBcP/sGTIDibaE1LfTDwfu+9HzPzwoQzbVz3tzMxOfVh+uPMbO7T3PzC5/zi0pGOU0WhQWMeq5OQaOBMQsMww+EkUUBEyOE4PN3N/OMzUJrF8tD0EmgJ0pEsYpQYKwX57/VAFc7X/VhAhwSquFMPYHz+6utU4HrA3kRW9HE0Nr6FfVz4I8pikF91S9sb1Wq5ijPilSvbGSlXKpse9kruEKu18uPdReXm536Q/+W3Y5oKkIZyonXTcxPT6hNlGOUwyPmphoTQU9KBpqWSCNCt/rCDAV6zShtHsbJHGjxUxzf6RGjdE6FNCmK6+l8vE//nNVMTVVt9JpPUgKSji6KUYxPjrFDcZgqo4T1LCFXMvhXTLlGEGlt7zpbw+lP8PjnaKHmWH9g2vqERZtAyWkEF5KEtVEN7aB81EEWX6ArdoFvnh3Pt3DsPo+iE87LzBf0F5+kZA3m0Wg==</latexit>
+
+Reflected Light
+(Output Image)
+GAMES101
+
+Emission
+
+X
+
+Li (x, !i ) f (x, !i , !r ) (!i , n)
+
+28
+
+Incident
+Light (from
+light source)
+
+BRDF
+
+Cosine of
+Incident angle
+Lingqi Yan, UC Santa Barbara
+
+Reflection Equation
+
+dωi
+
+ω i ωr
+x
+
+Lr (x, !r ) = Le (x, !r ) +
+<latexit sha1_base64="u4qej+vbNLDXTvMmcYgu4NMfBmE=">AAACXnicdVFdaxNBFJ1dta2ptVFfBF8Gg9BiCbtNsOmDUPTFh4AVTFvIhGV2cjcZOh/LzN1iWPInfRNf/CnOpimNohcGzj3nHubOmbxU0mOS/IjiBw8fbW3vPG7tPtl7ut9+9vzC28oJGAmrrLvKuQclDYxQooKr0gHXuYLL/Ppjo1/egPPSmq+4KGGi+czIQgqOgcra1TBzB9+OmNUw45k7fD/MYLN/y6TBjH1uWjrM5L0mDxktNtp7D6NMWM9wDhh4dsQ0x7nT9XR5N5u1O0n39Hgw6A1oA9Je/7QBvX7/XUrTbrKqDlnXedb+zqZWVBoMCsW9H6dJiZOaO5RCwbLFKg8lF9d8BuMADdfgJ/UqniV9E5gpLawLxyBdsZuOmmvvFzoPk82m/m+tIf+ljSssBpNamrJCMOL2oqJSFC1tsqZT6UCgWgTAhZNhVyrm3HGB4UdaIYS7l9L/g4vjbhrwl6Rz9mEdxw55RV6TA5KSE3JGPpFzMiKC/IyiqBXtRr/irXgv3r8djaO15wX5o+KXvwGSybTc</latexit>
+sha1_base64="b+/7EoiWNscaoIkptv5zpscDkHk=">AAACXnicdVFdaxNBFJ3daq2ptVFfBF8Gi9BiCbtN0PRBCPriQ8AKpi1kwjo7uZsMnY9l5q40LMH/6Jv44k9xNrE0il4YOPece5g7Z/JSSY9J8j2Kt+7c3b63c7+1+2Dv4X770eNzbysnYCSssu4y5x6UNDBCiQouSwdc5wou8qt3jX7xBZyX1nzCRQkTzWdGFlJwDFTWroaZO7w+ZlbDjGfu6M0wg83+JZMGM/ahaekwk7eaPGK02GhvPYwyYT3DOWDg2THTHOdO19PlzWzWPkg6pyf9frdPG5B2e6cN6PZ6r1KadpJVHQwGy6+fCSFnWfsbm1pRaTAoFPd+nCYlTmruUAoFyxarPJRcXPEZjAM0XIOf1Kt4lvRFYKa0sC4cg3TFbjpqrr1f6DxMNpv6v7WG/Jc2rrDoT2ppygrBiPVFRaUoWtpkTafSgUC1CIALJ8OuVMy54wLDj7RCCDcvpf8H5yedNOCPIY23ZF075Bl5Tg5JSl6TAXlPzsiICPIjiqJWtBv9jLfjvXh/PRpHvz1PyB8VP/0FFc+2uA==</latexit>
+sha1_base64="B4qfg/ZlZ+SbzXDQn9cIeIn0ktU=">AAACXnicdVHRahNBFJ1da1tTa6O+CL4MFqHFEnaboOmDEPTFh0ArmLaQCcvs5G4ydHZmmbkrhmXxj3z0Q/pWfPFTnE0sjaIXBs495x7mzpm0UNJhFN0E4b2N+5tb2w9aOw93H+21Hz85d6a0AkbCKGMvU+5ASQ0jlKjgsrDA81TBRXr1vtEvPoN10uhPuChgkvOZlpkUHD2VtMthYg++HDGTw4wn9vDtMIH1/hWTGhN22rR0mMg7TR4ymq21dx5GmTCO4RzQ8+yI5RznNq+m9e1s0t6POifH/X63TxsQd3snDej2eq9jGneiZe0PBvXX9Pu3+ixpX7OpEWUOGoXizo3jqMBJxS1KoaBusdJBwcUVn8HYQ81zcJNqGU9NX3pmSjNj/dFIl+y6o+K5c4s89ZPNpu5vrSH/pY1LzPqTSuqiRNBidVFWKoqGNlnTqbQgUC084MJKvysVc265QP8jLR/C7Uvp/8H5cSf2+KNP4x1Z1TZ5Tl6QAxKTN2RAPpAzMiKC/AiCoBXsBD/DzXA33FuNhsFvz1PyR4XPfgGbbLib</latexit>
+
+Reflected Light
+(Output Image)
+GAMES101
+
+Emission
+
+Z
+
+Replace sum with integral
+
+Li (x, !i ) f (x, !i , !r ) cos ✓i d!i
+⌦
+
+Incident
+Light (from
+light source)
+29
+
+BRDF
+
+Cosine of
+Incident angle
+Lingqi Yan, UC Santa Barbara
+
+Rendering Equation
+Surfaces (interreflection)
+
+xʹ
+dA
+dωi
+
+ω i ωr
+
+x
+Lr (x,ω r ) = Le (x,ω r ) + ∫ Lr ( xʹ,−ω i )f (x,ω i ,ω r ) cosθ i dω i
+
+GAMES101
+
+Reflected Light
+(Output Image)
+
+Emission
+
+UNKNOWN
+
+KNOWN
+
+Ω
+
+Reflected
+Light
+
+BRDF
+
+Cosine of
+Incident angle
+
+UNKNOWN
+
+KNOWN
+
+KNOWN
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Rendering Equation (Kajiya 86)
+
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Rendering Equation as
+Integral Equation
+Lr (x,ω r ) = Le(x,ω r ) + ∫ Lr ( xʹ,−ω i ) f (x,ω i ,ω r ) cosθ i dω i
+Ω
+
+Reflected Light
+(Output Image)
+
+Emission
+
+Reflected
+Light
+
+BRDF
+
+Cosine of
+Incident angle
+
+UNKNOWN
+
+KNOWN
+
+UNKNOWN
+
+KNOWN
+
+KNOWN
+
+Is a Fredholm Integral Equation of second kind
+[extensively studied numerically] with canonical form
+
+l (u) = e(u) + ∫ l (v) K(u,v)dv
+Kernel of equation
+
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Linear Operator Equation
+l (u ) = e(u ) + ∫ l (v) K (u , v)dv
+Kernel of equation
+Light Transport Operator
+
+L = E + KL
+Can be discretized to a simple matrix equation
+[or system of simultaneous linear equations]
+(L, E are vectors, K is the light transport matrix)
+
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Tracing and extensions
+• General class numerical Monte Carlo methods
+• Approximate set of all paths of light in scene
+L = E + KL
+IL − KL = E
+(I − K)L = E
+−1
+L = (I − K) E
+Binomial Theorem
+2
+
+3
+
+L = (I + K + K + K + ...)E
+2
+3
+L = E + KE + K E + K E + ...
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Tracing
+2
+
+3
+
+L = E + KE + K E + K E + ...
+Emission directly
+From light sources
+Direct Illumination
+on surfaces
+Indirect Illumination
+(One bounce indirect)
+[Mirrors, Refraction]
+(Two bounce indirect illum.)
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Tracing
+2
+
+3
+
+L = E + KE + K E + K E + ...
+Emission directly
+From light sources
+Direct Illumination
+on surfaces
+
+Shading in
+Rasterization
+
+GAMES101
+
+Indirect Illumination
+(One bounce indirect)
+[Mirrors, Refraction]
+(Two bounce indirect illum.)
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+p
+
+Direct illumination
+
+p
+
+One-bounce global illumination (dir+indir)
+
+p
+
+Two-bounce global illumination
+
+p
+
+Four-bounce global illumination
+
+p
+
+Eight-bounce global illumination
+
+p
+
+Sixteen-bounce global illumination
+
+Probability Review
+
+Random Variables
+X
+
+random variable. Represents a distribution of potential
+values
+
+X ⇠ p(x)
+
+probability density function (PDF). Describes relative
+probability of a random process choosing value
+
+X ⇠ p(x)
+Example: uniform PDF: all values over a domain are equally likely
+e.g. A six-sided die
+
+X takes on values 1, 2, 3, 4, 5, 6
+p(1) = p(2) = p(3) = p(4) = p(5) = p(6)
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Probabilities
+n discrete values
+
+xi
+
+With probability
+
+pi
+
+pi
+
+Requirements of a probability distribution:
+
+xi
+
+pi
+
+0
+
+n
+X
+
+pi = 1
+
+i=1
+
+Six-sided die example:
+
+GAMES101
+
+1
+pi =
+6
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Expected Value of a Random Variable
+The average value that one obtains if repeatedly drawing
+samples from the random distribution.
+
+X drawn from distribution with
+n discrete values xi
+with probabilities pi
+Expected value of X:
+
+pi
+
+E[X] =
+
+n
+X
+
+x i pi
+
+xi
+
+i=1
+
+Die example:
+
+E[X] =
+
+n
+X
+i
+
+6
+i=1
+
+= (1 + 2 + 3 + 4 + 5 + 6)/6 = 3.5
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Continuous Case: Probability Distribution Function (PDF)
+X ⇠ p(x)
+A random variable X that can take any of a continuous set of
+values, where the relative probability of a particular value is
+given by a continuous probability density function p(x).
+Conditions on p(x):
+Expected value of X:
+
+GAMES101
+
+Z
+
+p(x)
+
+0Zand
+p(x) dx = 1
+E[X] = x p(x) dx
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Function of a Random Variable
+A function Y of a random variable X is also a random
+variable:
+
+X ⇠ p(x)
+
+Y = f (X)
+
+Z
+
+X
+⇠
+p(x)
+E[Y ] = E[f (X)] = f (x) p(x) dx
+Expected
+Y = value
+f (X) of a function of a random variable:
+Z
+E[Y ] = E[f (X)] = f (x) p(x) dx
+
+GAMES101
+
+48
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

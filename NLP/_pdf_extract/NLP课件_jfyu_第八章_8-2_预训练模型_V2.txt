@@ -1,0 +1,1307 @@
+
+---PAGE 1---
+自然语言处理
+8. Transformer与预训练模型
+2026/5/26 《自然语言处理课件》by 虞剑飞 1
+虞剑飞
+南京大学智能科学与技术学院
+2026.5.27
+
+---PAGE 2---
+2026/5/26 2
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 3---
+2026/5/26 3
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 4---
+2026/5/26 4
+预训练任务
+监督学习
+无监督学习自监督学习
+《自然语言处理课件》by 虞剑飞 
+---PAGE 5---
+2026/5/26 5
+预训练任务
+• 自监督学习
+– 一种监督学习和无监督学习的结合
+• 监督式的学习方式
+• 训练数据由无标注数据自动构建
+– 典型任务
+• Language Modeling (LM)
+• CBoW, Skip-Gram, GloVe
+• Masked Language Modeling (MLM)
+• Next Sentence Prediction (NSP)
+• Masked Span Prediction
+• ……
+《自然语言处理课件》by 虞剑飞 
+---PAGE 6---
+2026/5/26 6
+预训练任务
+• 回顾前向神经网络神经语言模型
+– 给定第t个词的前n-1个词，最大化第t个词的似然估计
+《自然语言处理课件》by 虞剑飞 
+𝑝 𝑤𝑡 𝑤𝑡−𝑛+1
+𝑡−1 = 𝑓 𝑤𝑡 𝑤𝑡−𝑛+1
+𝑡−1 = 𝑐(𝑤𝑡−𝑛+1
+𝑡 )
+σ𝑤𝑡 𝑐(𝑤𝑡−𝑛+1
+𝑡 )
+---PAGE 7---
+2026/5/26 7
+预训练任务
+• 回顾前向神经网络神经语言模型
+《自然语言处理课件》by 虞剑飞 
+⚫ ⚫ … ⚫ ⚫ ⚫ … ⚫ ⚫ ⚫ … ⚫…
+⚫ ⚫ … … ⚫ ⚫
+⚫ ⚫ … … ⚫ ⚫ … … ⚫ ⚫
+tanh
+大量的计算
+在这一部分
+Output: 𝑤𝑡 = 𝑝(𝑤𝑡|𝑐𝑜𝑛𝑡𝑒𝑥𝑡)
+  Softmax
+参数共享
+(Bengio et al., 2003)
+𝑓(𝑾3 𝑓 𝑾2𝑓 𝑾1 ∙ 𝒙 + 𝑏1 + 𝑏2 + 𝑏3) ⋯
+𝒙 = (𝐿𝑇 𝑤𝑡−𝑛+1 , … , 𝐿𝑇 𝑤𝑡−2 , 𝐿𝑇(𝑤𝑡−1))
+𝐿𝑇 𝑤𝑡−𝑛+1 𝐿𝑇 𝑤𝑡−2 𝐿𝑇(𝑤𝑡−1)
+Table look-up 
+in 𝑳𝑻
+Indexes for 𝑤𝑡−𝑛+1 𝑤𝑡−2 𝑤𝑡−1⋯
+---PAGE 8---
+2026/5/26 8
+预训练任务
+• 回顾循环神经网络神经语言模型
+《自然语言处理课件》by 虞剑飞 
+模型训练时需要保证
+当前词的概率最大
+W
+U
+ht
+wt
+ht-1
+wt+1
+W
+U
+ht+1
+…
+…
+LThj
+误差反
+向传播
+𝑝 𝑤𝑗 = 𝑒𝑦𝑗
+σ𝑘 𝑒𝑦𝑘
+𝜃 ← 𝜃 + 𝜕ℒ(∙)
+𝜕𝜃
+𝜃: 𝑼, 𝑾, 𝒘𝑡, …
+ℒ ∙ : 损失函数等
+---PAGE 9---
+2026/5/26 9
+预训练任务
+• 之前神经网络神经语言模型的缺陷
+– 无法解决一词多义问题
+《自然语言处理课件》by 虞剑飞 
+Contextualized  
+WordEmbedding
+…money in the bank …
+Contextualized
+WordEmbedding
+… the river bank …
+Contextualized  
+WordEmbedding
+… own blood bank …
+---PAGE 10---
+2026/5/26 10
+预训练任务
+• Embeddings from Language Model (ELMO) (NAACL 2018 Best Paper)
+– RNN-based language models (trained from lots of sentences)
+– Bidirectional Modeling
+《自然语言处理课件》by 虞剑飞 
+RNN
+RNN
+<BOS> 潮水 退了
+RNN
+ RNN
+RNN RNN
+潮水 退了 就
+…
+…
+RNN
+RNN
+退了 就 知道
+RNN
+ RNN
+RNN RNN
+潮水 退了 就
+…
+…
+…
+…
+---PAGE 11---
+2026/5/26 11
+预训练任务
+• Embeddings from Language Model (ELMO) (NAACL 2018 Best Paper)
+《自然语言处理课件》by 虞剑飞 
+RNN
+RNN
+<BOS> 潮水 退了
+RNN
+ RNN
+RNN RNN
+潮水 退了 就
+…
+…
+RNN
+RNN
+退了 就 知道
+RNN
+ RNN
+RNN RNN
+潮水 退了 就
+…
+…
+…
+…
+
+---PAGE 12---
+2026/5/26 12
+预训练任务
+• Embeddings from Language Model (ELMO) (NAACL 2018 Best Paper)
+– RNN-based language models (trained from lots of sentences)
+– Bidirectional Modeling
+《自然语言处理课件》by 虞剑飞 
+RNN
+RNN
+<BOS> 潮水 退了
+RNN
+ RNN
+RNN RNN
+潮水 退了 就
+…
+…
+RNN
+RNN
+退了 就 知道
+RNN
+ RNN
+RNN RNN
+潮水 退了 就
+…
+…
+…
+…
+
+---PAGE 13---
+2026/5/26 13
+预训练任务
+• Embeddings from Language Model (ELMO) (NAACL 2018 Best Paper)
+– Multi-Layer RNNs
+《自然语言处理课件》by 虞剑飞 
+RNN
+RNN
+<BOS> 潮水 退了
+RNN
+RNN
+RNN
+RNN
+…
+…
+RNN
+RNN
+退了 就 知道
+RNN
+RNN
+RNN
+RNN
+…
+…
+…
+RNN
+ RNN
+ RNN
+ …
+ RNN
+ RNN
+ RNN
+ ……
+ℎ1
+ℎ2
+…
+…
+…
+…
+…
+…
+…
+---PAGE 14---
+2026/5/26 14
+预训练任务
+• Embeddings from Language Model (ELMO) (NAACL 2018 Best Paper)
+– Multi-Layer RNNs
+《自然语言处理课件》by 虞剑飞 
+潮水 退了 就 知 道 ……
+ELMO
+= 𝛼1 + 𝛼2
+Learned with the down  
+stream tasks
+---PAGE 15---
+2026/5/26 15
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+• 预训练任务
+• 下游任务
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 16---
+2026/5/26 16
+预训练任务
+• 自监督学习
+– Masked Language Modeling (MLM)
+Bidirectional Encoder Representations from Transformers(BERT)
+Devlin J, Chang M W, Lee K, et al. Bert: Pre-training of deep bidirectional transformers for language understanding. In NAACL, 2019. Best 
+Paper Award
+《自然语言处理课件》by 虞剑飞 
+---PAGE 17---
+2026/5/26 17
+预训练任务
+• 自监督学习
+– Next Sentence Prediction (NSP)
+句子A 句子B
+Devlin J, Chang M W, Lee K, et al. Bert: Pre-training of deep bidirectional transformers for language understanding. In NAACL, 2019. Best 
+Paper Award
+《自然语言处理课件》by 虞剑飞 
+---PAGE 18---
+2026/5/26 18
+预训练任务
+• 自监督学习
+– 预测一个范围内的所有词 (SpanBERT)
+Joshi M, Chen D, Liu Y, et al. Spanbert: Improving pre-training by representing and predicting spans. Transactions of the Association 
+for  Computational Linguistics, 2020
+《自然语言处理课件》by 虞剑飞 
+---PAGE 19---
+2026/5/26 19
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+• 预训练任务
+• 下游任务
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 20---
+2026/5/26 20
+下游任务
+• 预训练+精调范式
+Transformer 预训练 PTMs 任务
+模型
+任务数据
+迁移学习
+精调
+《自然语言处理课件》by 虞剑飞 
+---PAGE 21---
+2026/5/26 21
+下游任务
+• 预训练+精调范式
+– BERT
+《自然语言处理课件》by 虞剑飞 
+---PAGE 22---
+2026/5/26 22
+下游任务
+• 预训练+精调范式
+– BERT
+《自然语言处理课件》by 虞剑飞 
+---PAGE 23---
+2026/5/26 23
+下游任务
+• 预训练+精调范式
+– BERT
+《自然语言处理课件》by 虞剑飞 
+---PAGE 24---
+2026/5/26 24
+下游任务
+• 预训练+精调范式
+– BERT
+《自然语言处理课件》by 虞剑飞 
+---PAGE 25---
+2026/5/26 25
+下游任务
+• 预训练+精调范式
+– 预训练模型BERT的威力
+– General Language Understanding Evaluation (GLUE)
+• Corpus of Linguistic Acceptability (CoLA)
+• Stanford Sentiment Treebank (SST-2)
+• Microsoft Research Paraphrase Corpus (MRPC)
+• Quora Question Pairs (QQP)
+• Semantic Textual Similarity Benchmark (STS-B)
+• Multi-Genre Natural Language Inference (MNLI)
+• Question-answering NLI (QNLI)
+• Recognizing Textual Entailment (RTE) 
+• Winograd NLI (WNLI) 
+https://gluebenchmark.com/
+《自然语言处理课件》by 虞剑飞 
+---PAGE 26---
+2026/5/26 26
+下游任务
+• 预训练+精调范式
+– 预训练模型BERT的威力
+• BERT-base
+– 12 layers, d_model = 768, 12-headed attention
+– Total Parameters= 12*768*12=110M
+• BERT-large
+– 24 layers, d_model = 1,024, 16-headed attention
+– Total Parameters=24*1024*16=340M
+《自然语言处理课件》by 虞剑飞 
+---PAGE 27---
+2026/5/26 27
+下游任务
+• 预训练+精调范式
+– 预训练模型的威力
+《自然语言处理课件》by 虞剑飞 
+---PAGE 28---
+2026/5/26 28
+下游任务
+• 预训练+精调范式
+– 预训练模型的威力
+《自然语言处理课件》by 虞剑飞 
+---PAGE 29---
+2026/5/26 29
+下游任务
+• 预训练+精调范式
+– 预训练模型的威力
+《自然语言处理课件》by 虞剑飞 
+---PAGE 30---
+2026/5/26 30
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+• 预训练任务
+• 下游任务
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 31---
+2026/5/26 31
+预训练任务
+• 自监督学习
+– 典型任务
+• Seq2Seq Language Modeling (LM)
+• Seq2Seq Masked Language Modeling (MLM)
+• Seq2Seq Permuted Language Modeling (PLM)
+• Seq2Seq Masked Span Prediction
+• ……
+《自然语言处理课件》by 虞剑飞 
+---PAGE 32---
+2026/5/26 32
+下游任务
+• 统一建模成生成式任务
+– T5
+Raffel C, Shazeer N, Roberts A, et al. Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. Journal of 
+Machine Learning Research, 21, 1-67.
+Text-to-Text Transfer Transformer(T5)
+《自然语言处理课件》by 虞剑飞 
+---PAGE 33---
+2026/5/26 33
+预训练任务
+• T5
+– 自监督学习
+Text-to-Text Transfer Transformer(T5)
+Raffel C, Shazeer N, Roberts A, et al. Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. Journal of 
+Machine Learning Research, 21, 1-67.
+《自然语言处理课件》by 虞剑飞 
+---PAGE 34---
+2026/5/26 34
+预训练任务
+《自然语言处理课件》by 虞剑飞 
+• BART
+– 自监督学习
+• document corruption
+• reconstruction
+BART
+Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., Stoyanov, V. and Zettlemoyer, L., 2020, 
+July. BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and 
+Comprehension. In Proceedings of ACL (pp. 7871-7880).
+---PAGE 35---
+2026/5/26 35
+预训练任务
+《自然语言处理课件》by 虞剑飞 
+• BART
+– 自监督学习
+• document corruption
+• reconstruction
+Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., Stoyanov, V. and Zettlemoyer, L., 2020, 
+July. BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and 
+Comprehension. In Proceedings of ACL (pp. 7871-7880).
+---PAGE 36---
+2026/5/26 36
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+• 预训练任务
+• 下游任务
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 37---
+2026/5/26 37
+下游任务
+• 统一建模成生成式任务
+– T5
+《自然语言处理课件》by 虞剑飞 
+
+---PAGE 38---
+2026/5/26 38
+下游任务
+• 统一建模成生成式任务
+– BART for sequence classification
+《自然语言处理课件》by 虞剑飞 
+BART
+masked attention
+---PAGE 39---
+2026/5/26 39
+下游任务
+• 统一建模成生成式任务
+– BART for machine translation
+《自然语言处理课件》by 虞剑飞 
+
+---PAGE 40---
+2026/5/26 40
+下游任务
+• 统一建模成生成式任务
+– T5的威力
+• T5-small: 6 layers, d_model = 512, d_ff = 2,048, 8-headed attention
+• T5-base: 12 layers, d_model = 768, d_ff = 3,072, 12-headed attention
+• T5-large: 24 layers, d_model = 1,024, d_ff = 4,096, 16-headed attention
+• T5-3B: 24 layers, d_model = 1,024, d_ff = 16,384, 32-headed attention
+• T5-11B: 24 layers, d_model = 1,024, d_ff = 65,536, 128-headed attention
+Raffel C, Shazeer N, Roberts A, et al. Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. Journal of 
+Machine Learning Research, 21, 1-67.
+《自然语言处理课件》by 虞剑飞 
+---PAGE 41---
+2026/5/26 41
+下游任务
+• 统一建模成生成式任务
+– T5的威力
+Raffel C, Shazeer N, Roberts A, et al. Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. Journal of 
+Machine Learning Research, 21, 1-67.
+《自然语言处理课件》by 虞剑飞 
+---PAGE 42---
+2026/5/26 42
+下游任务
+• 统一建模成生成式任务
+– T5的威力
+Raffel C, Shazeer N, Roberts A, et al. Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. Journal of 
+Machine Learning Research, 21, 1-67.
+《自然语言处理课件》by 虞剑飞 
+---PAGE 43---
+2026/5/26 43
+下游任务
+• 统一建模成生成式任务
+– T5的威力
+Raffel C, Shazeer N, Roberts A, et al. Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. Journal of 
+Machine Learning Research, 21, 1-67.
+《自然语言处理课件》by 虞剑飞 
+---PAGE 44---
+2026/5/26 44
+下游任务
+• 统一建模成生成式任务
+– T5的威力
+Raffel C, Shazeer N, Roberts A, et al. Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. Journal of 
+Machine Learning Research, 21, 1-67.
+《自然语言处理课件》by 虞剑飞 
+---PAGE 45---
+2026/5/26 45
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+• 预训练任务
+• 下游任务
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 46---
+2026/5/26 46
+预训练任务
+《自然语言处理课件》by 虞剑飞 
+Megatron
+• GPT-3 has 175B parameters!
+• (10 times larger than Turing NLG)
+---PAGE 47---
+2026/5/26 47
+预训练任务
+《自然语言处理课件》by 虞剑飞 
+BERT  
+(340M)
+ELMO  
+(94M)
+ GPT-2
+(1542M)
+GPT-3
+(175B)
+ChatGPT
+(175B)
+---PAGE 48---
+2026/5/26 48
+预训练任务
+《自然语言处理课件》by 虞剑飞 
+
+---PAGE 49---
+2026/5/26 49
+预训练任务
+《自然语言处理课件》by 虞剑飞 
+𝑣1
+𝑞1 𝑘1
+ 𝑞2 𝑘2 𝑣2
+ 𝑣3
+𝑞3 𝑘3
+ 𝑞4 𝑘4 𝑣4
+𝑎4𝑎3𝑎2𝑎1
+<BOS> 潮水
+𝑏2
+退了
+• Generative Pre-Training (GPT)
+退了
+---PAGE 50---
+2026/5/26 50
+预训练任务
+《自然语言处理课件》by 虞剑飞 
+𝑣1
+𝑞1 𝑘1
+ 𝑞2 𝑘2 𝑣2
+ 𝑣3
+𝑞3 𝑘3
+ 𝑞4 𝑘4 𝑣4
+𝑎4𝑎3𝑎2𝑎1
+<BOS> 潮水
+𝑏3
+就
+退了
+ 就
+• Generative Pre-Training (GPT)
+---PAGE 51---
+2026/5/26 51
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+• 预训练任务
+• 下游任务
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 52---
+2026/5/26 52
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• Generative Pre-Training (GPT)
+T ext without  
+annotation Pre-train
+A model that can 
+read text
+Model
+Model
+Task
+Specific
+Model
+Task
+Specific
+Model
+Task
+Specific
+Fine-tune
+Task-specific data  
+with annotation
+---PAGE 53---
+2026/5/26 53
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• Generative Pre-Training (GPT)
+
+---PAGE 54---
+2026/5/26 54
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• Generative Pre-Training 3 (GPT-3)
+
+---PAGE 55---
+2026/5/26 55
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• Generative Pre-Training 3 (GPT-3)
+T ext without  
+annotation Pre-train
+A model that can 
+read text
+Model
+Model
+Task
+Specific
+Model
+Task
+Specific
+Model
+Task
+Specific
+Fine-tune
+Task-specific data  
+with annotation
+---PAGE 56---
+2026/5/26 56
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• 上下文学习（零样本/小样本学习）
+– “In-context” Learning
+Few-shot
+Learning
+(no gradient  
+descent)
+One-shot 
+Learning
+Zero-shot
+Learning
+
+---PAGE 57---
+2026/5/26 57
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• 上下文学习（零样本/小样本学习）
+– “In-context” Learning
+CoQA
+• Reading Comprehension
+𝑑1, 𝑑2, ⋯ , 𝑑𝑁,
+“Q:”, 𝑞1, 𝑞2, ⋯ , 𝑞𝑁,
+“ A:”
+---PAGE 58---
+2026/5/26 58
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• 上下文学习（零样本/小样本学习）
+Average of 42 tasks
+---PAGE 59---
+2026/5/26 59
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• 上下文学习（零样本/小样本学习）
+Closed Book QA
+---PAGE 60---
+2026/5/26 60
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• 上下文学习（零样本/小样本学习）
+
+---PAGE 61---
+2026/5/26 61
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• 上下文学习（零样本/小样本学习）
+
+---PAGE 62---
+2026/5/26 62
+下游任务
+《自然语言处理课件》by 虞剑飞 
+• 上下文学习（零样本/小样本学习）
+
+---PAGE 63---
+2026/5/26 63
+ChatGPT模型迭代历程
+《自然语言处理课件》by 虞剑飞 
+• 从GPT-3到ChatGPT
+
+---PAGE 64---
+2026/5/26 64
+ChatGPT模型效果
+《自然语言处理课件》by 虞剑飞 
+• ChatGPT
+
+---PAGE 65---
+2026/5/26 65
+ChatGPT模型效果
+《自然语言处理课件》by 虞剑飞 
+• ChatGPT
+
+---PAGE 66---
+2026/5/26 66
+ChatGPT模型效果
+《自然语言处理课件》by 虞剑飞 
+• ChatGPT
+
+---PAGE 67---
+2026/5/26 《自然语言处理课件》by 虞剑飞 67
+ChatGPT训练过程（方法）
+• ChatGPT
+– OpenAI 未发表ChatGPT论文，训练过程与Instruct GPT类似
+---PAGE 68---
+2026/5/26 68
+ChatGPT训练过程（方法）
+《自然语言处理课件》by 虞剑飞 
+• ChatGPT
+– OpenAI 未发表ChatGPT论文，训练过程与Instruct GPT类似
+– 人类反馈强化学习方法（Reinforcement Learning from Human Feedback, 
+RLHF）
+
+---PAGE 69---
+2026/5/26 69
+GPT-4
+《自然语言处理课件》by 虞剑飞 
+• GPT-4
+---PAGE 70---
+2026/5/26 70
+LLM整体发展进程
+《自然语言处理课件》by 虞剑飞 
+• 截至2024年为止的开源/闭源大语言模型
+
+---PAGE 71---
+2026/5/26 71
+大模型实现过程
+《自然语言处理课件》by 虞剑飞 
+• 大模型实现过程
+explain the moon  
+landing to 6 year olds
+Some people went to  
+the Moon
+标注人员构
+造目标答案
+explain the moon  
+landing to 6 year olds
+标注人员对
+答案质量进
+行排序
+有监督微调大模型
+奖励函数
+A
+C
+B
+D
+C>A>B=D
+Writesomething  
+about frog
+奖励函数
+大模型
+Once upon a time …
+rk
+基础大模型
+预训练阶段
+十万各任务
+用户指令
+有监督微调 奖励函数 强化学习
+百万各任务
+用户指令
+十万各任务
+用户指令
+数千亿单词
+图书、百科、
+网页等
+---PAGE 72---
+2026/5/26 72
+大模型实现过程
+《自然语言处理课件》by 虞剑飞 
+• 大模型实现过程
+基础大模型
+预训练阶段
+数千亿单词
+图书、百科、
+网页等
+知识压缩和表示学习
+语言模型
+---PAGE 73---
+2026/5/26 73
+大模型实现过程
+《自然语言处理课件》by 虞剑飞 
+• 大模型实现过程
+基础大模型
+预训练阶段
+数千亿单词
+图书、百科、
+网页等
+语言模型
+explain the moon  
+landing to 6 year olds
+Some people went to  
+the Moon
+标注人员构
+造目标答案
+有监督微调大模型
+十万各任务
+用户指令
+有监督微调
+能力注入
+---PAGE 74---
+2026/5/26 74
+大模型实现过程
+《自然语言处理课件》by 虞剑飞 
+• 大模型实现过程
+基础大模型
+预训练阶段
+数千亿单词
+图书、百科、
+网页等
+语言模型
+explain the moon  
+landing to 6 year olds
+Some people went to  
+the Moon
+标注人员构
+造目标答案
+有监督微调大模型
+十万各任务
+用户指令
+有监督微调
+explain the moon  
+landing to 6 year olds
+奖励函数
+A
+C
+B
+D
+C>A>B=D
+奖励函数
+百万各任务
+用户指令
+---PAGE 75---
+2026/5/26 75
+大模型实现过程
+《自然语言处理课件》by 虞剑飞 
+• 大模型实现过程
+基础大模型
+预训练阶段
+数千亿单词
+图书、百科、
+网页等
+语言模型
+explain the moon  
+landing to 6 year olds
+Some people went to  
+the Moon
+标注人员构
+造目标答案
+有监督微调大模型
+十万各任务
+用户指令
+有监督微调
+explain the moon  
+landing to 6 year olds
+奖励函数
+A
+C
+B
+D
+C>A>B=D
+奖励函数
+百万各任务
+用户指令 Writesomething  
+about frog
+奖励函数
+大模型
+Once upon a time …
+rk
+强化学习
+十万各任务
+用户指令
+---PAGE 76---
+2026/5/26 76
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• “无所不能”
+– 文本摘要
+
+---PAGE 77---
+2026/5/26 77
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• “无所不能”
+– 辅助写作、辅助诊疗
+
+---PAGE 78---
+2026/5/26 78
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• “无所不能”
+– 起草方案、理论解释
+
+---PAGE 79---
+2026/5/26 79
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• 大模型当前能力
+– 知识利用层次图
+大模型的知识能力现状
+目前大模型主要停留在记忆层次，能够存储和
+检索大量知识
+1 记忆：存储和检索事实知识，如“南
+大有四个校区"
+2 分类：判断知识属性，如“南京大学
+是985高校"
+Wang et al. Knowledge Mechanisms in Large Language Models: A Survey and Perspective, EMNLP 2024
+---PAGE 80---
+2026/5/26 80
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• 大模型当前能力
+– 知识利用层次图
+Wang et al. Knowledge Mechanisms in Large Language Models: A Survey and Perspective, EMNLP 2024
+大模型的知识能力现状
+目前大模型在深层理解和推理方面仍有明显
+局限。
+3 比较：对比不同知识，如“南京大学
+比南理工成立更早“
+4 逆向搜索：根据属性找实体，如“南京
+市仙林大道有哪些大学"
+5 推理：基于已知推导未知，如多步逻辑推理
+？
+---PAGE 81---
+2026/5/26 81
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• 大模型当前能力
+– 能力边界实证：高考数学测试
+数据来源： https://mp.weixin.qq.com/s/KYEsTA-qU72pXWnr7-iB4A
+---PAGE 82---
+2026/5/26 82
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• 大模型当前能力
+– 能力边界实证：高考数学测试
+数据来源： https://mp.weixin.qq.com/s/KYEsTA-qU72pXWnr7-iB4A
+两场平均分最好70%，最差 25%， 填空题成绩更差
+---PAGE 83---
+2026/5/26 83
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• 大模型当前能力
+– 能力边界实证：逻辑推理能力
+• ChatGPT和GPT-4在逻辑多选机器阅读理解任务上的性能表现
+基准数据集效果较好，分布外数据集表现差
+---PAGE 84---
+2026/5/26 84
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• 大模型当前能力
+– 能力边界实证：规划能力
+Valmeekam et al. LLMs Still Can‘t Plan; Can LRMs? A Preliminary Evaluation of OpenAI’s o1 on PlanBench, Arxiv, 2024.
+Mystery Blocks World 样例：我的初始条件是，红色积木是空的，蓝色积木
+是空的，黄色积木是空 的，手是空的，蓝色积木在橙色积木的上面，红色积木
+在桌子上，橙色积木在桌子上，黄色积木在桌 子上。我的目标是让橙色积木在
+蓝色积木的上面。 实现我目标的计划是什么?只需给出计划中的行动。
+
+---PAGE 85---
+2026/5/26 85
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• 大模型当前能力
+– 能力边界实证：规划能力
+Valmeekam et al. LLMs Still Can‘t Plan; Can LRMs? A Preliminary Evaluation of OpenAI’s o1 on PlanBench, Arxiv, 2024.
+
+---PAGE 86---
+2026/5/26 86
+大语言模型能力边界
+《自然语言处理课件》by 虞剑飞 
+• 大模型当前能力
+– 记忆 vs 理解
+记忆能力
+✓ 存储与检索：能够存储和检索大量事实知识
+✓ 模式识别：能够识别训练数据中的统计模式
+✓ 上下文关联：能够关联相似上下文中的信息
+✓ 语言生成：能够生成流畅、连贯的文本
+理解能力
+✗ 因果推理：难以进行真正的因果关系推理
+✗ 抽象思维：难以形成抽象概念和原理
+✗ 逻辑一致性：难以保持复杂推理中的逻辑一致
+✗ 知识迁移：难以将知识迁移到全新领域
+
+---PAGE 87---
+2026/5/26 87
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 预训练任务
+• 下游任务
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 88---
+2026/5/26 88
+文本-视觉预训练数据
+, ‘man with his dog on a couch’(
+ )
+《自然语言处理课件》by 虞剑飞 
+---PAGE 89---
+2026/5/26 89
+文本-视觉预训练任务
+• Masked Language Modeling (MLM)
+Image Regions: 
+Sentence Tokens: 
+Masking Indices:
+Loss Function of Masked Language Modeling (MLM):
+UNITER
+man with his [MASK] …
+dog
+Reference:
+1. Chen Y C, Li L, Yu L, et al. Uniter: Universal image-text representation learning. ECCV 2020
+《自然语言处理课件》by 虞剑飞 
+---PAGE 90---
+2026/5/26 90
+文本-视觉预训练任务
+• Masked Region Modeling (MRM)
+Image Regions: 
+Sentence Tokens: 
+Masking Indices:
+man with his dog …
+pred: gt:
+Loss Function of Masked Region Modeling:
+1) Objective of Masked Region Feature Regression (MRFR)
+UNITER
+Reference:
+1. Chen Y C, Li L, Yu L, et al. Uniter: Universal image-text representation learning. ECCV 2020
+《自然语言处理课件》by 虞剑飞 
+---PAGE 91---
+2026/5/26 91
+文本-视觉预训练任务
+• Masked Region Modeling (MRM)
+Image Regions: 
+Sentence Tokens: 
+Masking Indices:
+man with his dog …
+Loss Function of Masked Region Modeling:
+dog
+2) Objective of Masked Region Classification (MRC)
+UNITER
+Reference:
+1. Chen Y C, Li L, Yu L, et al. Uniter: Universal image-text representation learning. ECCV 2020
+《自然语言处理课件》by 虞剑飞 
+---PAGE 92---
+2026/5/26 92
+文本-视觉预训练任务
+• Masked Region Modeling (MRM)
+Image Regions: 
+Sentence Tokens: 
+Masking Indices:
+man with his dog …
+Loss Function of Masked Region Modeling:
+3) Objective of Masked Region Classification – KL Divergence (MRC-kl)
+UNITER
+Reference:
+1. Chen Y C, Li L, Yu L, et al. Uniter: Universal image-text representation learning. ECCV 2020
+《自然语言处理课件》by 虞剑飞 
+---PAGE 93---
+2026/5/26 93
+文本-视觉预训练任务
+• Image-Text Matching (ITM)
+Image Regions: 
+Sentence Tokens: 
+Masking Indices:
+UNITER
+[CLS] the bus is …
+: 0/1
+Loss Function of Image-Text Matching (ITM)
+Reference:
+1. Chen Y C, Li L, Yu L, et al. Uniter: Universal image-text representation learning. ECCV 2020
+《自然语言处理课件》by 虞剑飞 
+---PAGE 94---
+2026/5/26 《自然语言处理课件》by 虞剑飞 94
+文本-视觉预训练任务
+• CLIP模型-图文对比学习
+---PAGE 95---
+2026/5/26 《自然语言处理课件》by 虞剑飞 95
+文本-视觉预训练任务
+• CLIP模型-图文对比学习
+---PAGE 96---
+2026/5/26 《自然语言处理课件》by 虞剑飞 96
+多模态大模型
+• 动机
+– 真实物理世界中有文本、视觉、音频、3D、雷达、多谱等复杂多样的不
+同模态信号
+脉搏波
+温度
+3D超声波指纹 红外信号 陀螺仪
+---PAGE 97---
+2026/5/26 《自然语言处理课件》by 虞剑飞 97
+多模态大模型
+• 三类范式
+多模态大语言模型：
+以大语言模型未认知基座，将
+其他各种模态对齐到语言空间，
+实现多模态大模型
+例如BLIP-2、LLaVA
+特点：
+1. 综合自监督、有监督数据，
+数据量大
+2. 模型参数规模大(百亿、千
+亿级参数)
+3. 通用能力强
+多任务多模态大模型：
+基于单一模型架构，通过若
+干跨模态任务同时训练产生
+的多模态大模型
+例如SAM、BEiT-3
+特点：
+1. 训练任务受限，多为监督
+数据
+2. 模型参数规模较小(十亿级
+参数)
+3. 通用能力弱
+面向特定任务的多模态大模型
+面向跨模态检索和生成等特定
+任务构建的多模态大模型
+例如CLIP、DALL-E、Stable 
+Diffusion
+特点：
+1. 训练任务单一
+2. 模型参数规模较小(千万、
+亿级参数)
+3. 下游任务受限
+
+---PAGE 98---
+2026/5/26 《自然语言处理课件》by 虞剑飞 98
+多模态大模型发展历程
+• 截止2024年3月
+
+---PAGE 99---
+2026/5/26 99
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 预训练任务
+• 下游任务
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 100---
+2026/5/26 100
+文本-视觉下游任务
+• Visual Question Answering
+https://vilbert.cloudcv.org/
+《自然语言处理课件》by 虞剑飞 
+---PAGE 101---
+2026/5/26 101
+文本-视觉下游任务
+• Spatial Visual Reasoning
+https://vilbert.cloudcv.org/
+《自然语言处理课件》by 虞剑飞 
+---PAGE 102---
+2026/5/26 102
+文本-视觉下游任务
+• Visual Commonsense Reasoning
+I choose (a) because:
+Reference:
+1. From Recognition to Cognition: Visual Commonsense Reasoning, CVPR 2019
+《自然语言处理课件》by 虞剑飞 
+---PAGE 103---
+2026/5/26 103
+文本-视觉下游任务
+• Referring Expression Comprehension
+woman washing dishes
+Reference:
+1. Flickr30K Entities: Collecting Region-to-Phrase Correspondences for Richer Image-to-Sentence Models, IJCV 2017
+《自然语言处理课件》by 虞剑飞 
+---PAGE 104---
+2026/5/26 104
+文本-视觉下游任务
+• Referring Expression Comprehension
+VL Model
+《自然语言处理课件》by 虞剑飞 
+---PAGE 105---
+2026/5/26 105
+文本-视觉下游任务
+• Referring Expression Comprehension
+https://vilbert.cloudcv.org/
+《自然语言处理课件》by 虞剑飞 
+---PAGE 106---
+2026/5/26 106
+文本-视觉下游任务
+• Image-Text Retrieval
+“a girl with a cat on grass”
+…Image
+DB
+《自然语言处理课件》by 虞剑飞 
+---PAGE 107---
+2026/5/26 107
+文本-视觉下游任务
+• Image-Text Retrieval
+…
+Text
+DB
+• “four people with ski poles in their hands in
+the snow” 
+• “four skiers hold on to their poles in a snowy
+forest” 
+• “a group of young men riding skis”
+• “skiers pose for a picture while outside in
+the woods”
+• “a group of people cross country skiing in
+the woods”
+《自然语言处理课件》by 虞剑飞 
+---PAGE 108---
+2026/5/26 108
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 本章小结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 109---
+2026/5/26 《自然语言处理课件》by 虞剑飞 109
+欢迎提问！

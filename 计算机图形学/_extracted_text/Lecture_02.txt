@@ -1,0 +1,999 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 2:
+Review of Linear Algebra
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Slides and recordings of Lecture 1 now available
+• (Pre)-reading materials will be out before lectures
+
+• Happy Valentine’s Day!
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lecture
+• What is Computer Graphics?
+• Why study Computer Graphics?
+• Course Topics
+• Course Logistics
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+A Swift and Brutal
+Introduction to Linear Algebra!
+(in fact it’s relatively easy…)
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Graphics’ Dependencies
+• Basic mathematics
+- Linear algebra, calculus, statistics
+
+• Basic physics
+- Optics, Mechanics
+
+• Misc
+- Signal processing
+- Numerical analysis
+
+• And a bit of aesthetics
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+This Course
+• More dependent on Linear Algebra
+- Vectors (dot products, cross products, …)
+- Matrices (matrix-matrix, matrix-vector mult., …)
+
+• For example,
+- A point is a vector (?)
+- An operation like translating or rotating objects
+can be matrix-vector multiplication
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+An Example of Rotation
+
+Rendering Glints on High-Resolution Normal-Mapped Specular Surfaces, Lingqi Yan, 2014
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Vectors
+B
+
+B’
+
+=
+
+~a
+<latexit sha1_base64="FoK24mWOAJgO/ufi1JngN294BOA=">AAAB7nicbVDLSgNBEOzxGeMr6tHLYBA8hV0R9Bjw4jGCeUCyhNlJbzJkdnaZmQ2EJR/hxYMiXv0eb/6Nk2QPmljQUFR1090VplIY63nfZGNza3tnt7RX3j84PDqunJy2TJJpjk2eyER3QmZQCoVNK6zETqqRxaHEdji+n/vtCWojEvVkpykGMRsqEQnOrJPavQnynM36lapX8xag68QvSBUKNPqVr94g4VmMynLJjOn6XmqDnGkruMRZuZcZTBkfsyF2HVUsRhPki3Nn9NIpAxol2pWydKH+nshZbMw0Dl1nzOzIrHpz8T+vm9noLsiFSjOLii8XRZmkNqHz3+lAaORWTh1hXAt3K+Ujphm3LqGyC8FffXmdtK5rvlfzH2+q9UYRRwnO4QKuwIdbqMMDNKAJHMbwDK/wRlLyQt7Jx7J1gxQzZ/AH5PMHkyaPwQ==</latexit>
+<latexit
+
+A
+
+A’
+
+• Usually written as ~
+a or in bold a
+<latexit sha1_base64="BGh0mf4IFK9bjmWo+lb8G6bkAFw=">AAAB/HicbZDLSgMxFIbP1Futt1GXboJFcFVmRNBl0Y3LCvYC7VAyaaaNTTJDkhHKUJ/Bra7diVvfxaVvYqadhW39IfDxn3M4J3+YcKaN5307pbX1jc2t8nZlZ3dv/8A9PGrpOFWENknMY9UJsaacSdo0zHDaSRTFIuS0HY5v83r7iSrNYvlgJgkNBB5KFjGCjbVavVBkeNp3q17Nmwmtgl9AFQo1+u5PbxCTVFBpCMdad30vMUGGlWGE02mll2qaYDLGQ9q1KLGgOshm107RmXUGKIqVfdKgmft3IsNC64kIbafAZqSXa7n5X62bmug6yJhMUkMlmS+KUo5MjPKvowFTlBg+sYCJYvZWREZYYWJsQAtbQpFn4i8nsAqti5pv+f6yWr8p0inDCZzCOfhwBXW4gwY0gcAjvMArvDnPzrvz4XzOW0tOMXMMC3K+fgGDMJXQ</latexit>
+<latexit
+
+<latexit sha1_base64="FoK24mWOAJgO/ufi1JngN294BOA=">AAAB7nicbVDLSgNBEOzxGeMr6tHLYBA8hV0R9Bjw4jGCeUCyhNlJbzJkdnaZmQ2EJR/hxYMiXv0eb/6Nk2QPmljQUFR1090VplIY63nfZGNza3tnt7RX3j84PDqunJy2TJJpjk2eyER3QmZQCoVNK6zETqqRxaHEdji+n/vtCWojEvVkpykGMRsqEQnOrJPavQnynM36lapX8xag68QvSBUKNPqVr94g4VmMynLJjOn6XmqDnGkruMRZuZcZTBkfsyF2HVUsRhPki3Nn9NIpAxol2pWydKH+nshZbMw0Dl1nzOzIrHpz8T+vm9noLsiFSjOLii8XRZmkNqHz3+lAaORWTh1hXAt3K+Ujphm3LqGyC8FffXmdtK5rvlfzH2+q9UYRRwnO4QKuwIdbqMMDNKAJHMbwDK/wRlLyQt7Jx7J1gxQzZ/AH5PMHkyaPwQ==</latexit>
+<latexit
+
+!
+• Or using start and end points AB = B
+
+A
+
+• Direction and length
+• No absolute starting position
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Vector Normalization
+• Magnitude (length) of a vector written as k~ak
+<latexit sha1_base64="WR4S2DIzmdtA1deKNc+GCPkDTIU=">AAAB+nicbZBNS8NAEIYn9avWr1SPXoJF8FQSEfRY8OKxgv2ANpTNdtIu3WzC7qZSYn+KFw+KePWXePPfuE1z0NYXFh7emWFm3yDhTGnX/bZKG5tb2zvl3cre/sHhkV09bqs4lRRbNOax7AZEIWcCW5ppjt1EIokCjp1gcruod6YoFYvFg54l6EdkJFjIKNHGGtjVfhul7k+RZmSe88CuuXU3l7MOXgE1KNQc2F/9YUzTCIWmnCjV89xE+xmRmlGO80o/VZgQOiEj7BkUJELlZ/npc+fcOEMnjKV5Qju5+3siI5FSsygwnRHRY7VaW5j/1XqpDm/8jIkk1SjoclGYckfHziIHZ8gkUs1nBgiVzNzq0DGRhGqTVsWE4K1+eR3al3XPrXv3V7VGs4ijDKdwBhfgwTU04A6a0AIKj/AMr/BmPVkv1rv1sWwtWcXMCfyR9fkDsiqUUA==</latexit>
+
+• Unit vector
+
+- A vector with magnitude of 1
+a/k~ak
+- Finding the unit vector of a vector (normalization): â = ~
+- Used to represent directions
+<latexit sha1_base64="TXiiCONEDH7hv2wLKAHjAla7xvg=">AAACCnicbVDLSsNAFJ3UV62vqEs30SK4qokIuhEKblxWsA9oQplMb9qhkwczN4USunbjr7hxoYhbv8Cdf+M0zUJbDwxz5px7uXOPnwiu0La/jdLK6tr6RnmzsrW9s7tn7h+0VJxKBk0Wi1h2fKpA8AiayFFAJ5FAQ19A2x/dzvz2GKTicfSAkwS8kA4iHnBGUUs989gdUszo9MYdA9P3udsCicUj5z2zatfsHNYycQpSJQUaPfPL7ccsDSFCJqhSXcdO0MuoRM4ETCtuqiChbEQH0NU0oiEoL8tXmVqnWulbQSz1idDK1d8dGQ2VmoS+rgwpDtWiNxP/87opBtdexqMkRYjYfFCQCgtja5aL1ecSGIqJJpRJrv9qsSGVlKFOr6JDcBZXXiati5pj15z7y2q9UcRRJkfkhJwRh1yROrkjDdIkjDySZ/JK3own48V4Nz7mpSWj6Dkkf2B8/gA0gJtB</latexit>
+
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Vector Addition
+~a
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+~a + ~b
+
+~b
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+<latexit sha1_base64="qMvyaNnULSksruhfBZB1ZWUZ1SU=">AAAB+nicbZDLSsNAFIYn9VbrLdWlm8EiCEJJRNBlwU2XFewF2lAm05N26GQSZiaVEvMoblwo4tYncefbOE2z0NYfBj7+cw7nzO/HnCntON9WaWNza3unvFvZ2z84PLKrxx0VJZJCm0Y8kj2fKOBMQFszzaEXSyChz6HrT+8W9e4MpGKReNDzGLyQjAULGCXaWEO7OpgBTUmGL3FOfja0a07dyYXXwS2ghgq1hvbXYBTRJAShKSdK9V0n1l5KpGaUQ1YZJApiQqdkDH2DgoSgvDQ/PcPnxhnhIJLmCY1z9/dESkKl5qFvOkOiJ2q1tjD/q/UTHdx6KRNxokHQ5aIg4VhHeJEDHjEJVPO5AUIlM7diOiGSUG3SqpgQ3NUvr0Pnqu46dff+utZoFnGU0Sk6QxfIRTeogZqohdqIokf0jF7Rm/VkvVjv1seytWQVMyfoj6zPH8Axk60=</latexit>
+
+~a + ~b
+<latexit sha1_base64="qMvyaNnULSksruhfBZB1ZWUZ1SU=">AAAB+nicbZDLSsNAFIYn9VbrLdWlm8EiCEJJRNBlwU2XFewF2lAm05N26GQSZiaVEvMoblwo4tYncefbOE2z0NYfBj7+cw7nzO/HnCntON9WaWNza3unvFvZ2z84PLKrxx0VJZJCm0Y8kj2fKOBMQFszzaEXSyChz6HrT+8W9e4MpGKReNDzGLyQjAULGCXaWEO7OpgBTUmGL3FOfja0a07dyYXXwS2ghgq1hvbXYBTRJAShKSdK9V0n1l5KpGaUQ1YZJApiQqdkDH2DgoSgvDQ/PcPnxhnhIJLmCY1z9/dESkKl5qFvOkOiJ2q1tjD/q/UTHdx6KRNxokHQ5aIg4VhHeJEDHjEJVPO5AUIlM7diOiGSUG3SqpgQ3NUvr0Pnqu46dff+utZoFnGU0Sk6QxfIRTeogZqohdqIokf0jF7Rm/VkvVjv1seytWQVMyfoj6zPH8Axk60=</latexit>
+
+~b
+
+~b
+
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+~a
+
+~a
+
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+• Geometrically: Parallelogram law & Triangle law
+• Algebraically: Simply add coordinates
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Cartesian Coordinates
+
+• X and Y can be any (usually orthogonal unit) vectors
+✓ ◆
+p
+x
+T
+2 + y2
+kAk
+=
+x
+A=
+A = x, y
+y
+<latexit sha1_base64="vU9RYZ7dVE8Ko9CmpRhs3Nzmkn0=">AAACDXicdVDLSsNAFJ34tr6qLt0MVkEQShJLqwuh4qZLBfuAppbJdKJDJw9nbsQQ8gNu/BU3LhRx696df+OkVlDRAwNnzrmXe+9xI8EVmOa7MTE5NT0zOzdfWFhcWl4prq61VBhLypo0FKHsuEQxwQPWBA6CdSLJiO8K1naHx7nfvmZS8TA4gyRiPZ9cBNzjlICW+sUtp8UkOD6BS9dLj7LR99BRVxLSm3Mb7ybndtYvlszywX7VrlSxWTbNmmVbObFrlb0KtrSSo4TGOOkX35xBSGOfBUAFUaprmRH0UiKBU8GyghMrFhE6JBesq2lAfKZ66eiaDG9rZYC9UOoXAB6p3ztS4iuV+K6uzNdWv71c/MvrxuDt91IeRDGwgH4O8mKBIcR5NHjAJaMgEk0IlVzviuklkYSCDrCgQ/i6FP9PWnbZMsvWaaVUb4zjmEMbaBPtIAvVUB010AlqIopu0T16RE/GnfFgPBsvn6UTxrhnHf2A8foB4L2cEw==</latexit>
+
+<latexit sha1_base64="NeF2J5zaU//c3mZPb5afBjlAsV8=">AAACFnicbVDLSgMxFM3UV62vUZdugkVwoWVGBN0IFTddVugLOrVk0jttaCYzJBlpGfoVbvwVNy4UcSvu/BvTB6KtBwKHc+7l5hw/5kxpx/myMkvLK6tr2fXcxubW9o69u1dTUSIpVGnEI9nwiQLOBFQ10xwasQQS+hzqfv9m7NfvQSoWiYoextAKSVewgFGijdS2T72Q6J4fpNeju8qV50OXiTQ2mmSD0eAEDz0QnR+hbeedgjMBXiTujOTRDOW2/el1IpqEIDTlRKmm68S6lRKpGeUwynmJgpjQPulC01BBQlCtdBJrhI+M0sFBJM0TGk/U3xspCZUahr6ZHIdQ895Y/M9rJjq4bKVMxIkGQaeHgoRjHeFxR7jDJFDNh4YQKpn5K6Y9IgnVpsmcKcGdj7xIamcF1ym4t+f5YmlWRxYdoEN0jFx0gYqohMqoiih6QE/oBb1aj9az9Wa9T0cz1mxnH/2B9fEND3qglA==</latexit>
+
+<latexit sha1_base64="qX75rVxK3FvgX4yB5pZZRrt/HRo=">AAACFXicbVDLSsNAFJ34rPUVdelmsAgupCQi6EaouOmygn1AE8pketMOnUzCzEQaQn/Cjb/ixoUibgV3/o3TB6KtBwYO59zLnXOChDOlHefLWlpeWV1bL2wUN7e2d3btvf2GilNJoU5jHstWQBRwJqCumebQSiSQKODQDAY3Y795D1KxWNzpLAE/Ij3BQkaJNlLHPvUiovtBmF+PrrwAekzkiVEkG46GnoczD0T3R+nYJafsTIAXiTsjJTRDrWN/et2YphEITTlRqu06ifZzIjWjHEZFL1WQEDogPWgbKkgEys8nqUb42ChdHMbSPKHxRP29kZNIqSwKzOQ4g5r3xuJ/XjvV4aWfM5GkGgSdHgpTjnWMxxXhLpNANc8MIVQy81dM+0QSqk2RRVOCOx95kTTOyq5Tdm/PS5XqrI4COkRH6AS56AJVUBXVUB1R9ICe0At6tR6tZ+vNep+OLlmznQP0B9bHN6TGoGQ=</latexit>
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Vector Multiplication
+• Dot product
+• Cross product
+• Orthonormal bases and coordinate frames
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Dot (scalar) Product
+~b
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+✓
+<latexit sha1_base64="NUK0sHLTXK4LoNBm9KRzPPK4oTA=">AAAB7XicbVDLSgNBEJyNrxhfUY9eBoPgKeyKoMeAlxwjmAckS5id9CZjZmeWmV4hhPyDFw+KePV/vPk3TpI9aGJBQ1HVTXdXlEph0fe/vcLG5tb2TnG3tLd/cHhUPj5pWZ0ZDk2upTadiFmQQkETBUropAZYEkloR+O7ud9+AmOFVg84SSFM2FCJWHCGTmr1cATI+uWKX/UXoOskyEmF5Gj0y1+9geZZAgq5ZNZ2Az/FcMoMCi5hVuplFlLGx2wIXUcVS8CG08W1M3rhlAGNtXGlkC7U3xNTllg7SSLXmTAc2VVvLv7ndTOMb8OpUGmGoPhyUZxJiprOX6cDYYCjnDjCuBHuVspHzDCOLqCSCyFYfXmdtK6qgV8N7q8rtXoeR5GckXNySQJyQ2qkThqkSTh5JM/klbx52nvx3r2PZWvBy2dOyR94nz+lxY8u</latexit>
+<latexit
+
+~a
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+~a · ~b = k~akk~bk cos ✓
+
+• For unit vectors
+
+<latexit sha1_base64="ynH9g5HKOqJ1hrmdogbP/6H7WWM=">AAACK3icbZDJSgNBEIZ7XGPcoh69NAbBU5gRQS9C0EuOEcwCmRB6OpWkSc/00F0TCEPex4uv4kEPLnj1PexsqIkFDR//X0V1/UEshUHXfXdWVtfWNzYzW9ntnd29/dzBYdWoRHOocCWVrgfMgBQRVFCghHqsgYWBhFrQvx37tQFoI1R0j8MYmiHrRqIjOEMrtXI3/gB4ykY+byuccDC69qugcW6Mmf4owVzhyvjYA2StXN4tuJOiy+DNIE9mVW7lnv224kkIEXLJjGl4bozNlGkUXMIo6ycGYsb7rAsNixELwTTTya0jemqVNu0obV+EdKL+nkhZaMwwDGxnyLBnFr2x+J/XSLBz1UxFFCcIEZ8u6iSSoqLj4GhbaOAohxYY18L+lfIe04yjjTdrQ/AWT16G6nnBcwve3UW+WJrFkSHH5IScEY9ckiIpkTKpEE4eyBN5JW/Oo/PifDif09YVZzZzRP6U8/UNbZCpnQ==</latexit>
+
+~
+~a · b
+cos ✓ =
+k~akk~bk
+
+cos ✓ = â · b̂
+<latexit sha1_base64="OHHsMeCQmxegFZWLDUCB8e78R6I=">AAACB3icbZBNS8NAEIY39avWr6hHQYJF8FQSEfQiFL14rGBroQllstm0SzfZsDsRSujNi3/FiwdFvPoXvPlv3H4ctPWFhYd3ZpidN8wE1+i631ZpaXllda28XtnY3NresXf3WlrmirImlUKqdgiaCZ6yJnIUrJ0pBkko2H04uB7X7x+Y0lymdzjMWJBAL+Uxp4DG6tqHPpXaxz5DuPT7gAWMfBpJnHA46tpVt+ZO5CyCN4MqmanRtb/8SNI8YSlSAVp3PDfDoACFnAo2qvi5ZhnQAfRYx2AKCdNBMblj5BwbJ3JiqcxL0Zm4vycKSLQeJqHpTAD7er42Nv+rdXKML4KCp1mOLKXTRXEuHJTOOBQn4opRFEMDQBU3f3VoHxRQNNFVTAje/MmL0DqteW7Nuz2r1q9mcZTJATkiJ8Qj56RObkiDNAklj+SZvJI368l6sd6tj2lryZrN7JM/sj5/ABP4mhI=</latexit>
+
+<latexit sha1_base64="Pl8Hv1NemeBNXeAf2fYyx0+sHOI=">AAACMnicbZBNS8NAEIY3flu/oh69BIvgqSQi6EUoeNFbBdsKTSmbzcQubrJhd1IoIb/Ji79E8KAHRbz6I9ymUfwaWHh43xlm5w1SwTW67qM1Mzs3v7C4tFxbWV1b37A3tzpaZopBm0kh1VVANQieQBs5CrhKFdA4ENANbk4nfncESnOZXOI4hX5MrxMecUbRSAP73GdS+zgEpCd+pCjL/RGwnBY+CyWWHBRF7ndA4adT8pcQTIViYNfdhluW8xe8CuqkqtbAvvdDybIYEmSCat3z3BT7OVXImYCi5mcaUspu6DX0DCY0Bt3Py5MLZ88ooRNJZV6CTql+n8hprPU4DkxnTHGof3sT8T+vl2F03M95kmYICZsuijLhoHQm+TkhV8BQjA1Qprj5q8OG1ASHJuWaCcH7ffJf6Bw0PLfhXRzWm2dVHEtkh+ySfeKRI9IkZ6RF2oSRW/JAnsmLdWc9Wa/W27R1xqpmtsmPst4/AM/SrYs=</latexit>
+
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Dot (scalar) Product
+• Properties
+
+~a · ~b = ~b · ~a
+<latexit sha1_base64="nK8CgazRkcIGw2z9F8tW0sqkx30=">AAACEHicbZBPS8MwGMbT+W/Of1WPXoJD9DRaEfQiDLzsOMFtwlpGmqZbWJqUJB2M0o/gxa/ixYMiXj1689uYdQV184WQH8/zviTvEySMKu04X1ZlZXVtfaO6Wdva3tnds/cPukqkEpMOFkzI+wApwignHU01I/eJJCgOGOkF45uZ35sQqajgd3qaED9GQ04jipE20sA+9SYEZyj3cCh0wUF+Xd4/GsoHdt1pOEXBZXBLqIOy2gP70wsFTmPCNWZIqb7rJNrPkNQUM5LXvFSRBOExGpK+QY5iovysWCiHJ0YJYSSkOVzDQv09kaFYqWkcmM4Y6ZFa9Gbif14/1dGVn1GepJpwPH8oShnUAs7SgSGVBGs2NYCwpOavEI+QRFibDGsmBHdx5WXonjdcp+HeXtSbrTKOKjgCx+AMuOASNEELtEEHYPAAnsALeLUerWfrzXqft1ascuYQ/Cnr4xvAxJ5O</latexit>
+
+~a · (~b + ~c) = ~a · ~b + ~a · ~c
+<latexit sha1_base64="ZV7YV/bBAvqeNUg7r0U6yn6vsJ0=">AAACLnicbVDLSsNAFJ34rPUVdekmWISKUBIRdCMUROiygn1AE8rkZtIOnTyYmRRKyBe58Vd0IaiIWz/DaZpFHx4Y5sw593LnHjdmVEjT/NDW1jc2t7ZLO+Xdvf2DQ/3ouC2ihANpQcQi3nWxIIyGpCWpZKQbc4IDl5GOO7qf+p0x4YJG4ZOcxMQJ8CCkPgUsldTXH+wxgRRnNniRrOYPN7vMb8gu7ubdBXNeg6yvV8yamcNYJVZBKqhAs6+/2V4ESUBCCQwL0bPMWDop5pICI1nZTgSJMYzwgPQUDXFAhJPm62bGuVI8w4+4OqE0cnW+I8WBEJPAVZUBlkOx7E3F/7xeIv1bJ6VhnEgSwmyQnzBDRsY0O8OjnIBkE0UwcKr+asAQcwxSJVxWIVjLK6+S9lXNMmvW43Wl3ijiKKFTdIaqyEI3qI4aqIlaCNAzekWf6Et70d61b+1nVrqmFT0naAHa7x8Sv6sE</latexit>
+
+~
+~
+~
+(k~a) · b = ~a · (k b) = k(~a · b)
+<latexit sha1_base64="qmwubx2cCrJboJa1Ha21JWMFV9M=">AAACLXicbZBNS8MwGMfT+TbnW9Wjl+IQtstoRdDLYKCHHSe4F1jLSNN0C03TkqSDUfqFvPhVRPAwEa9+DbOuwtx8IPDP7/88JM/fjSkR0jTnWmlre2d3r7xfOTg8Oj7RT896Iko4wl0U0YgPXCgwJQx3JZEUD2KOYehS3HeD+4Xfn2IuSMSe5CzGTgjHjPgEQanQSH+oBfYUoxRmdRt5kcwvbtYsYM6KFjerN4PaqvGLR3rVbJh5GZvCKkQVFNUZ6W+2F6EkxEwiCoUYWmYsnRRySRDFWcVOBI4hCuAYD5VkMMTCSfNtM+NKEc/wI64Ok0ZOVydSGAoxC13VGUI5EeveAv7nDRPp3zkpYXEiMUPLh/yEGjIyFtEZHuEYSTpTAiJO1F8NNIEcIqkCrqgQrPWVN0XvumGZDevxptpqF3GUwQW4BDVggVvQAm3QAV2AwDN4BXPwob1o79qn9rVsLWnFzDn4U9r3D/l7qc4=</latexit>
+
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Dot Product in Cartesian
+Coordinates
+• Component-wise multiplication, then adding up
+- In 2D
+
+~a · ~b =
+<latexit sha1_base64="71LZjEeEEtHoqvtwatn8jr8FrLk=">AAACXnicbVFdS8MwFE3r9/zY1BfBl+AQBGG0IujLYOCLjwpOhXWUm/RuBtO0JKk4Sv+kb+KLP8V0G6LTC4HDOefe3JywXApjg+Dd85eWV1bX1jcam1vbO83W7t69yQrNsc8zmelHBgalUNi3wkp8zDVCyiQ+sOerWn94QW1Epu7sJMdhCmMlRoKDdVTcKqIX5CVUEU8yO8Ws6kYMx0KVeQpWi9fqNQYaRXQSQ4Qq+aZnLYtWNrOyX9ZuPcJpp25GLcatdtAJpkX/gnAO2mReN3HrLUoyXqSoLJdgzCAMcjssQVvBJVaNqDCYA3+GMQ4cVJCiGZbTeCp67JiEjjLtjrJ0yv7sKCE1ZpIy53T7PplFrSb/0waFHV0OS6HywqLis4tGhaQ2o3XWNBEauZUTB4Br4Xal/Ak0cOt+pOFCCBef/Bfcn3XCoBPenrd71/M41skhOSInJCQXpEeuyQ3pE04+PM9reJvep7/qb/vNmdX35j375Ff5B1/LEbi2</latexit>
+
+✓
+
+◆ ✓ ◆
+xa
+xb
+·
+= x a x b + ya yb
+ya
+yb
+
+- In 3D
+
+0 1 0 1
+xa
+xb
+~a · ~b = @ ya A · @ yb A = xa xb + ya yb + za zb
+za
+zb
+<latexit sha1_base64="qP63o3F/sPHdYZSmFHuVUJ87bLI=">AAACdnicbVFNSwMxEM2u3/Wr6kkECRZREMquCHopCF56rGBboVtKkp3WYDa7JNnSuuxP8M9583d48Wi2W0SrA2Ee896bTCY0EVwbz3t33KXlldW19Y3K5tb2zm51b7+j41QxaLNYxOqREg2CS2gbbgQ8JgpIRAV06fNdwXfHoDSP5YOZJtCPyEjyIWfE2NKg+hqMgWUkD1gYmxmmeSOgMOIySyJiFJ/kkwHBQYCnZXopEsjwmy6tixZaWmhpob8tjaKl1VwUPa3oomhqVYNqzat7s8B/gT8HNTSP1qD6FoQxSyOQhgmidc/3EtPPiDKcCcgrQaohIeyZjKBnoSQR6H42W1uOT20lxMNY2SMNnlV/OjISaT2NqFXauZ/0IlcU/+N6qRne9DMuk9SAZOVFw1RgE+PiD3DIFTAjphYQpridFbMnoggz9qcqdgn+4pP/gs5l3ffq/v1V7bY5X8c6OkIn6Bz56BrdoiZqoTZi6MM5dE6cmvPpHrun7lkpdZ255wD9Ctf7AunnwQs=</latexit>
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Dot Product in Graphics
+• Find angle between two vectors
+
+(e.g. cosine of angle between light source and surface)
+
+• Finding projection of one vector on another
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Dot Product for Projection
+~
+~
+b
+:
+projection
+of
+b onto ~a
+?
+•
+- ~b? must be along ~a (or along â)
+
+~b
+
+<latexit sha1_base64="iEEmRhC86rqL+x5Y42hXG1KKS3Y=">AAAB7nicbVDLSgNBEOz1GeMr6tHLYBA8hV0R9Bjw4jGCeUCyhNlJbzJkZnaZmQ2EJR/hxYMiXv0eb/6Nk2QPmljQUFR1090VpYIb6/vf3sbm1vbObmmvvH9weHRcOTltmSTTDJssEYnuRNSg4AqblluBnVQjlZHAdjS+n/vtCWrDE/VkpymGkg4Vjzmj1knt3gRZTmf9StWv+QuQdRIUpAoFGv3KV2+QsEyiskxQY7qBn9owp9pyJnBW7mUGU8rGdIhdRxWVaMJ8ce6MXDplQOJEu1KWLNTfEzmVxkxl5DoltSOz6s3F/7xuZuO7MOcqzSwqtlwUZ4LYhMx/JwOukVkxdYQyzd2thI2opsy6hMouhGD15XXSuq4Ffi14vKnW60UcJTiHC7iCAG6hDg/QgCYwGMMzvMKbl3ov3rv3sWzd8IqZM/gD7/MHjlaPsQ==</latexit>
+<latexit
+
+<latexit sha1_base64="NZCKDY4fCPQs8COw8x0Vw+lZyEA=">AAAB7nicbVDLSgNBEOz1GeMr6tHLYBA8hV0R9Bjw4jGCeUCyhNlJbzJkZnaZmQ2EJR/hxYMiXv0eb/6Nk2QPmljQUFR1090VpYIb6/vf3sbm1vbObmmvvH9weHRcOTltmSTTDJssEYnuRNSg4AqblluBnVQjlZHAdjS+n/vtCWrDE/VkpymGkg4Vjzmj1knt3gRZHs36lapf8xcg6yQoSBUKNPqVr94gYZlEZZmgxnQDP7VhTrXlTOCs3MsMppSN6RC7jioq0YT54twZuXTKgMSJdqUsWai/J3IqjZnKyHVKakdm1ZuL/3ndzMZ3Yc5VmllUbLkozgSxCZn/TgZcI7Ni6ghlmrtbCRtRTZl1CZVdCMHqy+ukdV0L/FrweFOt14s4SnAOF3AFAdxCHR6gAU1gMIZneIU3L/VevHfvY9m64RUzZ/AH3ucPj9uPsg==</latexit>
+<latexit
+
+<latexit sha1_base64="wuyi22LjRLo00zaxg98A0cb9dM8=">AAAB9HicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBi8cK9gOaUDbbSbt0s4m7m0IJ/R1ePCji1R/jzX/jts1BWx8MPN6bYWZemAqujet+O6WNza3tnfJuZW//4PCoenzS1kmmGLZYIhLVDalGwSW2DDcCu6lCGocCO+H4bu53Jqg0T+SjmaYYxHQoecQZNVYK/AmyPJz1/RRV2q/W3Lq7AFknXkFqUKDZr375g4RlMUrDBNW657mpCXKqDGcCZxU/05hSNqZD7FkqaYw6yBdHz8iFVQYkSpQtachC/T2R01jraRzazpiakV715uJ/Xi8z0W2Qc5lmBiVbLooyQUxC5gmQAVfIjJhaQpni9lbCRlRRZmxOFRuCt/ryOmlf1T237j1c1xqNIo4ynME5XIIHN9CAe2hCCxg8wTO8wpszcV6cd+dj2VpyiplT+APn8wc6O5Jg</latexit>
+
+<latexit sha1_base64="iEEmRhC86rqL+x5Y42hXG1KKS3Y=">AAAB7nicbVDLSgNBEOz1GeMr6tHLYBA8hV0R9Bjw4jGCeUCyhNlJbzJkZnaZmQ2EJR/hxYMiXv0eb/6Nk2QPmljQUFR1090VpYIb6/vf3sbm1vbObmmvvH9weHRcOTltmSTTDJssEYnuRNSg4AqblluBnVQjlZHAdjS+n/vtCWrDE/VkpymGkg4Vjzmj1knt3gRZTmf9StWv+QuQdRIUpAoFGv3KV2+QsEyiskxQY7qBn9owp9pyJnBW7mUGU8rGdIhdRxWVaMJ8ce6MXDplQOJEu1KWLNTfEzmVxkxl5DoltSOz6s3F/7xuZuO7MOcqzSwqtlwUZ4LYhMx/JwOukVkxdYQyzd2thI2opsy6hMouhGD15XXSuq4Ffi14vKnW60UcJTiHC7iCAG6hDg/QgCYwGMMzvMKbl3ov3rv3sWzd8IqZM/gD7/MHjlaPsQ==</latexit>
+<latexit
+
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+<latexit sha1_base64="ujWkCJlqvMqFETqeGWgRTKVJxTg=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69BIvgqSQi6LHgxWMF+wFtKJPtpl262YTdiVBCf4QXD4p49fd489+4bXPQ1gcDj/dmmJkXplIY8rxvp7SxubW9U96t7O0fHB5Vj0/aJsk04y2WyER3QzRcCsVbJEjybqo5xqHknXByN/c7T1wbkahHmqY8iHGkRCQYkpU6/TFSjrNBtebVvQXcdeIXpAYFmoPqV3+YsCzmiphEY3q+l1KQoybBJJ9V+pnhKbIJjnjPUoUxN0G+OHfmXlhl6EaJtqXIXai/J3KMjZnGoe2MkcZm1ZuL/3m9jKLbIBcqzYgrtlwUZdKlxJ3/7g6F5ozk1BJkWthbXTZGjYxsQhUbgr/68jppX9V9r+4/XNcajSKOMpzBOVyCDzfQgHtoQgsYTOAZXuHNSZ0X5935WLaWnGLmFP7A+fwBjK+PsA==</latexit>
+
+<latexit sha1_base64="wuyi22LjRLo00zaxg98A0cb9dM8=">AAAB9HicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBi8cK9gOaUDbbSbt0s4m7m0IJ/R1ePCji1R/jzX/jts1BWx8MPN6bYWZemAqujet+O6WNza3tnfJuZW//4PCoenzS1kmmGLZYIhLVDalGwSW2DDcCu6lCGocCO+H4bu53Jqg0T+SjmaYYxHQoecQZNVYK/AmyPJz1/RRV2q/W3Lq7AFknXkFqUKDZr375g4RlMUrDBNW657mpCXKqDGcCZxU/05hSNqZD7FkqaYw6yBdHz8iFVQYkSpQtachC/T2R01jraRzazpiakV715uJ/Xi8z0W2Qc5lmBiVbLooyQUxC5gmQAVfIjJhaQpni9lbCRlRRZmxOFRuCt/ryOmlf1T237j1c1xqNIo4ynME5XIIHN9CAe2hCCxg8wTO8wpszcV6cd+dj2VpyiplT+APn8wc6O5Jg</latexit>
+
+- ~b? = kâ
+<latexit sha1_base64="4ECsb0DR+eFxhCQYHh99RQKUJEc=">AAAB/3icbVBNS8NAEN34WetXVPDiJVgETyURQS9CwYvHCvYDmhA220m7dLNZdjeFEnPwr3jxoIhX/4Y3/43bNgdtfTDweG+GmXmRYFRp1/22VlbX1jc2K1vV7Z3dvX374LCt0kwSaJGUpbIbYQWMcmhpqhl0hQScRAw60eh26nfGIBVN+YOeCAgSPOA0pgRrI4X2sT8GkkdF6AuQ4mbkD7HOcRHaNbfuzuAsE68kNVSiGdpffj8lWQJcE4aV6nmu0EGOpaaEQVH1MwUCkxEeQM9QjhNQQT67v3DOjNJ34lSa4tqZqb8ncpwoNUki05lgPVSL3lT8z+tlOr4OcspFpoGT+aI4Y45OnWkYTp9KIJpNDMFEUnOrQ4ZYYqJNZFUTgrf48jJpX9Q9t+7dX9YajTKOCjpBp+gceegKNdAdaqIWIugRPaNX9GY9WS/Wu/Uxb12xypkj9AfW5w+zkJaF</latexit>
+
+-
+
+✓
+
+What’s its magnitude k?
+
+<latexit sha1_base64="NUK0sHLTXK4LoNBm9KRzPPK4oTA=">AAAB7XicbVDLSgNBEJyNrxhfUY9eBoPgKeyKoMeAlxwjmAckS5id9CZjZmeWmV4hhPyDFw+KePV/vPk3TpI9aGJBQ1HVTXdXlEph0fe/vcLG5tb2TnG3tLd/cHhUPj5pWZ0ZDk2upTadiFmQQkETBUropAZYEkloR+O7ud9+AmOFVg84SSFM2FCJWHCGTmr1cATI+uWKX/UXoOskyEmF5Gj0y1+9geZZAgq5ZNZ2Az/FcMoMCi5hVuplFlLGx2wIXUcVS8CG08W1M3rhlAGNtXGlkC7U3xNTllg7SSLXmTAc2VVvLv7ndTOMb8OpUGmGoPhyUZxJiprOX6cDYYCjnDjCuBHuVspHzDCOLqCSCyFYfXmdtK6qgV8N7q8rtXoeR5GckXNySQJyQ2qkThqkSTh5JM/klbx52nvx3r2PZWvBy2dOyR94nz+lxY8u</latexit>
+<latexit
+
+- k = k~b? k = k~bk cos ✓
+
+~a
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+<latexit sha1_base64="dJ4KUN1VNHjJtdfY3AOO2gRrYM8=">AAAB9HicdVDLSsNAFJ3UV62vqks3g0VwFZIa2roruOmygn1AE8pketMOnTycmRRK6He4caGIWz/GnX/jpK2gogcuHM65l3vv8RPOpLKsD6Owsbm1vVPcLe3tHxwelY9PujJOBYUOjXks+j6RwFkEHcUUh34igIQ+h54/vcn93gyEZHF0p+YJeCEZRyxglCgtee4MaOYvhm4CIhmWK5Z53ahVnRq2TMuq21U7J9W6c+VgWys5KmiN9rD87o5imoYQKcqJlAPbSpSXEaEY5bAouamEhNApGcNA04iEIL1sefQCX2hlhINY6IoUXqrfJzISSjkPfd0ZEjWRv71c/MsbpCpoeBmLklRBRFeLgpRjFeM8ATxiAqjic00IFUzfiumECEKVzqmkQ/j6FP9PulXTtkz71qk0W+s4iugMnaNLZKM6aqIWaqMOougePaAn9GzMjEfjxXhdtRaM9cwp+gHj7ROcspKq</latexit>
+
+<latexit sha1_base64="FBTOJWtHj8fD9QNViP8cR50Yho4=">AAACIHicbZDLSgNBEEV74ivGV9Slm8YguAozIsRNIODGZQTzgMww9HQqSZOeB901gTDkU9z4K25cKKI7/Ro7ySw08ULD5VQV1XWDRAqNtv1lFTY2t7Z3irulvf2Dw6Py8Ulbx6ni0OKxjFU3YBqkiKCFAiV0EwUsDCR0gvHtvN6ZgNIijh5wmoAXsmEkBoIzNMgv18a0Tt02KHQnwLNg5rsJqGRB6r/50vNYuzgCZH65Ylfthei6cXJTIbmafvnT7cc8DSFCLpnWPcdO0MuYQsElzEpuqiFhfMyG0DM2YiFoL1scOKMXhvTpIFbmRUgX9PdExkKtp2FgOkOGI71am8P/ar0UBzdeJqIkRYj4ctEglRRjOk+L9oUCjnJqDONKmL9SPmKKcTSZlkwIzurJ66Z9VXXsqnN/XWk08jiK5Iyck0vikBppkDvSJC3CySN5Jq/kzXqyXqx362PZWrDymVPyR9b3D1JGpFU=</latexit>
+
+GAMES101
+
+~b?
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Dot Product in Graphics
+• Measure how close
+
+~b
+
+two directions are
+
+• Decompose a vector
+
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+✓
+
+• Determine forward /
+
+<latexit sha1_base64="NUK0sHLTXK4LoNBm9KRzPPK4oTA=">AAAB7XicbVDLSgNBEJyNrxhfUY9eBoPgKeyKoMeAlxwjmAckS5id9CZjZmeWmV4hhPyDFw+KePV/vPk3TpI9aGJBQ1HVTXdXlEph0fe/vcLG5tb2TnG3tLd/cHhUPj5pWZ0ZDk2upTadiFmQQkETBUropAZYEkloR+O7ud9+AmOFVg84SSFM2FCJWHCGTmr1cATI+uWKX/UXoOskyEmF5Gj0y1+9geZZAgq5ZNZ2Az/FcMoMCi5hVuplFlLGx2wIXUcVS8CG08W1M3rhlAGNtXGlkC7U3xNTllg7SSLXmTAc2VVvLv7ndTOMb8OpUGmGoPhyUZxJiprOX6cDYYCjnDjCuBHuVspHzDCOLqCSCyFYfXmdtK6qgV8N7q8rtXoeR5GckXNySQJyQ2qkThqkSTh5JM/klbx52nvx3r2PZWvBy2dOyR94nz+lxY8u</latexit>
+<latexit
+
+backward
+
+GAMES101
+
+~b
+
+~b?
+
+~b?
+
+~a
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+<latexit sha1_base64="dJ4KUN1VNHjJtdfY3AOO2gRrYM8=">AAAB9HicdVDLSsNAFJ3UV62vqks3g0VwFZIa2roruOmygn1AE8pketMOnTycmRRK6He4caGIWz/GnX/jpK2gogcuHM65l3vv8RPOpLKsD6Owsbm1vVPcLe3tHxwelY9PujJOBYUOjXks+j6RwFkEHcUUh34igIQ+h54/vcn93gyEZHF0p+YJeCEZRyxglCgtee4MaOYvhm4CIhmWK5Z53ahVnRq2TMuq21U7J9W6c+VgWys5KmiN9rD87o5imoYQKcqJlAPbSpSXEaEY5bAouamEhNApGcNA04iEIL1sefQCX2hlhINY6IoUXqrfJzISSjkPfd0ZEjWRv71c/MsbpCpoeBmLklRBRFeLgpRjFeM8ATxiAqjic00IFUzfiumECEKVzqmkQ/j6FP9PulXTtkz71qk0W+s4iugMnaNLZKM6aqIWaqMOougePaAn9GzMjEfjxXhdtRaM9cwp+gHj7ROcspKq</latexit>
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Dot Product in Graphics
+~a
+
+• Measure how close
+
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+two directions are
+
+~b
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+• Decompose a vector
+
+forward
+
+• Determine forward /
+backward
+
+backward
+
+~c
+dot product > or < 0
+
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Vector Multiplication
+• Dot product
+• Cross product
+• Orthonormal bases and coordinate frames
+
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Cross (vector) Product
+
+• Cross product is orthogonal to two initial vectors
+• Direction determined by right-hand rule
+• Useful in constructing coordinate systems (later)
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Cross product: Properties
+~x ⇥ ~y = +~z
+
+~a ⇥ ~b = ~b ⇥ ~a
+
+<latexit sha1_base64="wxZyVgrasqidSxLUv8xrpPBtlTA=">AAACBnicbVDLSsNAFL2pr1pfUZciBIsgCCURQTdCwY3LCvYBbSiT6aQdOpmEmUkxhqzc+CtuXCji1m9w5984TbPQ1gMD555zL3fu8SJGpbLtb6O0tLyyulZer2xsbm3vmLt7LRnGApMmDlkoOh6ShFFOmooqRjqRICjwGGl74+up354QIWnI71QSETdAQ059ipHSUt887E0ITu+znqIBkXmRZFenOXnI+mbVrtk5rEXiFKQKBRp986s3CHEcEK4wQ1J2HTtSboqEopiRrNKLJYkQHqMh6WrKkV7qpvkZmXWslYHlh0I/rqxc/T2RokDKJPB0Z4DUSM57U/E/rxsr/9JNKY9iRTieLfJjZqnQmmZiDaggWLFEE4QF1X+18AgJhJVOrqJDcOZPXiSts5pj15zb82q9XsRRhgM4ghNw4ALqcAMNaAKGR3iGV3gznowX4934mLWWjGJmH/7A+PwBmi+Z0g==</latexit>
+
+<latexit sha1_base64="JbgSAWAZWVCZGAV0y3VraJtry0w=">AAACE3icbVDLSsNAFJ34rPUVdelmsAgiWBIRdCMU3LisYB/QhDKZ3rZDJ5MwMymUkH9w46+4caGIWzfu/BunaRa19cDAuefcy517gpgzpR3nx1pZXVvf2Cxtlbd3dvf27YPDpooSSaFBIx7JdkAUcCagoZnm0I4lkDDg0ApGd1O/NQapWCQe9SQGPyQDwfqMEm2krn3ujYGmJPM0C0HlRZDdXhRkTiVZ1644VScHXiZuQSqoQL1rf3u9iCYhCE05UarjOrH2UyI1oxyyspcoiAkdkQF0DBXE7PLT/KYMnxqlh/uRNE9onKvzEykJlZqEgekMiR6qRW8q/ud1Et2/8VMm4kSDoLNF/YRjHeFpQLjHJFDNJ4YQKpn5K6ZDIgnVJsayCcFdPHmZNC+rrlN1H64qtVoRRwkdoxN0hlx0jWroHtVRA1H0hF7QG3q3nq1X68P6nLWuWMXMEfoD6+sXDZufgQ==</latexit>
+
+~y ⇥ ~x =
+<latexit sha1_base64="NstiQkTmzWeleJ6ta8NAfOWGUTc=">AAACBnicbVDLSsNAFL2pr1pfUZciBIvgxpKIoBuh4MZlBfuANpTJdNIOnUzCzKQYQ1Zu/BU3LhRx6ze482+cpllo64GBc8+5lzv3eBGjUtn2t1FaWl5ZXSuvVzY2t7Z3zN29lgxjgUkThywUHQ9JwignTUUVI51IEBR4jLS98fXUb0+IkDTkdyqJiBugIac+xUhpqW8e9iYEp0nWUzQgMi/us6vTnDxkfbNq1+wc1iJxClKFAo2++dUbhDgOCFeYISm7jh0pN0VCUcxIVunFkkQIj9GQdDXlSC910/yMzDrWysDyQ6EfV1au/p5IUSBlEni6M0BqJOe9qfif142Vf+mmlEexIhzPFvkxs1RoTTOxBlQQrFiiCcKC6r9aeIQEwkonV9EhOPMnL5LWWc2xa87tebVeL+IowwEcwQk4cAF1uIEGNAHDIzzDK7wZT8aL8W58zFpLRjGzD39gfP4AnVKZ1A==</latexit>
+
+~z
+
+~a ⇥ ~a = ~0
+
+~y ⇥ ~z = +~x
+
+<latexit sha1_base64="G/6yNPGmcm57wSngJFI6KTBJSyA=">AAACBXicbVDLSsNAFJ34rPUVdamLwSK4KokIuhEKblxWsA9oQplMJ+3QySTM3BRKyMaNv+LGhSJu/Qd3/o3TNAttPTDMmXPu5c49QSK4Bsf5tlZW19Y3Nitb1e2d3b19++CwreNUUdaisYhVNyCaCS5ZCzgI1k0UI1EgWCcY3878zoQpzWP5ANOE+REZSh5ySsBIffvEmzCakdwDHjFdPm6K28n7ds2pOwXwMnFLUkMlmn37yxvENI2YBCqI1j3XScDPiAJOBcurXqpZQuiYDFnPUEnMTD8rtsjxmVEGOIyVORJwof7uyEik9TQKTGVEYKQXvZn4n9dLIbz2My6TFJik80FhKjDEeBYJHnDFKIipIYQqbv6K6YgoQsEEVzUhuIsrL5P2Rd116u79Za3RKOOooGN0is6Ri65QA92hJmohih7RM3pFb9aT9WK9Wx/z0hWr7DlCf2B9/gBvPpkk</latexit>
+
+<latexit sha1_base64="RfQBwC8Y+s4pKLTUJJFIFIA+mHg=">AAACBnicbVDLSsNAFL2pr1pfUZciBIsgCCURQTdCwY3LCvYBbSiT6aQdOpmEmUkxhqzc+CtuXCji1m9w5984TbPQ1gMD555zL3fu8SJGpbLtb6O0tLyyulZer2xsbm3vmLt7LRnGApMmDlkoOh6ShFFOmooqRjqRICjwGGl74+up354QIWnI71QSETdAQ059ipHSUt887E0ITpOsp2hAZF48ZFenObnP+mbVrtk5rEXiFKQKBRp986s3CHEcEK4wQ1J2HTtSboqEopiRrNKLJYkQHqMh6WrKkV7qpvkZmXWslYHlh0I/rqxc/T2RokDKJPB0Z4DUSM57U/E/rxsr/9JNKY9iRTieLfJjZqnQmmZiDaggWLFEE4QF1X+18AgJhJVOrqJDcOZPXiSts5pj15zb82q9XsRRhgM4ghNw4ALqcAMNaAKGR3iGV3gznowX4934mLWWjGJmH/7A+PwBmk6Z0g==</latexit>
+
+~z ⇥ ~y =
+<latexit sha1_base64="IPTOl/A5DK5zQCTrk1BR2ZT58v4=">AAACBnicbVDLSsNAFL2pr1pfUZciBIvgxpKIoBuh4MZlBfuANpTJdNIOnUzCzKQYQ1Zu/BU3LhRx6ze482+cpllo64GBc8+5lzv3eBGjUtn2t1FaWl5ZXSuvVzY2t7Z3zN29lgxjgUkThywUHQ9JwignTUUVI51IEBR4jLS98fXUb0+IkDTkdyqJiBugIac+xUhpqW8e9iYEpw9ZT9GAyLxIsqvTnNxnfbNq1+wc1iJxClKFAo2++dUbhDgOCFeYISm7jh0pN0VCUcxIVunFkkQIj9GQdDXlSC910/yMzDrWysDyQ6EfV1au/p5IUSBlEni6M0BqJOe9qfif142Vf+mmlEexIhzPFvkxs1RoTTOxBlQQrFiiCcKC6r9aeIQEwkonV9EhOPMnL5LWWc2xa87tebVeL+IowwEcwQk4cAF1uIEGNAHDIzzDK7wZT8aL8W58zFpLRjGzD39gfP4AnXGZ1A==</latexit>
+
+~a ⇥ (~b + ~c) = ~a ⇥ ~b + ~a ⇥ ~c
+
+~x
+
+<latexit sha1_base64="vsN5QJDL+ngZPngK3t67iKz36Ws=">AAACMXicbVDLSsNAFJ34rPUVdekmWISKUBIRdCMU3HRZwT6gCWUynbZDJ5Mwc1MoIb/kxj8RN10o4tafcJpmYVoPDHPmnHu5c48fcabAtufGxubW9s5uaa+8f3B4dGyenLZVGEtCWyTkoez6WFHOBG0BA067kaQ48Dnt+JPHhd+ZUqlYKJ5hFlEvwCPBhoxg0FLfbLhTShKcusACqqrZy0+vs5ukVw8Fu+AWRJL2zYpdszNY68TJSQXlaPbNN3cQkjigAgjHSvUcOwIvwRIY4TQtu7GiESYTPKI9TQXWs7wk2zi1LrUysIah1EeAlal/OxIcKDULfF0ZYBirVW8h/uf1YhjeewkTUQxUkOWgYcwtCK1FfNaASUqAzzTBRDL9V4uMscQEdMhlHYKzuvI6ad/UHLvmPN1W6vU8jhI6Rxeoihx0h+qogZqohQh6Qe/oA30ar8bc+DK+l6UbRt5zhgowfn4B/cWsgg==</latexit>
+
+~z ⇥ ~x = +~y
+
+~a ⇥ (k~b) = k(~a ⇥ ~b)
+
+<latexit sha1_base64="X8okLi9PVqzWN+8Ej8w3vd/Z1DM=">AAACBnicbVDLSsNAFL2pr1pfUZciBIsgCCURQTdCwY3LCvYBbSiT6aQdOpmEmUkxhqzc+CtuXCji1m9w5984TbPQ1gMD555zL3fu8SJGpbLtb6O0tLyyulZer2xsbm3vmLt7LRnGApMmDlkoOh6ShFFOmooqRjqRICjwGGl74+up354QIWnI71QSETdAQ059ipHSUt887E0ITh+ynqIBkXlxn12d5iTJ+mbVrtk5rEXiFKQKBRp986s3CHEcEK4wQ1J2HTtSboqEopiRrNKLJYkQHqMh6WrKkV7qpvkZmXWslYHlh0I/rqxc/T2RokDKJPB0Z4DUSM57U/E/rxsr/9JNKY9iRTieLfJjZqnQmmZiDaggWLFEE4QF1X+18AgJhJVOrqJDcOZPXiSts5pj15zb82q9XsRRhgM4ghNw4ALqcAMNaAKGR3iGV3gznowX4934mLWWjGJmH/7A+PwBmlKZ0g==</latexit>
+
+~x ⇥ ~z =
+<latexit sha1_base64="C10XkbAK5Q1D0nXn2O8ohOIarUU=">AAACBnicbVDLSsNAFL2pr1pfUZciBIvgxpKIoBuh4MZlBfuANpTJdNIOnUzCzKQYQ1Zu/BU3LhRx6ze482+cpllo64GBc8+5lzv3eBGjUtn2t1FaWl5ZXSuvVzY2t7Z3zN29lgxjgUkThywUHQ9JwignTUUVI51IEBR4jLS98fXUb0+IkDTkdyqJiBugIac+xUhpqW8e9iYEp/dZT9GAyLx4yK5Oc5JkfbNq1+wc1iJxClKFAo2++dUbhDgOCFeYISm7jh0pN0VCUcxIVunFkkQIj9GQdDXlSC910/yMzDrWysDyQ6EfV1au/p5IUSBlEni6M0BqJOe9qfif142Vf+mmlEexIhzPFvkxs1RoTTOxBlQQrFiiCcKC6r9aeIQEwkonV9EhOPMnL5LWWc2xa87tebVeL+IowwEcwQk4cAF1uIEGNAHDIzzDK7wZT8aL8W58zFpLRjGzD39gfP4AnU6Z1A==</latexit>
+
+GAMES101
+
+<latexit sha1_base64="HIccB5JPl7yAsenM8sGEILJ6qpw=">AAACGHicbVDLSsNAFJ34rPUVdelmsAh1UxMRdCMU3LisYB/QhDKZTtqhkwczN4US8hlu/BU3LhRx251/4zSNYFsPDJx7zr3cuceLBVdgWd/G2vrG5tZ2aae8u7d/cGgeHbdUlEjKmjQSkex4RDHBQ9YEDoJ1YslI4AnW9kb3M789ZlLxKHyCSczcgAxC7nNKQEs989IZM5qSzAEeMFUd5aWXXdyNqgvOr94zK1bNyoFXiV2QCirQ6JlTpx/RJGAhUEGU6tpWDG5KJHAqWFZ2EsViQkdkwLqahkQvc9P8sAyfa6WP/UjqFwLO1b8TKQmUmgSe7gwIDNWyNxP/87oJ+LduysM4ARbS+SI/ERgiPEsJ97lkFMREE0Il13/FdEgkoaCzLOsQ7OWTV0nrqmZbNfvxulKvF3GU0Ck6Q1VkoxtURw+ogZqIomf0it7Rh/FivBmfxte8dc0oZk7QAozpDwpqoP4=</latexit>
+
+~y
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+a
+
+Cross Product: Cartesian Formula?
+0
+10
+1
+~y ~z
+~xxya z~yby y~zzb za ⎛ yyaazzbb− y byzbaza⎞
+ya~a ⇥za~b =
+xaza xyba x
+za zb=A⎜@za xb xa zb⎟A
+=@
+a × b = xa y a za = ⎜ za xb − xa zb ⎟
+y b zb
+xbxa yybb yzab xb ⎜ xa yb ya xb⎟
+xb
+
+<latexit sha1_base64="EUTsPJ1D7a3BSukMR1fJt6DMQnI=">AAACuXicbVFdb9MwFHXCx0b5KvDIi0VFxQtVMiGYhCZN4mWPQ6LbpLqKbtyb1sxxItuZkmb5j4g3/g2OmyHYuFKS43POPXau01IKY6PoVxDeu//g4d7+o9HjJ0+fPR+/eHlmikpznPNCFvoiBYNSKJxbYSVelBohTyWep5dfev38CrURhfpmmxKXOayVyAQH66hk/INdIW+hY1bkaPwi7Y6YxMxesxTXQrU5WC3qrtdoTafUg+YGbCljtE6ATpsEptsE/DJ1cuPf2yRlqFZ/UrRYb+z10ZBdDrQzQ2+l732bi+lj+0/tyXqQh72awbmTff5NUjKeRLPIF70L4gFMyFCnyfgnWxW8ylFZLsGYRRyVdtmCtoJL7EasMlgCv4Q1LhxU4Oa0bP3kO/rWMSuaFdo9ylLP/t3RQm5Mk6fO6c63Mbe1nvyftqhsdrhshSori4rvNsoqSW1B+2ukK6GRW9k4AFwLd1bKN6CBW3fZIzeE+PYv3wVnB7M4msVfP0yOT4Zx7JPX5A15R2LyiRyTE3JK5oQHHwMWYJCFn0MIN+H3nTUMhp5X5J8KzW+7+dXd</latexit>
+
+yb
+
+• Later in this lecture 0
+
+zb
+
+⎜⎝ xa y b − y a xb ⎟⎠
+
+0
+⇤
+~
+~a ⇥ b = A b = @ za
+ya
+<latexit sha1_base64="TFwqdOBSSYw/UTzs8Dime2zvnWA=">AAACf3icbVHJTsMwEHXCXrYCRy4WFYtYqgQhAQckEBeOIFFAakpku9Ni4TiR7aCGKL/Bh3HjXzjgJhWCwkgev3kzY89CE8G18bwPx52YnJqemZ2rzS8sLi3XV1bvdJwqBi0Wi1g9UKJBcAktw42Ah0QBiaiAe/p8OfTfv4DSPJa3JkugE5G+5D3OiLFUWH8LXoDlpAgMj0CXBi3OLh53MT0LKPS5zJOIGMUHBfbwFj54DYm9MquDAFdGyQ8q5iArqUHlCEB2v/PHnhuE1MZnpX4NKf4VG9YbXtMrBf8F/gg00Eiuw/p70I1ZGoE0TBCt276XmE5OlOFMQFELUg0JYc+kD20LJbHddvJyfgXetEwX92JljzS4ZH9m5CTSOouojbT1Pelx35D8z9dOTe+kk3OZpAYkqz7qpQKbGA+XgbtcATMis4AwxW2tmD0RRZixK6vZIfjjLf8Fd4dN32v6N0eN86vROGbROtpAO8hHx+gcXaFr1EIMfTobzp6z7zruttt0vSrUdUY5a+iXuKdf282++g==</latexit>
+
+za
+0
+xa
+
+10 1
+ya
+xb
+x a A @ yb A
+0
+zb
+
+dual matrix of vector a
+
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Cross Product in Graphics
+~b
+
+• Determine left / right
+
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+• Determine inside / outside
+
+✓
+<latexit sha1_base64="NUK0sHLTXK4LoNBm9KRzPPK4oTA=">AAAB7XicbVDLSgNBEJyNrxhfUY9eBoPgKeyKoMeAlxwjmAckS5id9CZjZmeWmV4hhPyDFw+KePV/vPk3TpI9aGJBQ1HVTXdXlEph0fe/vcLG5tb2TnG3tLd/cHhUPj5pWZ0ZDk2upTadiFmQQkETBUropAZYEkloR+O7ud9+AmOFVg84SSFM2FCJWHCGTmr1cATI+uWKX/UXoOskyEmF5Gj0y1+9geZZAgq5ZNZ2Az/FcMoMCi5hVuplFlLGx2wIXUcVS8CG08W1M3rhlAGNtXGlkC7U3xNTllg7SSLXmTAc2VVvLv7ndTOMb8OpUGmGoPhyUZxJiprOX6cDYYCjnDjCuBHuVspHzDCOLqCSCyFYfXmdtK6qgV8N7q8rtXoeR5GckXNySQJyQ2qkThqkSTh5JM/klbx52nvx3r2PZWvBy2dOyR94nz+lxY8u</latexit>
+<latexit
+
+~a
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Cross Product in Graphics
+A
+
+~b
+<latexit sha1_base64="/rGVQOTIbXqAPDqXLKNzh31NhCI=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbI8mA+rNbcursE2SReQWpQoDWsfg1GMUsjlIYJqnXfcxPj51QZzgTOK4NUY0LZlI6xb6mkEWo/X547J1dWGZEwVrakIUv190ROI62zKLCdETUTve4txP+8fmrCez/nMkkNSrZaFKaCmJgsficjrpAZkVlCmeL2VsImVFFmbEIVG4K3/vIm6dzUPbfuPd7WGs0ijjJcwCVcgwd30IAmtKANDKbwDK/w5iTOi/PufKxaS04xcw5/4Hz+AJJDj7o=</latexit>
+<latexit
+
+P
+
+y
+
+~a
+<latexit sha1_base64="o6mbAbY6sW8dp7q91DpcpJQJkZc=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBU0lE0GPBS48V7Ae0oWy2k3bpZhN2N4UQ+iO8eFDEq7/Hm//GbZuDtj4YeLw3w8y8IBFcG9f9dkpb2zu7e+X9ysHh0fFJ9fSso+NUMWyzWMSqF1CNgktsG24E9hKFNAoEdoPpw8LvzlBpHssnkyXoR3QsecgZNVbqDmbIcjofVmtu3V2CbBKvIDUo0BpWvwajmKURSsME1brvuYnxc6oMZwLnlUGqMaFsSsfYt1TSCLWfL8+dkyurjEgYK1vSkKX6eyKnkdZZFNjOiJqJXvcW4n9ePzXhvZ9zmaQGJVstClNBTEwWv5MRV8iMyCyhTHF7K2ETqigzNqGKDcFbf3mTdG7qnlv3Hm9rjWYRRxku4BKuwYM7aEATWtAGBlN4hld4cxLnxXl3PlatJaeYOYc/cD5/AJC+j7k=</latexit>
+<latexit
+
+x
+z
+
+GAMES101
+
+B
+
+25
+
+C
+
+Lingqi Yan, UC Santa Barbara
+
+Vector Multiplication
+• Dot product
+• Cross product
+• Orthonormal bases and coordinate frames
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Orthonormal Bases / Coordinate Frames
+
+• Important for representing points, positions, locations
+• Often, many sets of coordinate systems
+- Global, local, world, model, parts of model (head,
+hands, …)
+
+• Critical issue is transforming between these systems/
+bases
+- A topic for next week
+
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Orthonormal Coordinate Frames
+• Any set of 3 vectors (in 3D) that
+
+k~uk = k~v k = kwk
+~ =1
+<latexit sha1_base64="FzFS/eCq1ot4dj6ZzJQz1tyNbys=">AAACKHicbZDLSgMxFIYz9VbrbdSlm2ARXJUZEXQjFtx0WcFeoB1KJj3ThmYyQ5KplKGP48ZXcSOiSLc+iWk7Qm37Q+DPd84hOb8fc6a040ys3Mbm1vZOfrewt39weGQfn9RVlEgKNRrxSDZ9ooAzATXNNIdmLIGEPoeGP3iY1htDkIpF4kmPYvBC0hMsYJRogzr2fbsOUuP2EChO8PxyhxfgcB18/oNuxy46JWcmvGrczBRRpmrH/mh3I5qEIDTlRKmW68TaS4nUjHIYF9qJgpjQAelBy1hBQlBeOlt0jC8M6eIgkuYIjWd0cSIloVKj0DedIdF9tVybwnW1VqKDWy9lIk40CDp/KEg41hGepoa7TALVfGQMoZKZv2LaJ5JQbbItmBDc5ZVXTf2q5Dol9/G6WK5kceTRGTpHl8hFN6iMKqiKaoiiF/SGPtGX9Wq9W9/WZN6as7KZU/RP1s8vvLGj7Q==</latexit>
+
+~u · ~v = ~v · w
+~ = ~u · w
+~ =0
+<latexit sha1_base64="qcKh+yITKFf6OjtD4loSThxiVAY=">AAACLHicbZDLSsNAFIYn9VbrLerSzWARXJVEBN0IhW66rGAv0IYymUzaoZNJmEulhD6QG19FEBcWcetzOE1TqK0/DPzznXOYOb+fMCqV48yswtb2zu5ecb90cHh0fGKfnrVkrAUmTRyzWHR8JAmjnDQVVYx0EkFQ5DPS9ke1eb09JkLSmD+pSUK8CA04DSlGyqC+XeuNCYYa9nAQK5hdxvBhaVbo85Lqder07bJTcTLBTePmpgxyNfr2ey+IsY4IV5ghKbuukygvRUJRzMi01NOSJAiP0IB0jeUoItJLs2Wn8MqQAIaxMIcrmNHViRRFUk4i33RGSA3lem0O/6t1tQrvvZTyRCvC8eKhUDOoYjhPDgZUEKzYxBiEBTV/hXiIBMLK5FsyIbjrK2+a1k3FdSru4225Ws/jKIILcAmugQvuQBXUQQM0AQYv4A18gpn1an1YX9b3orVg5TPn4I+sn1/gGaTo</latexit>
+
+w
+~ = ~u ⇥ ~v
+
+(right-handed)
+
+<latexit sha1_base64="bA1OenK00VcpaXM5qZV/jWie/O8=">AAACBnicbVBNS8NAEJ3Ur1q/oh5FWCyCp5KIoBeh4KXHCrYVmlA22027dLMJu5tKCT158a948aCIV3+DN/+N2zQHbX2w8Oa9GWbnBQlnSjvOt1VaWV1b3yhvVra2d3b37P2DtopTSWiLxDyW9wFWlDNBW5ppTu8TSXEUcNoJRjczvzOmUrFY3OlJQv0IDwQLGcHaSD372BtTgh7QNcpJijzNIqrm1bhnV52akwMtE7cgVSjQ7NlfXj8maUSFJhwr1XWdRPsZlpoRTqcVL1U0wWSEB7RrqMBml5/lZ0zRqVH6KIyleUKjXP09keFIqUkUmM4I66Fa9Gbif1431eGVnzGRpJoKMl8UphzpGM0yQX0mKdF8Yggmkpm/IjLEEhNtkquYENzFk5dJ+7zmOjX39qJabxRxlOEITuAMXLiEOjSgCS0g8AjP8Apv1pP1Yr1bH/PWklXMHMIfWJ8/FpeXng==</latexit>
+
+<latexit sha1_base64="TO97u5gPtwlnKyOXscGyLIY5xNI=">AAACTXicbZHNS8MwGMbT+bE5v6oevQSHMBFGK4JehIGXHSe4D1jLSNN0C6ZpSdKOUfYPehG8+V948aCImHU96LYXQp48vzckeeLFjEplWW9GaWNza7tc2anu7u0fHJpHx10ZJQKTDo5YJPoekoRRTjqKKkb6sSAo9BjpeU/3c95LiZA04o9qGhM3RCNOA4qR0tbQ9J2UYBjDO1gvlIP9SMF8kVwUM7xch9MCp+vxBBZ8MjRrVsPKC64KuxA1UFR7aL46foSTkHCFGZJyYFuxcjMkFMWMzKpOIkmM8BMakYGWHIVEulmexgyea8eHQST04Arm7t8dGQqlnIae7gyRGstlNjfXsUGigls3ozxOFOF4cVCQMKgiOI8W+lQQrNhUC4QF1XeFeIwEwkp/QFWHYC8/eVV0rxq21bAfrmvNVhFHBZyCM1AHNrgBTdACbdABGDyDd/AJvowX48P4Nn4WrSWj2HMC/lWp/Au/Fa76</latexit>
+
+p~ = (~
+p · ~u)~u + (~
+p · ~v )~v + (~
+p · w)
+~ w
+~
+(projection)
+
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Questions?
+
+Matrices
+• Magical 2D arrays that haunt in every CS course
+• In Graphics, pervasively used to represent transformations
+
+- Translation, rotation, shear, scale
+(more details in the next lecture)
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+What is a matrix
+• Array of numbers (m × n = m rows, n columns)
+0
+1
+1 3
+@5 2A
+0 4
+<latexit sha1_base64="HzPvLqtATNersqV7FnFlASYpOFc=">AAACHnicbZDLSsNAFIYn9VbrLerSzWBRXJWktuiy4KbLCrYVmlAmk9N26GQSZiZiCX0SN76KGxeKCK70bZxeEG39YeDjP+cw5/xBwpnSjvNl5VZW19Y38puFre2d3T17/6Cl4lRSaNKYx/I2IAo4E9DUTHO4TSSQKODQDoZXk3r7DqRisbjRowT8iPQF6zFKtLG6dtULoM9ElkRES3Y/xi4+xefY83DVQHkCjoEK9kCEP11du+iUnKnwMrhzKKK5Gl37wwtjmkYgNOVEqY7rJNrPiNSMchgXvFRBQuiQ9KFjUJAIlJ9NzxvjE+OEuBdL84TGU/f3REYipUZRYDrNfgO1WJuY/9U6qe5d+hkTSapB0NlHvZRjHeNJVjhkEqjmIwOESmZ2xXRAJKHaJFowIbiLJy9Dq1xynZJ7XSnW6vM48ugIHaMz5KILVEN11EBNRNEDekIv6NV6tJ6tN+t91pqz5jOH6I+sz2/o459C</latexit>
+
+• Addition and multiplication by a scalar are trivial:
+element by element
+
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Matrix-Matrix Multiplication
+• # (number of) columns in A must = # rows in B
+(M x N) (N x P) = (M x P)
+
+0
+
+1
+@5
+0
+<latexit sha1_base64="AVD920hVz295RFMArzqPURdKmVM=">AAACWnicbVFdS8MwFE3r9/yaH2++BIfi02g3dfNN8MVHBafCWkaa3m5haVqTVBxlf9IXEfwrgulaRKcXLhzOPSe5OQlSzpR2nHfLXlhcWl5ZXautb2xubdd3du9VkkkKPZrwRD4GRAFnAnqaaQ6PqQQSBxwegvFVMX94BqlYIu70JAU/JkPBIkaJNtSg/uQFMGQiT2OiJXuZYhcf4zb2PHxmQKsAjgGn2AMRfqvmTW0jOTd9UUo9YzzGHdPd8rSf3kG94TSdWeG/wK1AA1V1M6i/emFCsxiEppwo1XedVPs5kZpRDtOalylICR2TIfQNFCQG5eezaKb4yDAhjhJpWmg8Y386chIrNYkDozT7jdT8rCD/m/UzHXX9nIk00yBoeVGUcawTXOSMQyaBaj4xgFDJzK6YjogkVJvfqJkQ3Pkn/wX3rabrNN3b08bldRXHKjpAh+gEuaiDLtE1ukE9RNEb+rSWrRXrw7btNXu9lNpW5dlDv8re/wLxeazU</latexit>
+
+GAMES101
+
+1
+3 ✓
+3
+2A
+2
+4
+
+6 9
+7 8
+
+4
+3
+
+32
+
+◆
+
+Lingqi Yan, UC Santa Barbara
+
+Matrix-Matrix Multiplication
+• # (number of) columns in A must = # rows in B
+(M x N) (N x P) = (M x P)
+
+0
+
+1
+1 3 ✓
+3
+6
+@5 2A
+2 7
+0 4
+<latexit sha1_base64="AVD920hVz295RFMArzqPURdKmVM=">AAACWnicbVFdS8MwFE3r9/yaH2++BIfi02g3dfNN8MVHBafCWkaa3m5haVqTVBxlf9IXEfwrgulaRKcXLhzOPSe5OQlSzpR2nHfLXlhcWl5ZXautb2xubdd3du9VkkkKPZrwRD4GRAFnAnqaaQ6PqQQSBxwegvFVMX94BqlYIu70JAU/JkPBIkaJNtSg/uQFMGQiT2OiJXuZYhcf4zb2PHxmQKsAjgGn2AMRfqvmTW0jOTd9UUo9YzzGHdPd8rSf3kG94TSdWeG/wK1AA1V1M6i/emFCsxiEppwo1XedVPs5kZpRDtOalylICR2TIfQNFCQG5eezaKb4yDAhjhJpWmg8Y386chIrNYkDozT7jdT8rCD/m/UzHXX9nIk00yBoeVGUcawTXOSMQyaBaj4xgFDJzK6YjogkVJvfqJkQ3Pkn/wX3rabrNN3b08bldRXHKjpAh+gEuaiDLtE1ukE9RNEb+rSWrRXrw7btNXu9lNpW5dlDv8re/wLxeazU</latexit>
+
+9
+8
+
+0
+
+1
+◆
+9
+? 33 13
+4
+= @19 44 61 26A
+3
+8 28 32 ?
+<latexit sha1_base64="u3RvsarDMzmL8qevzp72c9Ie+VM=">AAACP3icbVBNSwMxEM36WetX1aOXYFE8lU231HoQC148Ktha6JaSTac1mM0uSVYsS/+ZF/+CN69ePCji1ZvZWkSrA/N4vJlJZl4QC66N6z46M7Nz8wuLuaX88srq2nphY7Opo0QxaLBIRKoVUA2CS2gYbgS0YgU0DARcBtcnWf3yBpTmkbwwwxg6IR1I3ueMGit1C80jP4ABl2kcUqP47Qgf4j18bNPzLBAP+z4mmVapWKgSC+VqJtYyloFXHk/4IHvfr3QLRbfkjgP/JWRCimgSZ93Cg9+LWBKCNExQrdvEjU0npcpwJmCU9xMNMWXXdABtSyUNQXfS8f0jvGuVHu5HyqY0eKz+nEhpqPUwDGyn3e9KT9cy8b9aOzH9WiflMk4MSPb1UT8R2EQ4MxP3uAJmxNASyhS3u2J2RRVlxlqetyaQ6ZP/kma5RNwSOa8U66cTO3JoG+2gfUTQAaqjU3SGGoihO/SEXtCrc+88O2/O+1frjDOZ2UK/wvn4BERapic=</latexit>
+
+• Element (i, j) in the product is
+
+the dot product of row i from A and column j from B
+
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Matrix-Matrix Multiplication
+• Properties
+
+- Non-commutative
+
+(AB and BA are diﬀerent in general)
+
+- Associative and distributive
+- (AB)C=A(BC)
+- A(B+C) = AB + AC
+- (A+B)C = AC + BC
+
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Matrix-Vector Multiplication
+• Treat vector as a column matrix (m×1)
+• Key for transforming points (next lecture)
+• Oﬃcial spoiler: 2D reflection about y-axis
+✓
+◆✓ ◆ ✓ ◆
+1 0
+x
+x
+=
+0 1
+y
+y
+<latexit sha1_base64="s6IOGZlHvFyHJ0mfaqKKB7j2WsE=">AAACYHicbVHLTgIxFO0MPhBBQHe6aSQSN5IZY6IbExI3LDGRR8IQ0ikXaOh0Jm1HIRN+0p0LN36JBSZGHjdpc3LOue3tqR9xprTjfFl25uDw6Dh7kjvNF86KpfJ5W4WxpNCiIQ9l1ycKOBPQ0kxz6EYSSOBz6PjTl6XeeQepWCje9DyCfkDGgo0YJdpQg9KH58OYiSQKiJZstsB3Lq5iB3ue2arYxR6I4Z+6bZ4tffNNz/POiftcg1LFqTmrwrvATUEFpdUclD69YUjjAISmnCjVc51I9xMiNaMcFjkvVhAROiVj6BkoSACqn6wCWuAbwwzxKJRmCY1X7P+OhARKzQPfOM18E7WtLcl9Wi/Wo6d+wkQUaxB0fdEo5liHeJk2HjIJVPO5AYRKZmbFdEIkodr8Sc6E4G4/eRe072uuU3NfHyr1RhpHFl2ha3SLXPSI6qiBmqiFKPq2MlbeKlg/dtYu2uW11bbSngu0UfblL5Smtdc=</latexit>
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Transpose of a Matrix
+• Switch rows and columns (ij -> ji)
+0
+1T
+✓
+1 2
+1
+@3 4A =
+2
+5 6
+
+3
+4
+
+◆
+5
+6
+
+<latexit sha1_base64="UxIxfQy9/iAqWgHDFBVokQyVgec=">AAACV3icbZFdS8MwFIbTzo85v6peehMcilejnZt6Iwje7HKCc8JaR5qebWFpWpJUHGV/UrzZX/FG0zlE3Q4EHt5zXnLyJkw5U9p1Z5ZdWlvf2CxvVbZ3dvf2nYPDR5VkkkKHJjyRTyFRwJmAjmaaw1MqgcQhh244viv63ReQiiXiQU9SCGIyFGzAKNFG6jvCD2HIRJ7GREv2OsUePsN17Pv4wkCjgKaBS+yDiH6mnh/wDV7lLEzNwlSfu5eMfafq1tx54WXwFlBFi2r3nTc/SmgWg9CUE6V6npvqICdSM8phWvEzBSmhYzKEnkFBYlBBPs9lik+NEuFBIs0RGs/V346cxEpN4tBMmv1G6n+vEFf1epkeXAc5E2mmQdDviwYZxzrBRcg4YhKo5hMDhEpmdsV0RCSh2nxFxYTg/X/yMjzWa55b8+4b1dvWIo4yOkYn6Bx56ArdohZqow6i6B19WCVrzZpZn/aGXf4eta2F5wj9KfvgCzw5rak=</latexit>
+
+• Property
+T
+
+T
+
+(AB) = B A
+
+T
+
+<latexit sha1_base64="bBeF2Bh7JL1iqSZng24Wdvyho1I=">AAAB+XicbVDLTgIxFL2DL8TXqEs3jcQEN2TGmOjGBHDDEhNeCQykUwo0dDqTtkNCJvyJGxca49Y/ceffWGAWCp7k3pycc296e/yIM6Ud59vKbG3v7O5l93MHh0fHJ/bpWVOFsSS0QUIeyraPFeVM0IZmmtN2JCkOfE5b/uRx4bemVCoWirqeRdQL8EiwISNYG6lv24Vy5bpXRw+oYnq5V+/beafoLIE2iZuSPKSo9e2v7iAkcUCFJhwr1XGdSHsJlpoRTue5bqxohMkEj2jHUIEDqrxkefkcXRllgIahNCU0Wqq/NxIcKDULfDMZYD1W695C/M/rxHp47yVMRLGmgqweGsYc6RAtYkADJinRfGYIJpKZWxEZY4mJNmHlTAju+pc3SfOm6DpF9+k2X6qmcWThAi6hAC7cQQmqUIMGEJjCM7zCm5VYL9a79bEazVjpzjn8gfX5AxAwkVs=</latexit>
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Identity Matrix and Inverses
+0
+1
+I3⇥3 = @0
+0
+
+0
+1
+0
+
+<latexit sha1_base64="7ho4e87Q3BS8+CdHkFWg3nbtVLc=">AAACOHicbVDLSgMxFM3UV62vUZdugkVxVWasoBuh4KaurGAf0Cklk962oZnMkGTEMvSz3PgZ7sSNC0Xc+gWm0yK19cCFk3PvIfceP+JMacd5sTJLyyura9n13Mbm1vaOvbtXU2EsKVRpyEPZ8IkCzgRUNdMcGpEEEvgc6v7gatyv34NULBR3ehhBKyA9wbqMEm2ktn1z3U6KnmYBKFwcXXo+9JhIooBoyR5G2MXH2EnL81Lizj4mggei8+to23mn4KTAi8SdkjyaotK2n71OSOMAhKacKNV0nUi3EiI1oxxGOS9WEBE6ID1oGiqI2bSVpIeP8JFROrgbSlNC41SddSQkUGoY+GbS7NdX872x+F+vGevuRSthIoo1CDr5qBtzrEM8ThF3mASq+dAQQiUzu2LaJ5JQbbLOmRDc+ZMXSe204DoF9/YsXypP48iiA3SITpCLzlEJlVEFVRFFj+gVvaMP68l6sz6tr8loxpp69tEfWN8/sNem3Q==</latexit>
+
+AA
+
+1
+
+<latexit sha1_base64="9YIujSkSoATioUGEsEP1PVnDsAY=">AAACAHicbZDLSsNAFIZP6q3WW9SFCzeDRXBjSUTQjdDipu4q2Au0sUym03boZBJmJkIJ2fgqblwo4tbHcOfbOG0jaOsPAx//OYcz5/cjzpR2nC8rt7S8srqWXy9sbG5t79i7ew0VxpLQOgl5KFs+VpQzQeuaaU5bkaQ48Dlt+qPrSb35QKViobjT44h6AR4I1mcEa2N17YMKqtwnp26Krn6gYvCmaxedkjMVWgQ3gyJkqnXtz04vJHFAhSYcK9V2nUh7CZaaEU7TQidWNMJkhAe0bVDggCovmR6QomPj9FA/lOYJjabu74kEB0qNA990BlgP1XxtYv5Xa8e6f+klTESxpoLMFvVjjnSIJmmgHpOUaD42gIlk5q+IDLHERJvMCiYEd/7kRWiclVyn5N6eF8vVLI48HMIRnIALF1CGKtSgDgRSeIIXeLUerWfrzXqfteasbGYf/sj6+AYa8ZOG</latexit>
+
+(AB)
+
+=A
+1
+
+1
+
+=B
+
+1
+
+0
+0A
+1
+
+A=I
+1
+
+A
+
+1
+
+<latexit sha1_base64="YyVSXhRcmCK/I42TsWU5RV5SYNM=">AAACA3icbZDLSgMxFIbP1Futt1F3ugkWoS4sMyLoRmjrpssK9gLtWDJppg3NXEgyQhkKbnwVNy4UcetLuPNtTKez0OqBkI//P4fk/G7EmVSW9WXklpZXVtfy64WNza3tHXN3ryXDWBDaJCEPRcfFknIW0KZiitNOJCj2XU7b7vh65rfvqZAsDG7VJKKOj4cB8xjBSkt986BURbWTu+TUnqIrVJtDNb36ZtEqW2mhv2BnUISsGn3zszcISezTQBGOpezaVqScBAvFCKfTQi+WNMJkjIe0qzHAPpVOku4wRcdaGSAvFPoECqXqz4kE+1JOfFd3+liN5KI3E//zurHyLp2EBVGsaEDmD3kxRypEs0DQgAlKFJ9owEQw/VdERlhgonRsBR2CvbjyX2idlW2rbN+cFyv1LI48HMIRlMCGC6hAHRrQBAIP8AQv8Go8Gs/Gm/E+b80Z2cw+/Crj4xuA0pTl</latexit>
+
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Vector multiplication in Matrix form
+• Dot product?
+T~
+~
+~a · b = ~a b
+<latexit sha1_base64="utnhz/vov8myX+CBq7a+bAvQ0Tw=">AAACEHicbZBNS8MwGMfT+TbnW9Wjl+AQPY1WBL0IAy87TtgbrHWkabqFpUlJ0sEo+whe/CpePCji1aM3v41Z14Nu/iHwz+95HpLnHySMKu0431ZpbX1jc6u8XdnZ3ds/sA+POkqkEpM2FkzIXoAUYZSTtqaakV4iCYoDRrrB+G5e706IVFTwlp4mxI/RkNOIYqQNGtjn3oRgiKCHQ6FhfgngLSzoA2wVbGBXnZqTC64atzBVUKg5sL+8UOA0JlxjhpTqu06i/QxJTTEjs4qXKpIgPEZD0jeWo5goP8sXmsEzQ0IYCWkO1zCnvycyFCs1jQPTGSM9Usu1Ofyv1k91dONnlCepJhwvHopSBrWA83RgSCXBmk2NQVhS81eIR0girE2GFROCu7zyqulc1lyn5t5fVeuNIo4yOAGn4AK44BrUQQM0QRtg8AiewSt4s56sF+vd+li0lqxi5hj8kfX5A7Prmno=</latexit>
+
+= xa
+
+ya
+
+<latexit sha1_base64="t5KwFJwQdFtkDDMs21fxIUFK0ho=">AAAChHicbVHbSsNAEN3EW623qo++LBYvoJTEC/pSKfjSxwq2Ck0pm+20Lt1swu5GmoZ+iX/lm3/jJi1oLwM7c5g5h5md8SPOlHacH8teW9/Y3CpsF3d29/YPSodHLRXGkkKThjyU7z5RwJmApmaaw3skgQQ+hzd/+JzV3z5BKhaKV51E0AnIQLA+o0SbVLf0VfV8GDCRRgHRko0meNQl+BwnuR8b74Ho/VWX2T72PEPPwzgLc/zqCgXJVVd5jyRHWZ9lbbdUdipObngZuDNQRjNrdEvfXi+kcQBCU06UartOpDspkZpRDpOiFyuICB2SAbQNFCQA1UnzJU7wmcn0cD+U5gmN8+x/RUoCpZLAN0wz4IdarGXJVbV2rPuPnZSJKNYg6LRRP+ZYhzi7CO4xCVTzxABCJTOzYvpBJKHa3K1oluAufnkZtG4qrlNxX+7KtfpsHQV0gk7RJXLRA6qhOmqgJqKWZV1YjuXam/a1fWvfT6m2NdMcozmzn34BLknB8A==</latexit>
+
+• Cross product?
+
+0 1
+xb
+za @ y b A = x a x b + y a y b + z a zb
+zb
+0
+
+0
+~a ⇥ ~b = A⇤ b = @ za
+ya
+<latexit sha1_base64="TFwqdOBSSYw/UTzs8Dime2zvnWA=">AAACf3icbVHJTsMwEHXCXrYCRy4WFYtYqgQhAQckEBeOIFFAakpku9Ni4TiR7aCGKL/Bh3HjXzjgJhWCwkgev3kzY89CE8G18bwPx52YnJqemZ2rzS8sLi3XV1bvdJwqBi0Wi1g9UKJBcAktw42Ah0QBiaiAe/p8OfTfv4DSPJa3JkugE5G+5D3OiLFUWH8LXoDlpAgMj0CXBi3OLh53MT0LKPS5zJOIGMUHBfbwFj54DYm9MquDAFdGyQ8q5iArqUHlCEB2v/PHnhuE1MZnpX4NKf4VG9YbXtMrBf8F/gg00Eiuw/p70I1ZGoE0TBCt276XmE5OlOFMQFELUg0JYc+kD20LJbHddvJyfgXetEwX92JljzS4ZH9m5CTSOouojbT1Pelx35D8z9dOTe+kk3OZpAYkqz7qpQKbGA+XgbtcATMis4AwxW2tmD0RRZixK6vZIfjjLf8Fd4dN32v6N0eN86vROGbROtpAO8hHx+gcXaFr1EIMfTobzp6z7zruttt0vSrUdUY5a+iXuKdf282++g==</latexit>
+
+za
+0
+xa
+
+10 1
+ya
+xb
+x a A @ yb A
+0
+zb
+
+dual matrix of vector a
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+An Example of General Transformation
+
+The Sponza Scene, rendered by Lingqi Yan using Real-time Ray Tracing (RTRT)
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Questions?
+
+Next
+• Transform!
+
+Mondays
+5:00PM - 6:00PM
+6:00PM - 7:00PM
+Phelps 2510
+
+Transformers: The Last Knight, 2017 movie
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

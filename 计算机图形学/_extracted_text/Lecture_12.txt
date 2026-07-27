@@ -1,0 +1,596 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 12:
+Geometry 3
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homeworks
+
+- Enjoying HW3?
+- HW1 submission window reopened
+(similar policy applies to later HWs)
+
+• The T/N/B calculation
+
+- Will be in the next lectures [local shading frame]
+• BIG NEWS!
+
+- Computer Graphics won the Turing Award after 32 years!
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Turing Award Winners
+• Made Computer Graphics great
+• We will soon learn about their work!
+
+Ed Catmull
+GAMES101
+
+Pat Hanrahan
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Academic Family Tree
+
+Ravi Ramamoorthi @ UCSD
+Lingqi Yan @ UCSB
+
+Pat Hanrahan @ Stanford
+
+Pradeep Sen @ UCSB
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Back to Geometry
+
+Mesh Operations: Geometry Processing
+• Mesh subdivision
+• Mesh simplification
+• Mesh regularization
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Mesh Subdivision (upsampling)
+
+Increase resolution
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Mesh Simplification (downsampling)
+
+Decrease resolution; try to preserve shape/appearance
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Mesh Regularization (same #triangles)
+
+Modify sample distribution to improve quality
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Subdivision
+
+Loop Subdivision
+Common subdivision rule for triangle meshes
+First, create more triangles (vertices)
+Second, tune their positions
+
+Simon Fuhrman
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Loop Subdivision
+• Split each triangle into four
+
+• Assign new vertex positions according to weights
+- New / old vertices updated differently
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Loop Subdivision — Update
+For new vertices:
+
+Update to:
+3/8 * (A + B) + 1/8 * (C + D)
+
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Loop Subdivision — Update
+For old vertices (e.g. degree 6 vertices here):
+
+Update to:
+(1 - n*u) * original_position +
+u * neighbor_position_sum
+
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Loop Subdivision Results
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Catmull-Clark Subdivision (General Mesh)
+
+Non-quad face
+Extraordinary
+vertex (奇异点)
+(degree != 4)
+
+Each subdivision step:
+Add vertex in each face
+Add midpoint on each edge
+Connect all new vertices
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Catmull-Clark Subdivision (General Mesh)
+
+After one subdivision:
+How many extraordinary vertices?
+What are their degrees?
+How many non-quad faces?
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Catmull-Clark Subdivision (General Mesh)
+
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Catmull-Clark Subdivision (General Mesh)
+
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+FYI: Catmull-Clark Vertex Update Rules (Quad Mesh)
+Face point
+
+v1 + v2 + v3 + v4
+f=
+4
+
+Edge point
+
+f
+
+v1 + v2 + f1 + f2
+e=
+4
+
+e
+
+v1
+
+v4
+
+v2
+m1 f
+2
+
+f1
+
+m4
+f3
+GAMES101
+
+v3
+
+p
+
+v
+
+m2
+
+v1
+
+f1
+
+f2
+
+v2
+
+Vertex point
+
+f1 + f2 + f3 + f4 + 2(m1 + m2 + m3 + m4) + 4p
+v=
+16
+
+m midpoint of edge
+p old “vertex point”
+
+m3 f4
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Convergence: Overall Shape and Creases
+
+Figure from: Hakenberg et al. Volume Enclosed by Subdivision Surfaces with Sharp Creases
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Subdivision in Action (Pixar’s “Geri’s Game”)
+
+Mesh Simplification
+
+Mesh Simplification
+Goal: reduce number of mesh elements
+while maintaining the overall shape
+
+30,000 triangles
+
+3,000
+
+300
+
+30
+
+How to compute?
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Collapsing An Edge
+• Suppose we simplify a mesh using edge collapsing
+collapse
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Quadric Error Metrics
+（⼆次误差度量）
+
+• How much geometric error is introduced by simplification?
+• Not a good idea to perform local averaging of vertices
+• Quadric error: new vertex should minimize its sum of square
+distance (L2 distance) to previously related triangle planes!
+
+http://graphics.stanford.edu/courses/cs468-10-fall/LectureSlides/08_Simplification.pdf
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Quadric Error of Edge Collapse
+• How much does it cost to collapse an edge?
+• Idea: compute edge midpoint, measure quadric error
+collapse
+
+• Better idea: choose point that minimizes quadric error
+• More details: Garland & Heckbert 1997.
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Simplification via Quadric Error
+Iteratively collapse edges
+Which edges? Assign score with quadric error metric*
+
+• approximate distance to surface as sum of distances to
+planes containing triangles
+
+• iteratively collapse edge with smallest score
+• greedy algorithm... great results!
+
+* (Garland & Heckbert 1997)
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Quadric Error Mesh Simplification
+
+GAMES101
+
+994
+
+532
+
+29
+
+248
+
+64
+
+Garland and Heckbert ‘97
+
+5,804
+
+Lingqi Yan, UC Santa Barbara
+
+Quadric Error Mesh Simplification
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Before we move on…
+• Shadows
+- How to draw shadows using rasterization?
+- Shadow mapping!
+
+Shadow of the Tomb Raider, 2018
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Shadow Mapping
+• An Image-space Algorithm
+
+- no knowledge of scene’s geometry during shadow
+computation
+- must deal with aliasing artifacts
+
+• Key idea:
+- the points NOT in shadow must be seen both
+by the light and by the camera
+
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Pass 1: Render from Light
+• Depth image from light source
+
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Pass 1: Render from Light
+• Depth image from light source
+
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Pass 2A: Render from Eye
+• Standard image (with depth) from eye
+
+Eye
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Pass 2B: Project to light
+• Project visible points in eye view back to light source
+
+Eye
+
+(Reprojected) depths match for light and eye. VISIBLE
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Pass 2B: Project to light
+• Project visible points in eye view back to light source
+
+Eye
+
+(Reprojected) depths from light and eye are not the same. BLOCKED!!
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Visualizing Shadow Mapping
+• A fairly complex scene with shadows
+the point
+light source
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Visualizing Shadow Mapping
+• Compare with and without shadows
+
+with shadows
+GAMES101
+
+without shadows
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Visualizing Shadow Mapping
+• The scene from the light’s point-of-view
+
+FYI: from the
+eye’s point-of-view
+again
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Visualizing Shadow Mapping
+• The depth buﬀer from the light’s point-of-view
+
+FYI: from the
+light’s point-of-view
+again
+
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Visualizing Shadow Mapping
+• Comparing Dist(light, shading point) with shadow map
+
+Non-green is where
+shadows should be
+Green is where the
+distance(light,
+shading point) ≈
+depth on the
+shadow map
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Visualizing Shadow Mapping
+• Scene with shadows
+
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Shadow Mapping
+• Well known rendering technique
+
+- Basic shadowing technique for early animations (Toy
+Story, etc.) and in EVERY 3D video game
+
+Zelda: Breath of the Wild
+
+GAMES101
+
+Super Mario Odyssey
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Problems with shadow maps
+• Hard shadows (point lights only)
+• Quality depends on shadow map resolution
+
+(general problem with image-based techniques)
+
+• Involves equality comparison of floating point depth
+values means issues of scale, bias, tolerance
+
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Problems with shadow maps
+• Hard shadows vs. soft shadows
+
+[https://www.timeanddate.com/eclipse/umbra-shadow.html]
+
+[RenderMan]
+
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Course Roadmap
+
+GAMES101
+
+Rasterization
+
+Geometry
+
+Ray tracing
+
+Animation / simulation
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

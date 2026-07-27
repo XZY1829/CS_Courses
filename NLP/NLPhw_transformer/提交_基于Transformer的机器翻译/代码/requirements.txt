@@ -1,0 +1,9 @@
+torch
+sacrebleu
+tqdm
+pyyaml
+opencc-python-reimplemented
+subword-nmt
+jieba
+zhon
+nltk

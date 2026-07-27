@@ -1,0 +1,1788 @@
+      Multi-Agent
+Reinforcement Learning
+
+           Weinan Zhang
+    Shanghai Jiao Tong University
+        http://wnzhang.net
+             May 2024
+2024年上海交通大学ACM班强化学习课程大纲
+
+ 强化学习基础部分         强化学习前沿部分
+    （中文课件）            （英文课件）
+
+1. 强化学习、探索与利用    9. 基于模型的深度强化学习
+2. MDP和动态规划     10. 模仿学习
+3. 值函数估计        11. 离线强化学习
+4. 无模型控制方法      12. 多智能体强化学习基础
+5. 规划与学习        13. 多智能体强化学习前沿
+6. 参数化的值函数和策略   14. 基于扩散模型的强化学习
+7. 深度强化学习价值方法   15. AI Agent与决策大模型
+8. 深度强化学习策略方法   16. 技术交流与回顾
+
+                                 2
+Content
+• Background of MARL
+
+• Fundamentals of Game Theory
+
+• Multi-Agent Reinforcement Learning
+
+• Many-Agent Reinforcement Learning
+The Coming Intelligent IoT Era
+                        Intelligent
+                        Internet of
+                        Things based
+                        on 5G
+
+
+
+                        Autonomous
+                        driving cars
+                        with inter-
+                        connections
+   Observation: Machine Learning Paradigm Extension
+
+  Towards a more
+decentralized service                This area gets more and more attention!
+
+   Many-agent     Crowding sensing         IoT AI / City AI / Market AI
+
+
+
+   Multi-agent      Ensemble              GANs                MARL
+
+
+
+   Single-agent      LR/SVM           Language model         Atari AI
+
+
+                     Prediction         Generation       Decision Making
+                    & detection
+                         Give more access to machines
+MARL Case: Multi-Agent Game Playing
+• Multi-agent game playing
+      • Learning to cooperate and compete
+
+                                                               Wolfpack game
+                                                               • Red agents are the predators
+                                                               • Blue agent is the prey
+                                                               • Red agent gets close to blue
+                                                                 agent to make a capture, then
+                                                                 the whole team gets a reward
+
+                                                               Results
+                                                               • Red agents learn to cooperate.
+
+
+
+
+Leibo, Joel Z., et al. "Multi-agent Reinforcement Learning in Sequential Social Dilemmas." AAMAS 2017.
+MARL Case: Multi-Agent Game Playing
+• Multi-agent game playing
+      • Learning to cooperate and compete
+
+
+
+
+Gathering game                                                Results
+• Red and blue agents compete for food                        • Red agents learn to compete
+• Each agent can either move to eat or                          (shooting each other) when
+  attack the other to make it paused                            food resource is insufficient
+
+
+Leibo, Joel Z., et al. "Multi-agent Reinforcement Learning in Sequential Social Dilemmas." AAMAS 2017.
+MARL Case: Multi-Agent Game Playing
+  • Multi-agent game playing
+         • Learning to cooperate and compete
+
+
+
+
+         • Agents learn to cooperate in a team to fight against another
+           team (here the other team is just hand-crafted AI)
+Peng Peng, Jun Wang et al. Multiagent Bidirectionally-Coordinated Nets: Emergence of Human-level Coordination in Learning to
+Play StarCraft Combat Games. NIPS workshop 2017.
+    MARL Case: Army Align
+    • Let an army of agents align a particular pattern
+
+
+
+
+Lianmin Zheng, Weinan Zhang et al. Magent: a many-agent reinforcement learning platform for artificial collective intelligence. NIPS17 & AAAI18.
+MARL Case: City Traffic Simulation
+                       • Designing
+                          • Car routing
+                            policy
+                          • Traffic light
+                            controller
+                          • Fleet
+                            management &
+                            taxi dispatch
+                       • Shortcomings
+                          • Discrete
+                            implementation
+                            is not suitable
+                            for traffic
+                            simulation
+Use Case: Storage Sorting Robots
+
+
+
+
+Haifeng Zhang, et al. “Layout Design for Intelligent Warehouse by Evolution with Fitness Approximation.” IEEE Access 2019.
+REVIEW
+
+Reinforcement Learning
+                                    Agent
+
+• Learning from interaction
+  with the environment
+
+• The agent
+   • senses the observations
+     from environment
+   • takes actions to deliver to
+     the environment
+   • gets reward signal from
+     the environment
+
+
+• Normally, the
+  environment is stationary
+                                   Environment
+Multi-Agent Reinforcement Learning
+                               Agent
+
+• Learning from interaction
+  with the environment
+
+• The environment contains
+  other agents that are
+  learning and updating
+
+• Non-stationary
+  environment
+
+
+
+                              Environment
+Fundamental Difficulty
+in Multi-Agent RL
+• MARL is fundamentally
+  more difficult since
+  agents not only learn to
+  interact with the
+  environment but also
+  with each other
+• Directly applying single-
+  agent RL algorithms will
+  have no guarantee of
+  effectiveness
+• Solution: game theory!
+Content
+• Background of MARL
+
+• Fundamentals of Game Theory
+
+• Multi-Agent Reinforcement Learning
+
+• Many-Agent Reinforcement Learning
+What is Game Theory
+• Games theory studies
+  interaction of self-interested
+  agents
+   • What does “self-interested”
+     mean?
+
+• Modeling an agent’s interests:
+  utility theory
+   • Utility function: mapping from
+     states to real numbers
+
+• Things get more complicated with multiple agents
+   • One’s actions can affect others’ utilities
+   • Noncooperative game theory – individual
+Prisoner’s Dilemma
+
+               Defect   Cooperate
+
+
+      Defect
+
+
+
+
+   Cooperate
+Prisoner’s Dilemma
+• If two players tune their strategies interactively,
+  they will finally converge to defect-defect action
+  profile
+
+            Defect   Cooperate               Defect   Cooperate
+
+
+ Defect     -5, -5    0, -20      Defect     a, a       c, b
+
+Cooperate   -20, 0    -1, -1     Cooperate   b, c       d, d
+
+
+                                           c>d>a>b
+   Normal-form Game (正则形式博弈)
+   • Also known as the strategic or matrix form.
+   • It is a representation of every player’s utility for
+     every state of the world, where the states of the
+     world depend only on the player’s combined actions.
+                       Player 2
+
+                  Action 1 Action 2     • Most other
+                                          representations of
+                                          games can be reduced
+Player Action 1    a1 , a2   b 1, b 2
+                                          to (maybe much larger)
+   1                                      normal-form games.
+       Action 2    c1, c2    d 1, d 2
+Normal-form Game
+Definition A (finite, n-player) normal-form game is a
+tuple (𝑁, 𝐴, 𝑢), where:
+   • 𝑁 is a finite set of n players, indexed by 𝑖;
+   • 𝐴 = 𝐴!× ⋯×𝐴" , where 𝐴# is a finite set of actions
+     available to player 𝑖;
+   • Each vector 𝑎 = (𝑎!, ⋯ , 𝑎" ) ∈ 𝐴 is called an action
+     profile;
+   • 𝑢 = 𝑢!× ⋯×𝑢" where 𝑢# : 𝐴 → ℝ is a real-valued
+     utility (or payoff) function for player 𝑖.
+
+• Standard representation: an 𝑛-dimensional matrix.
+Common-payoff Game
+Definition A common-payoff game is a game in which
+for all action profiles 𝑎 ∈ 𝐴! × ⋯×𝐴" and for any pair
+of agents 𝑖, 𝑗, it is the case that 𝑢# 𝑎 = 𝑢$ 𝑎 .
+
+• Common-payoff games are also called pure
+  coordination games or team games.
+• The agents have no conflicting interests.
+Coordination Game: Example
+• Two drivers driving towards each other in a country
+  having no traffic rules …
+
+                                     Left    Right
+       left    right
+                             Left    1, 1    0, 0
+       right   left
+
+                             Right   0, 0    1, 1
+Zero-sum Game (零和博弈)
+Definition A two-player normal-form game is
+constant-sum if there exists a constant 𝑐 such that for
+each strategy profile 𝑎 ∈ 𝐴! ×𝐴% it is the case that
+𝑢! 𝑎 + 𝑢% 𝑎 = 𝑐.
+
+• Pure competition
+• A constant-sum game is zero-sum if 𝑐 = 0.
+• Zero-sum games are most meaningful for two
+  agents because if we allow more agents, any game
+  can be turned into a zero-sum game by adding a
+  dummy player.
+Zero-sum Game: Matching Pennies
+• Two players present a penny at the same time
+   • Player 1 wins if two pennies match
+   • Player 2 wins otherwise
+
+
+                                      Heads       Tails
+
+                             Heads        1, -1   -1, 1
+
+                              Tails       -1, 1   1, -1
+Zero-sum Game: Rock, Paper, Scissors
+• Two players with three actions
+
+                                   Rock    Paper   Scissors
+
+                         Rock      0, 0    -1, 1    1, -1
+
+                         Paper     1, -1   0, 0     -1, 1
+
+                        Scissors   -1, 1   1, -1     0, 0
+Normal-form Game: Battle of the Sexes
+• A couple wishes to go to watch boxing or shopping.
+  They have different preferences but prefer going
+  together.
+                                  Wife
+
+                           Boxing    Shopping
+
+
+      Husband    Boxing    2, 1          0, 0
+
+                Shopping   0, 0          1, 2
+
+• It includes element of both coordination and
+  competition.
+Strategies in Normal-Form Games
+• Pure strategy: to select a single action and play it.
+• Pure-strategy profile: An action profile where each
+  agent plays a pure strategy.
+
+Introducing randomness in the choice of action
+• Mixed strategy: randomizing over the set of
+  available actions according to some probability
+  distribution.
+Mixed Strategy
+Definition Let (𝑁, 𝐴, 𝑢) be a normal-form game, and
+for any set 𝑋 let Π(𝑋) be the set of all probability
+distributions over 𝑋. Then the set of mixed strategies
+for player 𝑖 is 𝑆# = Π(𝐴# ).
+
+Definition The set of mixed-strategy profiles is simply
+the Cartesian product of the individual mixed-
+strategy sets, i.e., 𝑆! × ⋯×𝑆" .
+
+Definition The support of a mixed strategy 𝑠# for a
+player 𝑖 is the set of pure strategies {𝑎# |𝑠# 𝑎# > 0}.
+Expected Utility
+Definition Given a normal-form game (𝑁, 𝐴, 𝑢), the
+expected utility 𝑢# for player 𝑖 of the mixed-strategy
+profile 𝑠 = (𝑠! , … , 𝑠" ) is defined as
+Best Response
+• Formally, define 𝑠&# = (𝑠# , … , 𝑠#&! , 𝑠#'! , … , 𝑠" ), a
+  strategy profile 𝑠 without agent 𝑖’s strategy. Thus
+  we can write 𝑠 = (𝑠# , 𝑠&# ).
+• If the agents other than 𝑖 (denoted as −𝑖) were to
+  commit to play 𝑠&# , what is the best response of
+  agent 𝑖?
+
+Definition Player 𝑖’s best response to the strategy
+profile 𝑠&# is a mixed strategy 𝑠#∗ ∈ 𝑆# such that
+𝑢# 𝑠#∗ , 𝑠&# ≥ 𝑢# (𝑠# , 𝑠&# ) for all strategies 𝑠# ∈ 𝑆# .
+Best Response
+• The best response is not necessarily unique
+   • Some cases – there is a unique best response that is a
+     pure strategy
+   • Other cases – the number of best responses is infinite
+
+
+• If the support of a best response 𝑠 ∗ includes more
+  than one actions, the agent must be indifferent
+  among them
+   • i.e., the same expected utility 𝑢# 𝑎!, 𝑠$# = 𝑢# 𝑎%, 𝑠$#
+   • As such, any blending of 𝑎! and 𝑎% is the best response
+Nash Equilibrium
+Definition
+A strategy profile 𝑠 = (𝑠! , … , 𝑠" ) is
+a Nash equilibrium if, for all agents
+𝑖, 𝑠# is a best response to 𝑠&# .
+                                                   John Nash
+• A Nash equilibrium is a stable strategy profile: no agent would
+  want to change his strategy if he knew what strategies the
+  other agents were following.
+• Whether or not every agent’s strategy constitutes a unique
+  best response to the other agents’ strategies?
+   • Yes – strict Nash equilibrium
+   • No – weak Nash equilibrium
+Finding Nash Equilibrium:
+Prisoner’s Dilemma
+• The only Nash equilibrium of prisoner’s dilemma is
+  both players defect
+
+
+            Defect   Cooperate               Defect   Cooperate
+
+
+ Defect     -5, -5    0, -20      Defect     a, a       c, b
+
+Cooperate   -20, 0    -1, -1     Cooperate   b, c       d, d
+
+
+                                           c>d>a>b
+Finding Nash Equilibria
+The Battle of the Sexes game has two pure-strategy
+Nash equilibria.
+                                  Wife
+
+                           Boxing    Shopping
+
+
+     Husband     Boxing    2, 1          0, 0
+
+                Shopping   0, 0          1, 2
+
+Are these two the only Nash equilibria?
+    Finding Nash Equilibria
+    • There is also another mixed-strategy equilibrium.
+    • Assume that husband’s strategy is to watch boxing with
+      probability 𝑝 and go shopping with probability 1 − 𝑝.
+    • Then if the wife also mixes between boxing and shopping, she
+      must be indifferent between them, given the husband’s
+      strategy.
+                       Wife
+
+                       Boxing   Shopping
+
+
+          𝑝   Boxing    2, 1      0, 0
+Husband
+   1 − 𝑝 Shopping       0, 0      1, 2
+Finding Nash Equilibria
+The mixed-strategy Nash equilibrium of the Battle of the Sexes
+game:
+• The husband chooses boxing with probability 2/3 and
+  shopping with probability 1/3.
+• The wife chooses to boxing with probability 1/3 and shopping
+  with probability 2/3.
+                                                                   Wife
+                                                            1              2
+• The expected payoff of both                               3              3
+
+  players is 2/3 in this                                  Boxing     Shopping
+  equilibrium, so each of the
+  pure-strategy equilibria                 2
+                                           3
+                                                Boxing     2, 1           0, 0
+  Pareto-dominates the mixed-    Husband
+                                           1
+  strategy equilibrium.                    3
+                                               Shopping    0, 0           1, 2
+Mixed Strategies Matter
+What about the Matching Pennies game?
+
+                       Heads    Tails
+
+              Heads    1, -1    -1, 1
+
+               Tails   -1, 1    1, -1
+
+• There is no pure-strategy Nash equilibrium.
+• There exists a mixed-strategy equilibrium: each
+  player chooses Heads and Tails with probability 1/2.
+Mixed Strategies Matter
+For the popular rock-paper-scissors game?
+                         Rock    Paper   Scissors
+
+               Rock      0, 0    -1, 1    1, -1
+
+               Paper     1, -1   0, 0     -1, 1
+
+              Scissors   -1, 1   1, -1     0, 0
+
+• There is no pure-strategy Nash equilibrium.
+• There exists a mixed-strategy equilibrium: each player
+  chooses Rock, Paper and Scissors with probability 1/3.
+Existence of Nash Equilibrium
+Theorem (Nash, 1951) Every game with a finite
+number of players and action profiles has at least one
+Nash equilibrium.
+
+• The proof of this theorem is achieved by appealing to
+  fixed-point theorem.
+• This theorem depends critically on the availability of
+  mixed strategies to the agents.
+Thinking on Nash Equilibrium and MARL
+• Given a normal-form game, every player i’s utility
+  depends on the joint strategy profile (𝑠# , 𝑠&# ),
+  which makes the multi-agent decision making
+  unstable
+• Nash equilibrium provides a peaceful place in such
+  an ‘unstable’ environment, where no player would
+  want to further change the strategy once getting to
+  the equilibrium
+• Nash equilibrium of the normal-form game can be
+  set as the learning target of MARL
+• Now we need to consider the case of multiple
+  states
+Content
+• Introduction to Reinforcement Learning
+
+• Fundamentals of Game Theory
+
+• Multi-Agent Reinforcement Learning
+
+• Many-Agent Reinforcement Learning
+Sequential Decision Making
+• 3 types of setting in Game Theory
+   • Markov decision processes
+                                                       MDPs            Repeated Games
+      • one decision maker                       •   Single Agent      •   Multiple Agents
+      • multiple states                          •   Multiple States   •   Single State
+
+
+   • Repeated games
+                                                             Stochastic Games
+      • multiple decision makers                            •   Multiple Agents
+      • one state (e.g., one normal form game)              •   Multiple States
+
+
+
+   • Stochastic games (Markov games)
+      • multiple decision makers
+      • multiple states (e.g., multiple normal
+        form games)
+Stochastic Games
+• A stochastic game has multiple states and multiple agents
+     • Each state corresponds to a normal-form game
+     • After a round, the game randomly transits to another state
+     • Transition probabilities depend on state and joint actions taken by
+       all agents
+• Typically, rewards are discounted over time
+                                        0.2                                        1, 1 1, 0
+         Player 2                                              0.5                                           State 2
+             a1            a2                                                      0, 1 0, 0
+       a1 2, 2   0, 3                                              0.4
+Player 1
+         a2 3, 0 1, 1                                               0.3
+                                                                                   1, 0 0, 1
+                  State 1                                0.6                                                 State 3
+                                          State transition                         0, 1 1, 0
+                                           probabilities
+      Shapley, Lloyd S. "Stochastic games." Proceedings of the national academy of sciences 39.10 (1953): 1095-1100.
+Definition of Stochastic Games
+• A stochastic game is defined by
+
+
+
+• State space:
+• Action space of agent j:
+• Reward function of agent
+• Transition probability
+
+                                    The collection of probability
+                                    distributions over S
+• Discount factor across time
+Policies in Stochastic Games
+• For agent j, the corresponding policy is
+                                      The collection of probability
+                                      distributions over Aj
+
+• The joint policy of all agents is
+
+• State value function of agent j
+
+
+
+• Action value function of agent j
+Independent Learning in SG
+• For each agent j, assume the other agents’ policies
+  are stationary, thus the environment for j is
+  stationary to perform Q-learning
+
+
+
+
+   • The agent does not know opponents’ actions, thus may
+     use the last-step actions or build opponent models
+   • Unfortunately, in SG with MARL, every agent is learning
+     and updating its policy, making the environment non-
+     stationary
+Nash Equilibrium in SG
+
+
+• Optimizing       for agent j depends on the joint policy π
+
+• Nash equilibrium in SG is represented by a particular joint
+  policy
+
+ such that nobody would like to change his policy given the
+ others’
+        Nash Q-learning
+        • Given a Nash policy π*, the Nash value function
+
+
+        • Nash Q-learning defines an iterative procedure
+                 1. Solving the Nash equilibrium π* of the current stage
+                    defined by {Qt}
+                 2. Improving the estimation of the Q-function with the
+                    new Nash value vNash
+        • But Nash Q-learning suffers from
+                 • Very high computational complexity
+                 • May not work when other agents’ policy is unavailable
+
+Hu, Junling, and Michael P. Wellman. "Nash Q-learning for general-sum stochastic games." Journal of machine learning research 4.Nov (2003): 1039-1069.
+        There is an implicit assumption of full observability in this approach –
+     each agent has to store Q-values for all the joint actions.
+        The general algorithmic version of this procedure can be seen in 3.3.
+        Nash Q-learning
+     Algorithm 3.3 General equilibrium learner algorithm
+      Initialize Q(s, a) arbitrarily
+
+          Initialize s
+          loop
+            ai      probabilistic outcome of Nash policy derived from Q(s, a), for
+            player i {Mixed with exploration policy}
+
+              Take action ai , observe reward r, next state s0 and the joint action of
+              other players a i
+
+              for i = 1 . . . n do
+                Qi (s, hai , a i i) Qi (s, hai , a i i) + ↵ ri + Vi (s0 ) Qi (s, hai , a i i)
+              end for
+              where V (s) = N ash ([Q(s, a)]) Instead of taking “max” as in Q learning
+
+            s   s0
+          end loop
+Hu, Junling, and Michael P. Wellman. "Nash Q-learning for general-sum stochastic games." Journal of machine learning research 4.Nov (2003): 1039-1069.
+ Nash Q-learning
+            Player 2         0.2
+                a1     a2
+                                           0.5         1, 1 1, 0
+                                                                     State 2
+           a1 2, 2
+                 0, 3                            0.4   0, 1 0, 0
+Player 1
+         a2 3, 0 1, 1                         0.3
+                                                       1, 0 0, 1
+                 State 1                    0.6                      State 3
+                             Entry values are          0, 1 1, 0
+                            immediate reward
+
+            Player 2         0.2
+                                           0.5         Q1,Q2 Q1,Q2
+                a1     a2                                            State 2
+           a1 Q1,Q2 Q1,Q2                        0.4   Q1,Q2 Q1,Q2
+Player 1
+           a2 Q1,Q2 Q1,Q2                     0.3
+                                                       Q1,Q2 Q1,Q2
+                 State 1                   0.6                       State 3
+                              Entry values             Q1,Q2 Q1,Q2
+                            become Q values
+         Minimax Q-learning
+         • Minimax-Q is designed to work with zero-sum
+           stochastic games
+                 • in zero-sum games a Nash equilibrium can be found
+                   using linear programming
+
+
+
+
+Littman, Michael L. "Markov games as a framework for multi-agent reinforcement learning." Machine Learning Proceedings 1994. 1994. 157-163.
+     function because, as the rewards are always symmetric for the agents, so
+     will be the state values and Q-values.
+         The algorithm can be particularized from Algorithm 3.3 to the Minimax-
+         Minimax Q-learning
+     Q form of Algorithm 3.4.
+
+     Algorithm 3.4 Minimax-Q learner
+      Initialize Q(s, ha, oi) and ⇡(s) arbitrarily
+
+          Initialize s
+          loop
+            a      probabilistic outcome of ⇡(s) {Mixed with exploration policy}
+
+              Take action a, observe reward r, next state s0 and opponent action o
+
+                                                                                                                            • a: own
+              Q(s, ha, oi)    Q(s, ha, oi) +P   ↵ r + V (s0 ) Q(s, ha, oi)
+                                                                                                                              actions,
+              with V (s) = max min                 ⇡(s,  a 0 ) Q(s, ha0 , o0 i)
+                                                                                                                            • o: opponent
+                           ⇡ 0 2P D(A) o0 2O a0 2A
+                                            P                                                                                 actions
+              ⇡(s) ! arg max min                 ⇡(s, a 0 ) Q(s, ha0 , o0 i)
+                                      0
+                                   ⇡ 0 2P D(A) o 2O a0 2A                                                                   • PD(A): prob.
+                                                                                                                              distribution
+            s   s0                                                                                                            of actions
+          end loop
+
+Littman, Michael L. "Markov games as a framework for multi-agent reinforcement learning." Machine Learning Proceedings 1994. 1994. 157-163.
+Recent Progress of MARL
+• Communications between agents
+   • Build local communication schemes between agents via the
+     hidden states of deep neural networks
+   • CommNet, BiCNet etc.
+• Centralized training & decentralized execution
+   • Train a centralized critic to guide the update of each actor
+     policy, and execute the actor policies in a decentralized way
+   • COMA, MADDPG, QMIX etc.
+• Opponent modeling
+   • Observe and predict the actions of other agents, so as to
+     perform better decision making
+   • LOLA, PR2, ROMMEO etc.
+• And many other aspects such as bi-level opt., signal
+  coordination, “win or learning fast” (WoLF) etc.
+Training Paradigms of MARL
+    Fully Decentralized                  Fully Centralized
+• Each agent independently        • Training and execution are both
+  senses the local env. and         centralized
+  learns its policy               • All agents sync at each step,
+• Like multiple single-RL tasks     which is costly
+• E.g., Independent Q learning    • E.g., Single Q learning,
+                                    CommNet
+
+
+   Centralized Training &           Decentralized Training with
+  Decentralized Execution              Networked Agents
+• Train the agents together but   • Agents senses the local env. but
+  execute each of them              can locally sync their info over the
+  independently                     network neighbors
+• Agents number and indices are   • Robust over time-varying network
+  fixed                           • E.g., AC with networked agents
+• E.g., COMA, MADDPG, QMIX
+Decentralized Training & Execution
+
+Independent Q-Learning
+• For each agent j, assume the other agents’ policies
+  are stationary, thus the environment for j is
+  stationary to perform Q-learning
+
+
+
+
+• Unfortunately, in SG with MARL, every agent is
+  learning and updating its policy, making the
+  environment non-stationary
+
+    Tan, Ming. "Multi-agent reinforcement learning: Independent vs. cooperative agents." ICML. 1993.
+       Decentralized Training & Execution (with Opponent Modeling)
+
+     PR2: Probabilistic Recursive Reasoning for MARL
+
+
+
+
+Recursive
+reasoning
+
+
+Policy
+objective
+
+
+Policy
+gradient
+
+            Wen, Ying, et al. "Probabilistic recursive reasoning for multi-agent reinforcement learning." ICLR 2019.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               Decentralized Training & Execution (with Opponent Modeling)
+
+LOLA: Learning with Opponent-Learning Awareness
+
+ • Main idea: not only consider the opponent’s
+   current policy, but further consider how it will
+   change for the next step!
+ • Naïve learner:
+
+
+
+ • LOLA learner optimizes
+  max
+  <latexit sha1_base64="KhwZDqRArhIeQzJ1Lt1yeAEfTe0=">AAACBXicbVDLSsNAFJ3UV62vqEtdBIvgqiRS1GXRjcsK9gFNDJPJpB06eTBzI5aQjRt/xY0LRdz6D+78GydtFtp6YJjDOfdy7z1ewpkE0/zWKkvLK6tr1fXaxubW9o6+u9eVcSoI7ZCYx6LvYUk5i2gHGHDaTwTFocdpzxtfFX7vngrJ4ugWJgl1QjyMWMAIBiW5+qEd4gc3s72Y+3ISqi+zYUQB53dW7up1s2FOYSwSqyR1VKLt6l+2H5M0pBEQjqUcWGYCToYFMMJpXrNTSRNMxnhIB4pGOKTSyaZX5MaxUnwjiIV6ERhT9XdHhkNZrKgqQwwjOe8V4n/eIIXgwslYlKRAIzIbFKTcgNgoIjF8JigBPlEEE8HUrgYZYYEJqOBqKgRr/uRF0j1tWGeN5k2z3ros46iiA3SETpCFzlELXaM26iCCHtEzekVv2pP2or1rH7PSilb27KM/0D5/AKaZmVE=</latexit>
+
+
+
+
+   1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ✓
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Consider opponent                                  First-order Taylor
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  policy learning                              expansion approximation
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Foerster, Jakob, et al. "Learning with opponent-learning awareness." AAMAS 2018.
+ Fully Centralized
+
+CommNet: Learnable Communication Scheme
+
+• Design learnable explicit communication scheme is
+  important for directly achieving agent coordination
+
+
+
+
+                                                 Possible skip connections:
+
+
+
+
+    Sukhbaatar et al. Learning Multiagent Communication with Backpropagation. NIPS 2016.
+     Fully Centralized
+
+BiCNet: Bidirectionally-Coordinated Net for MARL
+
+
+
+
+Peng Peng, Jun Wang et al. Multiagent Bidirectionally-Coordinated Nets: Emergence of Human-level Coordination in Learning to
+Play StarCraft Combat Games. NIPS workshop 2017.
+     Fully Centralized
+
+BiCNet: Bidirectionally-Coordinated Net for MARL
+
+  • Multi-agent game playing
+         • Learning to cooperate and compete
+
+
+
+
+         • Agents learn to cooperate in a team to fight against another
+           team (here the other team is just hand-crafted AI)
+Peng Peng, Jun Wang et al. Multiagent Bidirectionally-Coordinated Nets: Emergence of Human-level Coordination in Learning to
+Play StarCraft Combat Games. NIPS workshop 2017.
+Centralized Training & Decentralized Execution
+
+COMA: Counterfactual Multi-Agent PG
+
+
+
+
+      COMA Model                              Actor                           Critic
+
+
+
+
+    Foerster, Jakob N., et al. "Counterfactual multi-agent policy gradients." AAAI 2018.
+  Centralized Training & Decentralized Execution
+
+ MADDPG: Multi-Agent DDPG
+• Centralized action-value function
+
+
+
+
+• Deterministic policy gradient via chain rule
+
+
+• Comparing with COMA, MADDPG
+   • Learn a centralized critic for the agents
+   • Continuous policies
+    Lowe, Ryan, et al. "Multi-agent actor-critic for mixed cooperative-competitive environments." NIPS 2017.
+   Centralized Training & Decentralized Execution
+
+  Learning Multi-Agent Interactions
+
+
+
+
+   Predator-prey task                                  DDPG                                  MADDPG
+
+
+• Evaluation protocol
+   • A vs. B for training & test
+   • If A gets higher score in A-
+     vs-B than A-vs-A, then it
+     means A is better than B
+
+
+      Lowe, Ryan, et al. "Multi-agent actor-critic for mixed cooperative-competitive environments." NIPS 2017.
+ Decentralized Training & Execution (with Models)
+
+Two Parts of Sample Complexity in MARL
+
+
+
+
+• Dynamics sample complexity: num.
+                                 !
+                                     of real environment transitions
+  (observations sampled from 𝑝 𝑠 𝑠, 𝑎" , … , 𝑎# ))
+• Opponent sample complexity: num. of real opponent actions
+  (observations sampled from 𝜋$ (𝑎|𝑠))
+ Decentralized Training & Execution (with Models)
+
+Decentralized Model-based MARL
+
+
+
+
+• Multi-agent environment model
+      • Environment dynamics model
+      • Opponent model
+• Decentralized MARL: each agent independently maintains
+  its multi-agent environment model as above
+ Weinan Zhang et al. Model-based Multi-agent Policy Optimization with Adaptive Opponent-wise Rollouts. IJCAI 2021.
+ Decentralized Training & Execution (with Models)
+
+Bound of Policy Value Discrepancy
+• Multi-agent branched rollout scheme
+1. Learn environment dynamics and opponent models
+2. Start from an experienced state and start the rollout with
+   ego policy     and above models to collect simulated data
+3. Train ego policy based on simulated data
+• Then the value discrepancy bound is after branch
+
+                                                               before branch
+
+
+
+
+                                             different opponent models contribute differently
+
+ Weinan Zhang et al. Model-based Multi-agent Policy Optimization with Adaptive Opponent-wise Rollouts. IJCAI 2021.
+ Decentralized Training & Execution (with Models)
+
+Algorithm Derived from Theoretic Analysis
+
+                                                                           • Environment model starts
+                                                                             from real state and then
+                                                                             samples the next states
+
+                                                                           • Ego agent takes actions
+                                                                             following its current policy
+
+                                                                           • Opponent models sample
+                                                                             actions based on their errors
+                                                                             • If the error is large(small),
+                                                                                it samples few(more)
+                                                                                actions
+                                                                           • Then use real opponent
+                                                                             agents to sample further
+                                                                             actions
+
+Weinan Zhang et al. Model-based Multi-agent Policy Optimization with Adaptive Opponent-wise Rollouts. IJCAI 2021.
+ Decentralized Training & Execution (with Models)
+
+AORPO Experiments
+• Multi-Agent Particle Environment (cooperative setting)
+    • On sample efficiency, AORPO and AORDPG outperform MASAC and MADDPG
+      respectively, indicating the efficacy of building multi-agent environment model
+
+
+
+
+                                                                      Simple env. &
+        Complex env. & simple opponents                             complex opponents
+Content
+• Introduction to Reinforcement Learning
+
+• Fundamentals of Game Theory
+
+• Multi-Agent Reinforcement Learning
+
+• Many-Agent Reinforcement Learning
+   • Algorithms
+   • Platforms
+From Multi- to Many-Agent RL
+• What will happen when agent number grows?
+  • Reward function of agent
+  • Transition probability
+
+• Both reward function and state transition
+  probability get exponentially larger
+   • More difficult to model
+   • The environment is more dynamic and sensitive
+   • Need more exploration data
+   • More computational resources
+Battle Game Demo 1
+Battle Game Demo 2
+Idea 1: Taking Other Agents as A Whole
+
+
+
+
+• In some many-body systems, the interaction
+  between an agent and others can be approximated
+  as that between the agent and the “mean agent” of
+  others
+  Mean Field Multi-Agent RL
+  • Mean field approximation
+       • Approximate the joint
+         action value by factorizing
+         the Q-function into
+         pairwise interactions
+
+
+
+
+                   Neighboring agent set of j
+
+       • Significantly reduces the global interactions among agents
+       • Still preserves global interactions of any agent pair
+
+Yaodong Yang, Weinan Zhang et al. Mean Field Multi-Agent Reinforcement Learning. ICML 2018.
+Action Representation
+
+• Consider discrete action space
+   • Action aj of agent j is one-hot encoded as
+                                                  Only one element is 1
+   • The mean action based on the neighborhood of j is
+
+
+
+   • Thus the action ak of each neighbor k can be represented as
+
+
+
+                  mean residual          Residual sum is 0
+                  action
+Mean Field Approximation
+• A 2-order Taylor expansion on Q-function
+Mean Field Q-Learning
+Experiment of Ising Model
+
+• Each spin is an agent to
+  decide up or down (action)
+• Measure: order parameter
+
+
+
+   • The closer OP is to 1, the
+     more orderly the system is.
+Experiment Performance IM
+                   • Ground truth: MCMC
+                     simulation
+                   • Goal: MF-Q learns
+                     with the similar
+                     behavior as MCMC,
+                     which we observed
+Experiment Performance IM
+  Experiment: Battle
+      Grid World
+
+
+
+
+      Observation Space
+                                      wall
+                                      group1
+                                      group1’s hp
+                                      group1’s minimap
+                                      group2
+                                      group2’s hp
+                                      group2’s minimap
+                                      …
+
+        ID Embedding      Last action/reward   Relative pos
+
+
+
+      Action Space                                                             Supported by
+
+      move                   attack             turn
+
+Lianmin Zheng, Weinan Zhang et al. "MAgent: A Many-Agent Reinforcement Learning Platform for Artificial Collective Intelligence." NIPS 2017.
+Experiment Performance Battle
+
+
+
+
+• For 64 vs 64 battle, MF-Q works the best among all
+  compared models
+• MF-AC may not work that well particularly when
+  the agent number is large
+Experiment Performance Battle
+
+
+
+
+• MF-Q has a fast convergence property
+• MF-AC has a phase changing point
+Case Study of MF-Q vs. IL
+
+                    • Blue: MF-Q
+                    • Red: IL
+
+                    • MF-Q presents a
+                      go-around-and-
+                      besiege strategy
+
+                    • MF-Q agents are
+                      more consistent
+                      with neighbors
+Idea2: Factorization Machine
+
+
+
+
+• Computing the Q-value with the independent Q-
+  function and the interactive ingredients inspired
+  from factorization machine
+Factorized Q-learning
+ • A composite deep neural network architecture
+   whose components share the model parameters
+   among all the agents within the same group
+
+       • Reduce the model complexity
+
+       • Still preserves global interactions of any agent pair
+
+       • Accelerate the learning process.
+
+
+
+Ming Zhou, Weinan Zhang et al. Factorized Q-Learning for Large-Scale Multi-Agent Systems. DAI 2019.
+Factorized Q-learning
+                                   Q i ( s, a; 4)
+                                                                  O
+                                         
+                                                                 V ( s i , a i ; E1 )T U ( s  i , a  i ; E 2 )      scalar
+
+                                                                                    dot
+                                                                               vector                                          U ( s i , a i ; E 2 )
+       Q ( s , a ;T )
+             i   i
+                                        V ( s , a ; E1 )
+                                             i    i
+                                                                                                        averaged
+
+
+        scalar                 vector                                           matrix                                         U (s j , a j ; E2 )
+
+
+
+             Q  Network                         V  Network                                        U  Network
+
+                  (T )                                ( E1 )                                               (E2 )
+
+
+         ( si , a i )                      ( si , a i )                                                            {s j , a j } j i
+                                                      selector
+
+
+                                    s , a 1 , a 2 , " , a i ," , a j ," , a N
+
+Ming Zhou, Weinan Zhang et al. Factorized Q-Learning for Large-Scale Multi-Agent Systems. DAI 2019.
+Factorized Q-learning
+• Q-Network: Denote the i-th agent’s value function
+
+
+
+• V-Network & U-Network
+   • The outputs of V and U denote the feature vectors of
+     focused agent and other agents, respectively. And the dot
+     product of U and V denotes the interactive ingredients of
+     the focused i-th agent and other j-th agents
+Factorized Q-learning
+• We redefine the Q-function for the high-order
+  tensor relationship between states and actions as
+  follows
+
+
+
+
+             implies the equivalent force in place of complex interactions
+Experiment Performance Battle
+        FQL                                                 FQL
+
+                                     FQL
+
+
+
+
+• 3 self-play trainining curves. The Killing Index shows the ability of killing
+  enemies, the Mean-Rewards Index shows the rewards of every agent in every
+  step, and the Total Rewards Index shows the ability of gaining rewards in an
+  episode.
+Experiment Performance Battle
+
+
+
+
+ • The battle results between FQL and other three
+   competitors indicate the effectiveness of FQL
+Content
+• Introduction to Reinforcement Learning
+
+• Fundamentals of Game Theory
+
+• Multi-Agent Reinforcement Learning
+
+• Many-Agent Reinforcement Learning
+   • Algorithms
+   • Platforms
+From Multi- to Many-Agent RL
+• What will happen when agent number grows?
+  • Reward function of agent
+  • Transition probability
+
+• Both reward function and state transition
+  probability get exponentially larger
+   • More difficult to model
+   • The environment is more dynamic and sensitive
+   • Need more exploration data
+   • More computational resources
+Key Factors for Successful MARL
+• Computation: High computational resource for
+  reinforcement learning
+• Data: a huge amount of data for training the
+  models
+• Environment: a low-cost environment for RL agents
+  to interact with
+
+
+• Solution: an effective simulator
+What accounts for an effective simulator?
+
+     High Efficiency                High Reality
+ •   Interact with multiple   •   The simulation results
+     agents in a high speed       should be as close to
+ •   Multi-thread and             reality as possible
+     multi-machine            •   Match in both micro
+     deployment                   and macro levels
+
+
+      Extendibility                 Interaction
+ •   Flexible to adapt to     •   Easy to visualize and
+     new tasks with little        friendly for human
+     effort                       interaction
+MARL Case: Online Taxi Order Dispatch
+
+
+
+                                                                                               Blue points:
+                                                                                               orders
+
+                                                                                               Red points:
+                                                                                               taxis
+
+
+
+
+ Ming Zhou, Weinan Zhang. Multi-Agent Reinforcement Learning for Order Dispatching via Order-Vehicle Distribution Matching. Working paper.
+Featured Simulators
+• Discrete world: MAgent
+   • https://github.com/geek-ai/MAgent
+
+
+• Continuous world: Cityflow
+   • https://github.com/cityflow-project/CityFlow/
+
+
+• Self-driving cars: SMARTS
+   • https://github.com/huawei-noah/SMARTS
+The Challenges
+• High demand of
+  computation
+   • Large scale computation
+     in training, inference
+     and simulation
+• Scalable and dynamic
+  solution
+   • The number of agents is
+     highly dynamic. Agents
+     can enter and exit
+• Complicated interaction
+   • It is hard to exactly
+     model the interaction
+     among agents
+• Visualization
+The Challenges
+Grid World
+
+
+
+
+Observation Space
+                            wall
+                            group1
+                            group1’s hp
+                            group1’s minimap
+                            group2
+                            group2’s hp
+                            group2’s minimap
+                            …
+
+ ID Embedding   Last action/reward   Relative pos
+
+
+
+Action Space
+move              attack              turn
+Other MARL Platforms
+                      Number of
+     Platform                       Learning Interface
+                       agents
+   OpenAI Gym            < 10              !
+      Malmo             < 1000             !
+ Starcraft Learning
+                        < 2000             !
+   Environment
+ Arcade Learning
+                         < 10              !
+   Environment
+     NetLogo          ~ 1000,000           "
+     MAgent           ~ 1,000,000          !
+Decentralized MARL
+• When agent number is too large to maintain a centralized
+  meta-agent for controlling
+   • Sharing Q-network for scalability
+   • Agent ID for personalization
+ Use Case: Many-Agent Interactions
+   • MAgent game: aligning
+
+
+
+
+Lianmin Zheng, Jiacheng Yang et al. MAgent: A Many-Agent Reinforcement Learning Platform for Artificial Collective Intelligence. NIPS 2017 & AAAI 2018 Demos.
+ Use Case: Many-Agent Interactions
+   • MAgent game: battle
+
+
+
+
+Lianmin Zheng, Jiacheng Yang et al. MAgent: A Many-Agent Reinforcement Learning Platform for Artificial Collective Intelligence. NIPS 2017 & AAAI 2018 Demos.
+ Use Case: Many-Agent Interactions
+   • MAgent game: battle
+
+
+
+
+Lianmin Zheng, Jiacheng Yang et al. MAgent: A Many-Agent Reinforcement Learning Platform for Artificial Collective Intelligence. NIPS 2017 & AAAI 2018 Demos.
+ Use Case: Many-Agent Interactions
+   • MAgent game: city simulation
+                                                                                                      • Designing
+                                                                                                               • Car routing
+                                                                                                                 policy
+                                                                                                               • Traffic light
+                                                                                                                 controller
+                                                                                                               • Fleet
+                                                                                                                 management
+                                                                                                                 & taxi dispatch
+
+
+
+
+Lianmin Zheng, Jiacheng Yang et al. MAgent: A Many-Agent Reinforcement Learning Platform for Artificial Collective Intelligence. NIPS 2017 & AAAI 2018 Demos.
+    A Continuous-World Simulator is
+    Necessary to City Traffic Simulation
+
+
+
+
+    For example, traffic jams are caused by micro-scale acceleration
+    and deceleration.
+Cathy Wu et al. Flow: Architecture and Benchmarking for Reinforcement Learning in Traffic Control. 2017.
+Featured Simulators
+• Discrete world: MAgent
+   • https://github.com/geek-ai/MAgent
+
+
+• Continuous world: Cityflow
+   • https://github.com/cityflow-project/CityFlow/
+
+
+• Self-driving cars: SMARTS
+   • https://github.com/huawei-noah/SMARTS
+Why is Simulator a
+Necessity?
+• Large number of training samples
+  required
+• High trial and error cost
+
+• Not possible in real world
+  environment
+• Even more problematic in city
+  scenario
+Current City Simulator
+• Focus on traffic scenario
+   • Commercial:
+      • VISSIM
+      • AIMSUN.NEXT
+   • Open source:
+      • Most Popular: SUMO
+      • Ours: CityFlow
+
+
+• Microscopic Simulator
+   • Simulate the movement of each single vehicle or object
+SUMO
+• Simulation of Urban Mobility
+• Institute of Transportation Systems @ German Aerospace Center
+• Project starts from 2000
+
+
+
+
+                        https://gfycat.com/hopefulsolidamericancreamdraft
+ CityFlow                 https://github.com/cityflow-project/CityFlow
+
+
+ • CityFlow is city simulator particularly focused on
+   speed and scale
+
+
+
+
+   Parallel                Car                 Roadnet             Excellent
+  Computing             Following              Design             Implement
+Parallel Computing    New Car following      Our hierarchical     Improvement of
+speeds up 4x with 8   algorithm designed     roadnet structure   fundamental code
+    core CPU          by us is much faster    serves for car     speeds up 2x with
+                          than SUMO          following model      same algorithm
+ CityFlow Design
+ • Road structure
+                 RoadLink
+                                         Segment
+
+                              LaneLink
+Lane
+Road
+
+
+
+
+ • Car flow structure: linked list
+CityFlow Design                         Time Step 𝑡
+                                        𝑣% , 𝑔𝑎𝑝, 𝑑%       𝑣& , 𝑑&
+
+• Car following model
+ no-collision-speed 𝑠:
+     1 " 1                               Time Step 𝑡 + 1
+        𝑠 + 𝑖𝑛𝑡𝑒𝑟𝑣𝑎𝑙 3 𝑠
+    2𝑑!      2                                   s, 𝑔𝑎𝑝, 𝑑% 𝑣& = 0, 𝑑&
+         𝑣#"   1
+ = 𝑔𝑎𝑝 +     − 𝑖𝑛𝑡𝑒𝑟𝑣𝑎𝑙 3 𝑣!
+         2𝑑# 2
+
+
+
+• Lane changing model
+
+
+
+                               Shadow vehicle
+CityFlow Design
+• Intersection model
+
+
+                       Checkpoint
+CityFlow              https://github.com/cityflow-project/CityFlow
+
+
+• Focus on speed
+    • Data structure design
+    • Simulation algorithm design
+    • Multithread
+    • Faster python api (compared to SUMO)
+      CityFlow                             https://github.com/cityflow-project/CityFlow
+
+
+
+
+Huichu Zhang, Siyuan Feng et al. CityFlow: A Multi-Agent Reinforcement Learning Environment for Large Scale City Traffic Scenario. WWW
+      CityFlow                             https://github.com/cityflow-project/CityFlow
+
+
+
+
+Huichu Zhang, Siyuan Feng et al. CityFlow: A Multi-Agent Reinforcement Learning Environment for Large Scale City Traffic Scenario. WWW
+      CityFlow                             https://github.com/cityflow-project/CityFlow
+
+
+
+
+Huichu Zhang, Siyuan Feng et al. CityFlow: A Multi-Agent Reinforcement Learning Environment for Large Scale City Traffic Scenario. WWW
+Compare Good/Bad Traffic Control
+
+
+
+ Worse control
+
+
+
+
+ Better control
+   Test on Real-World Road Network:
+   Los Angeles (4 Intersections)
+
+
+
+
+Worse control               Better control
+Real World City Simulator: Manhatton
+(2510 Intersections)
+Real World City Simulator: Manhatton
+(2510 Intersections)
+TSCC2050
+• Use a customized version of CityFlow as backend
+    智能交通灯调度落地
+                         ๺૞उ૱य़ᚏ  ᧣ഴපຎ઀ᐏ
+                                                    -                    
+
+
+    ෱ภ᭗۪෸ᳩ                                                       ‫ق‬ॠ᧣ഴපຎ                                                  ‫ٺ‬੝ഭන&2‫ފو‬
+
+
+
+                                                                                                                   ᧣ෆ‫ڹ‬
+                                                                                                                   ᧣ෆ‫ݸ‬
+                                                    ෱ṛશ                      ଘશ             ภṛશ
+
+
+
+෱ṛશ  ۹‫ܖݻ‬ҁӤऱӾမṛຝ҂
+՗‫ړ‬ᰦᖽ‫ړکٺ‬ᰦ                                                                 ᓒဩฬᚆս۸᪠‫٭‬
+                                                                                                                           &2 ‫ފ‬
+      ‫ٺ‬੝          ଘ
+                     ࣐
+                     ᫣
+                     ᭛
+
+
+                                                                                                      ᓒဩս۸᪠‫҅٭‬൉෱
+                             Ӥ਍ṛશ҅ളᭆ᫣ၞीग़                                                            ᕮ๳ภṛશ
+                             ‫ۼ‬᭲ฬᚆන‫ف‬᫣ᬁ҅ᬡ‫ک‬
+                            ๋֯᫣ၞੂଶ̶
+
+
+                                                                  ᓒဩս۸᪠‫҅٭‬൉෱
+                                                                  ᕮ๳෱ṛશ
+
+
+
+
+ภṛશ  ‫ݻܖ‬۹ҁӾမӤऱṛຝ҂
+
+՗‫ړ‬ᰦᖽ‫ړکٺ‬ᰦ                                                            
+
+                                                                                                                            ༒໅
+      ‫ٺ‬੝
+  智能交通灯调度落地
+                                                                            调整前
+                                      早⾼峰          平峰        晚⾼峰            调整后
+Average Speed
+
+
+
+
+                 Morning peak hour
+
+
+
+
+          0:00     3:00              6:00   9:00   12:00   15:00   18:00   21:00
+
+                                             Time
+Featured Simulators
+• Discrete world: MAgent
+   • https://github.com/geek-ai/MAgent
+
+
+• Continuous world: Cityflow
+   • https://github.com/cityflow-project/CityFlow/
+
+
+• Self-driving cars: SMARTS
+   • https://github.com/huawei-noah/SMARTS
+Autonomous Driving
+
+
+
+
+   Step 1: Perception                Step 2: Control
+Recognize the objects around &   Make action decisions in the
+     build the 3D world                  built world
+SMARTS (with Huawei Team)                                                  https://github.com/huawei-noah/SMARTS
+
+
+
+
+• A scalable multi-agent learning simulator for
+  autonomous driving control
+• Flexibility and high efficiency in the physical
+  simulation and interacting with multi-agent
+  reinforcement learning algorithms
+
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+Scenario: Multi-lane Cruising
+Scenario: Crossroad
+Scenario: On-ramp
+Multi-Agent Learning for Auto-Driving
+
+
+
+
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+SMARTS:
+Scalable Multi-Agent RL Training School
+• SMARTS is an open-source scalable multi-agent
+  reinforcement learning platform for autonomous
+  driving.
+
+
+
+
+Distributed/Parallel                  High fidelity                    Interaction                    User friendly
+    Computing                                                        Scenario Design                   rendering
+
+
+
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+Overview Demo of SMARTS
+
+
+
+
+       https://github.com/huawei-noah/SMARTS
+SMARTS Architecture
+
+
+
+
+Interaction scenarios are instantiated based on a (domain specific language) DSL
+specification. Social agents are instantiated from the Social Agent Zoo. Orange vehicles
+are controlled by learning agents, dark blue vehicles by social agents, light blue ones by
+traffic provider. All providers and agents in principle run in their own processes, possibly
+remotely.
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+Bootstrapping Realistic Interaction
+• Key contextual factors of realistic and diverse:
+       • Physics
+       • Road users’ behavior
+       • Road structure & regulations
+
+                                                                                Data collected from
+                                                                                simulated self-plays
+                            Interactive social
+                      agents for scenario generation
+
+
+
+
+                                                                            •     Rule-based agent
+   Social Agent                   Behavior model with                       •     Learning-based agent
+       Zoo                        realistic constraints                     •     Optimal-control agent
+                                                                            •     Community contributions
+
+
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+Bubble Mechanism
+• The bubble mechanism
+  allows SMARTS to scale
+  without sacrificing interaction
+  relism.
+• Goal: support large-scale
+  simulation and distributed
+  computing.
+
+
+
+
+                  background traffic zone
+                  airlocking zone
+                  social agent zone
+
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+Interaction Scenario Library
+• Using the scenario
+  DSL of SMARTS,
+  we can create
+  numerous
+  scenarios that vary
+  in road structure
+  and traffic.
+• Scenarios provide
+  rich traffic flows
+  and road
+  conditions to help
+  us study behavior
+  and driving
+  strategies.
+
+
+
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+ MARL Benchmarking
+                                                              Evaluation metrics of multi-agent AD
+• Distributed training
+  supported.
+• Rich metrics.
+• Customizable observation,
+  action (controller) and
+  reward function.
+• Algorithms/Baselines
+    • Independent learning
+    • Centralized/decentraliz
+      ed learning
+    • Networked agent
+      learning
+    • …
+                                                                    Results on behavior metrics.
+                                                  “SV-” represents the algorithms interacting with social vehicles.
+
+
+ Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+SMARTS Supported MARL Algorithms
+
+
+
+
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+Overall Evaluation Results
+             Average collision rate / completion rate of selected baselines
+
+
+
+
+Observations from above table
+• PPO is the empirically best single-agent RL method
+• MADDPG is the empirically best multi-agent RL method
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+Demo: Single Agent with PPO
+
+
+
+
+Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+  Demo: Intersection (Unprotected Left Turn)
+
+
+
+
+Hard flow
+
+
+
+
+Easy flow
+
+
+
+
+  Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for Autonomous Driving. CoRL 2020.
+Summary of Many-Agent RL
+• Main difficulties for many-agent RL
+   • Computational complexity
+   • Complicated agent interactions
+   • Highly dynamic neighborhood
+• Possible solutions to many-agent RL
+   • Mean field approximation and factorized value functions
+   • Scalable MARL platforms
+
+
+
+
+ MAgent                   CityFlow                       SMARTS
+Summary from Machine Learning Perspective
+• Traditional machine          • Multi-agent machine
+  learning is to build           learning is to build
+   • a loss function              • a loss function
+   • a likelihood estimation      • a likelihood estimation
+   • an expectation of value      • an expectation of value
+ from a machine and the         from the two machines and
+ training data and to           the training data and to
+ optimize the objective         optimize the objective
+
+                                   model
+
+  model                                 objectives
+          objective
+                      data         model                data
+Summary of MARL
+• Machine learning paradigm shift
+   • From prediction to decision making (RL)
+   • From single-agent to multi-agent to many-agent
+   • An intersection with game theory is essential
+• Multi-agent RL
+   • Centralized training (with decentralized execution)
+   • Decentralized training (with networked agents)
+• Many-agent RL
+   • Challenges
+       • Computational complexity
+       • Complicated agent interactions
+       • Highly dynamic neighborhood
+   • Possible solutions
+       • Mean field approximation and factorized value functions
+       • Scalable MARL platforms: Magent and CityFlow etc.
+Thank You!
+Questions?
+Weinan Zhang
+Associate Professor at Shanghai Jiao Tong University
+http://wnzhang.net
+Related references
+1.   Yaodong Yang et al. Mean Field Multi-Agent Reinforcement Learning. ICML 2018.
+2.   Ming Zhou et al. Factorized Q-Learning for Large-Scale Multi-Agent Systems. DAI 2019.
+3.   Lianmin Zheng et al. MAgent: A Many-Agent Reinforcement Learning Platform for Artificial
+     Collective Intelligence. AAAI 2018.
+4.   Huichu Zhang et al. CityFlow: A Multi-Agent Reinforcement Learning Environment for Large
+     Scale City Traffic Scenario. WWW 2019.
+5.   Ming Zhou et al. SMARTS: A Scalable Multi-Agent Reinforcement Learning Training School for
+     Autonomous Driving. CoRL 2020.
+6.   Muning Wen et al. Multi-Agent Reinforcement Learning is a Sequence Modeling Problem.
+     NeurIPS 2022.
+7.   Xihuai Wang et al. Order Matters: Agent-by-agent Policy Optimization. ICLR 2023.
+

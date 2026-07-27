@@ -1,0 +1,1177 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 13:
+Ray Tracing 1
+(Whitted-Style Ray Tracing)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 4 — 252 submissions so far
+• Homework 1 — 80 resubmissions so far
+• For universities that use this course
+
+- Feel free to do so, and if you need scores
+- On your side: give me a name (TA or professor)
+
+On my side: give you access
+You determine whether to account for resubmissions
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Course Roadmap
+
+GAMES101
+
+Rasterization
+
+Geometry
+
+Ray tracing
+
+Animation / simulation
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Why Ray Tracing?
+• Rasterization couldn’t handle global eﬀects well
+- (Soft) shadows
+- And especially when the light bounces more than once
+
+Reflections
+& Specular
+SoftShadows
+shadows
+GAMES101
+
+Ambientreflection
+Occlusion
+Reflections
+& Specular
+Glossy
+4
+
+Global
+Illumination
+Ambient
+Occlusion
+Indirect
+illumination
+Lingqi Yan, UC Santa Barbara
+
+Why Ray Tracing?
+• Rasterization is fast, but quality is relatively low
+
+Buggy, from PlayerUnknown’s Battlegrounds (PC game)
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Why Ray Tracing?
+• Ray tracing is accurate, but is very slow
+- Rasterization: real-time, ray tracing: offline
+- ~10K CPU core hours to render one frame in production
+
+Zootopia, Disney Animation
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Basic Ray-Tracing Algorithm
+
+Light Rays
+Three ideas about light rays
+1. Light travels in straight lines (though this is wrong)
+2. Light rays do not “collide” with each other if they cross
+(though this is still wrong)
+3. Light rays travel from the light sources to the eye (but
+the physics is invariant under path reversal - reciprocity).
+“And if you gaze long into an abyss, the abyss also gazes
+into you.” — Friedrich Wilhelm Nietzsche (translated)
+
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Slide courtesy of Prof. Alexei Efros, UC Berkeley
+
+Ray Casting
+Appel 1968 - Ray casting
+1. Generate an image by casting one ray per pixel
+2. Check for shadows by sending a ray to the light
+
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Casting - Generating Eye Rays
+Pinhole Camera Model
+eye ray
+(starts at eye and goes
+through pixel)
+
+closest scene
+intersection point
+
+note: more intersection
+points
+eye point
+image plane
+
+(or the near plane
+in perspective projection)
+
+GAMES101
+
+light source
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Casting - Shading Pixels (Local Only)
+Pinhole Camera Model
+eye ray
+(starts at eye and goes
+through pixel)
+
+eye point
+image plane
+perform shading calculation
+here to compute color of pixel
+(e.g. Blinn Phong model)
+GAMES101
+
+12
+
+light source
+
+Lingqi Yan, UC Santa Barbara
+
+Recursive (Whitted-Style) Ray Tracing
+“An improved Illumination
+model for shaded display”
+T. Whitted, CACM 1980
+Time:
+
+• VAX 11/780 (1979) 74m
+• PC (2006) 6s
+• GPU (2012) 1/30s
+Spheres and Checkerboard, T. Whitted, 1979
+
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Recursive Ray Tracing
+
+eye point
+image plane
+light source
+
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Recursive Ray Tracing
+Reflected ray
+(specular reflection)
+
+eye point
+image plane
+light source
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Recursive Ray Tracing
+
+Refracted rays
+(specular transmission)
+
+eye point
+image plane
+light source
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Recursive Ray Tracing
+
+eye point
+image plane
+
+Shadow rays
+
+light source
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Recursive Ray Tracing
+secondary rays
+primary ray
+
+eye point
+image plane
+
+shadow rays
+light source
+
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Recursive Ray Tracing
+
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Ray-Surface Intersection
+
+Ray Equation
+Ray is defined by its origin and a direction vector
+Example:
+
+Ray equation:
+
+0t<1
+point along ray
+
+GAMES101
+
+“time”
+
+origin (normalized) direction
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Intersection With Sphere
+Ray: r(t) = o + t d, 0  t < 1
+0
+
+p)·N=0
++ bySphere:
++ cz + d p=: 0(p
+: (p
+
+c)2
+
+R2 = 0
+
+Set p = r(t) and solve for t
+2 0
+2
+0 an intersection?
+What
+is
+d t dc) p )R
+(p p ) · N (o
+=+
+(ot+
+· N==00
+
+2
+2
+2
+2 =0
+p
+:
+(p
+c)
+R
+p : (p c)
+R =0
+2
+2
+p : (p c)
+R =0
+
+0
+The intersection ppmust
+satisfy
+o)
+· Nboth
+ray equation
+and sphere equation
+t=
+22 d · 2N
+a t + b t + c = 0,
+
+where
+p : (p c)
+R =0
+a=d·d
+Solve for intersection:
+b
+=
+2(o
+c)
+2
+2 ·d
+(o + t d c)
+R =0
+c = (o
+
+2
+
+c) · (o
+
+a t + b t + c = 0,pwhere
+
+GAMES101
+
+c)
+
+22
+
+R
+
+2
+c)2
+
+(o++ttdd c)
+(o
+(o + t d c)
+
+2
+RR2 ==00
+2
+2
+
+R =
+
+2
+2
+where
+aatt ++bbtt++cc==0,0, where
+2
+2
+
+a
+t
++
+b
+t
++
+c
+=
+0,
+wh
+a
+=
+d
+·
+d
+a=d·d
+a
+=
+d
+·
+d
+b
+=
+2(o
+c)· ·dd
+b = 2(o c)
+
+Lingqi Yan,
+UC ·Santa
+Barbara
+b
+=
+2(o
+c)
+d
+c = (o c) · (o c) R
+
+Ray Intersection With Sphere
+2
+2
+2
+2
+p
+:
+(p
+c)
+R
+= 00
+p : (p c)2 R2 =
+p : (p c)
+R =0
+Solve for intersection:
+2
+2
+2
+2
+(o +
++ tt d
+d c)
+c)
+R =
+= 00
+(o
+R
+2
+2
+(o + t d c)
+R =0
+
+2
+2
+c)
+
+(p c)
+pp: :(p
+p : (p c)
+
+R =0
+
+2
+2
+2
+2 =0
+(o
++
+t
+d
+c)
+R
+(o + t d c)
+R =0
+2
+2
+(o + t d c)
+R =
+
+2
+2
+a tt +
++ bb tt +
++ cc =
+= 0,
+0,
+a
+2
+
+where
+where
+aa t= +
+b· d
+t + c = 0, where
+d
+a=d·d
+ab =
+= 2(o
+d · d c) · d
+b = 2(o c) · d
+bc =
+2(o
+c)
+·
+d
+2
+2
+=
+(o
+c)
+·
+(o
+c)
+R
+c = (o c) · (o c) R2
+c = (o c) · (o c) R
+p
+p
+bb ±
+± p bb22 4ac
+4ac
+= b ± b2 4ac
+tt =
+2a
+2a
+t=
+2a
+GAMES101
+
+2
+2
+RR ==00
+2
+2
+
+2
+2
+where
+aatt ++bbtt++cc==0,0, where
+2
+
+a
+t
++
+b
+t
++
+c
+=
+0,
+whe
+a
+=
+d
+·
+d
+a=d·d
+a
+=
+d
+·
+d
+b
+=
+2(o
+c)· ·dd
+b = 2(o c)
+
+23
+
+2
+b
+=
+2(o
+c)
+·
+d
+2
+(o c)
+c)· ·(o
+(o c)
+c) RR
+cc==(o
+c = (o c) · (o c)
+p
+p
+2
+b
+±
+b
+4ac
+2
+b
+±
+b
+4ac
+p
+t
+=
+Lingqi
+Yan, UC
+Santa Barbara
+t=
+2
+b ±2a b
+4ac
+
+Ray Intersection With Implicit Surface
+Ray: r(t) = o + t d, 0  t < 1
+0
+
+p)·N=0
+General implicit surface:
++ by + cz + d = 0
+: (p
+
+p : f (p) = 0
+p : f (p) = 0
+
+Set p =
+and solve for
+Substitute
+rayr(t)
+equation:
+f (ot + t d) = 0
+f (o + t d) = 0
+0
+0
+(p Solve
+p ) for
+· Nreal,
+= (opositive
++ td p
+)·N=0
+roots
+t=
+
+GAMES101
+
+p0
+
+o) · N
+d·N
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Intersection With Triangle Mesh
+Why?
+
+• Rendering: visibility, shadows,
+lighting …
+
+• Geometry: inside/outside test
+How to compute?
+Let’s break this down:
+
+• Simple idea: just intersect ray with each triangle
+• Simple, but slow (acceleration?)
+• Note: can have 0, 1 intersections
+(ignoring multiple intersections)
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Intersection With Triangle
+Triangle is in a plane
+
+• Ray-plane intersection
+• Test if hit point is inside
+triangle
+
+Many ways to optimize…
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Plane Equation
+Plane is defined by normal vector and a point on plane
+Example:
+
+p : (p
+
+0
+
+r(t) = o + t d, 0  t <
+
+p)·N=0
+
+r(t) = o + t
+ax
++satisfies
+by
++
+cz
++
+d
+=
+0
+0
+Plane Equation
+(if p
+it,
+then
+p
+is
+on
+the
+plane):
+r(t) = o + t d, 0  pt <
+1 p)·N=0
+: (p
+
+p ) · N = 0 Set p =
+ax +
+by +and
+cz + dsolve
+=0
+r(t)
+ax + by + cz + d = 0 0
+Set p = r(t)
+0 a
+p : (p
+
+all points on plane
+
+(p
+GAMES101
+
+0
+
+(p
+p
+)
+·
+N
+=
+(o
++
+t
+p
+)
+·
+0 d
+Set p = r(t) and solve for
+(pt p ) · N = (o +
+
+one point
+on plane
+
+normal vector
+
+0
+p ) · N = (o + t d p ) · p
+N = 0 o) · N p0
+27
+t
+=
+Lingqi Yan, UC
+Santa
+Barbara
+t
+=
+0
+0
+
+0
+
+Ray Intersection With Plane
+Ray equation:
+
+r(t) = o + t d, 0  t < 1
+
+p0 ) · N = 0
+r(t) =
+Plane equation: r(t) = o + t d, 0  t < 1
++ by +r(t)
+cz +
+do=
+0t d,0 0  t < 1
+=
++
+0
+p : (p p ) · N = 0
+p
+:
+(p
+p
+)
+·
+N
+=
+0
+Set=p0 = r(t) and solve for t
+p)·N
+ax + by + cz + d = 0
+0
+0
+Solve
+for
+intersection
+(p
+p
+)
+·
+N
+=
+(o
++
+t
+d
+p
+)·N=0
++ cz + d = 0
+Set p = r(t) and solve ax
+for t+ by + cz + d =
+0
+· Nsolve for t 0
+Set (p
+p =pr(t)
+and
+0 o)
+t = p ) · N = (o + t d p ) · N = 0
+Set
+p
+=
+0
+0
+d ·=
+N(o + t0 d p ) · N = 0
+(p p ) · N
+p
+o) · N
+0
+t
+=
+0
+(p
+o) · N
+(p
+p
+)
+·
+N
+=
+d
+·
+N
+t=
+r(t) = oCheck:
++ t d, 0  t < 1
+d·N 0
+p : (p p ) · N = 0
+(p
+
+GAMES101
+
+ax + by + cz + d = 0
+
+28
+
+t=
+
+Lingqi Yan, UC Santa Barbara
+
+Möller Trumbore Algorithm
+A faster approach, giving barycentric coordinate directly
+Derivation in the discussion section!
+
+Recall: How to determine
+if the “intersection” is
+inside the triangle?
+Hint:
+(1-b1-b2), b1, b2 are
+barycentric coordinates!
+
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Accelerating Ray-Surface
+Intersection
+
+Ray Tracing – Performance Challenges
+Simple ray-scene intersection
+
+• Exhaustively test ray-intersection with every triangle
+• Find the closest hit (i.e. minimum t)
+Problem:
+
+• Naive algorithm = #pixels ⨉ # traingles (⨉ #bounces)
+• Very slow!
+For generality, we use the term objects instead of triangles
+later (but doesn’t necessarily mean entire objects)
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Tracing – Performance Challenges
+
+Jun Yan, Tracy Renderer
+
+San Miguel Scene, 10.7M triangles
+
+Ray Tracing – Performance Challenges
+
+Deussen et al; Pharr & Humphreys, PBRT
+
+Plant Ecosystem, 20M triangles
+
+Bounding Volumes
+
+Bounding Volumes
+Quick way to avoid intersections: bound complex object
+with a simple volume
+
+• Object is fully contained in the volume
+• If it doesn’t hit the volume, it doesn’t hit the object
+• So test BVol first, then test object if it hits
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Ray-Intersection With Box
+Understanding: box is the intersection of 3 pairs of slabs
+Specifically:
+We often use an
+Axis-Aligned
+Bounding Box (AABB)
+(轴对⻬包围盒)
+
+i.e. any side of the BB
+is along either x, y, or z
+axis
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Intersection with Axis-Aligned Box
+2D example; 3D is the same! Compute intersections with slabs
+and take intersection of tmin/tmax intervals
+
+y0
+
+tmax
+x0
+
+y1
+
+x1
+
+y0
+
+x0
+tmax
+
+y1
+
+x1
+
+y0
+
+tmin
+
+tmin
+
+o, d
+o, d
+
+o, d
+o, d
+
+x1
+
+y0
+
+tmax
+
+y1
+
+tmin
+x0
+
+y1
+x0
+
+x1
+
+y0
+
+o, d
+o, d
+
+x1 x0 y0 x1 y1 Note:
+y0 y1tmin < 0
+
+Intersections with x planes
+
+x0
+
+x1
+
+y0
+
+y1
+
+x1 x0 y0 x1 y1 y0
+
+y1
+
+x0
+
+y1
+x0
+
+Intersections with y planes
+
+x1 x0 y0 x1 y1 y
+
+Final intersection result
+
+How do we know when the ray intersects the box?
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Intersection with Axis-Aligned Box
+• Recall: a box (3D) = three pairs of infinitely large slabs
+• Key ideas
+- The ray enters the box only when it enters all pairs of slabs
+- The ray exits the box as long as it exits any pair of slabs
+
+• For each pair, calculate the tmin and tmax (negative is fine)
+• For the 3D box, tenter = max{tmin}, texit = min{tmax}
+• If tenter < texit, we know the ray stays a while in the box
+
+(so they must intersect!) (not done yet, see the next slide)
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Intersection with Axis-Aligned Box
+• However, ray is not a line
+- Should check whether t is negative for physical correctness!
+
+• What if texit < 0?
+- The box is “behind” the ray — no intersection!
+
+• What if texit >= 0 and tenter < 0?
+- The ray’s origin is inside the box — have intersection!
+
+• In summary, ray and AABB intersect iﬀ
+- tenter < texit && texit >= 0
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+0
+
+r(t) = o + t d, 0  t < 1
+
+p)·N=0
+
+p : (p
+
+Why Axis-Aligned?
+
+ax + by + cz + d = 0
+
+Set p = r(t) and solve fo
+(p
+General
+
+p : (p
+
+p ) · N = (o + t d
+
+r(t) = o + t d,(p
+0 0 t <
+o)1· N
+
+t
+=
+p)·N=0
+0
+
+0
+
+ax + by + cz + d = 0
+
+d·N
+
+subtractions, 6 multiplies, 1 division
+Set p = 3r(t)
+and solve for t
+0
+(p r(t)
+p0=
+) ·oN+ =
+(o
++
+t
+d
+p
+t d, 0  t < 1 ) · N = 0
+0
+
+p)·N=0 t =
+
+p0
+
+o) · N
+d · Np0
+
+Slabs
+0 ax + by + cz + d = 0
+(p
+o)
+·
+N
+o
+x
+x
+perpendicular
+t=
+= for t
+Set p ==)
+r(t) and tsolve
+d·N 0
+dx
+to x-axis
+0
+(p p ) · N = (o + t d p ) · N = 0
+p : (p
+
+t=
+
+GAMES101
+
+40
+
+p0
+
+o) · N 1 subtraction, 1 division
+d·N
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

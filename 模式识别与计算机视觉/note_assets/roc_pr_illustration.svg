@@ -1,0 +1,127 @@
+<svg width="1200" height="520" viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font: 700 24px Arial, sans-serif; fill: #1f2937; }
+      .subtitle { font: 600 16px Arial, sans-serif; fill: #374151; }
+      .axis { stroke: #111827; stroke-width: 2; }
+      .grid { stroke: #e5e7eb; stroke-width: 1; }
+      .diag { stroke: #9ca3af; stroke-width: 2; stroke-dasharray: 8 6; fill: none; }
+      .curveRoc { stroke: #2563eb; stroke-width: 4; fill: none; }
+      .curvePr { stroke: #16a34a; stroke-width: 4; fill: none; }
+      .fillRoc { fill: #bfdbfe; opacity: 0.65; }
+      .fillPr { fill: #bbf7d0; opacity: 0.55; }
+      .tick { font: 12px Arial, sans-serif; fill: #4b5563; }
+      .label { font: 14px Arial, sans-serif; fill: #111827; }
+      .note { font: 13px Arial, sans-serif; fill: #374151; }
+      .dotRoc { fill: #2563eb; }
+      .dotPr { fill: #16a34a; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="520" fill="#ffffff"/>
+  <text x="40" y="40" class="title">ROC / PR Curves (Illustration)</text>
+
+  <!-- Left panel: ROC -->
+  <text x="110" y="80" class="subtitle">ROC Curve</text>
+  <rect x="80" y="90" width="470" height="360" fill="#ffffff" stroke="#e5e7eb"/>
+
+  <!-- ROC grid -->
+  <line x1="80" y1="450" x2="550" y2="450" class="axis"/>
+  <line x1="80" y1="450" x2="80" y2="90" class="axis"/>
+  <line x1="174" y1="450" x2="174" y2="90" class="grid"/>
+  <line x1="268" y1="450" x2="268" y2="90" class="grid"/>
+  <line x1="362" y1="450" x2="362" y2="90" class="grid"/>
+  <line x1="456" y1="450" x2="456" y2="90" class="grid"/>
+  <line x1="550" y1="360" x2="80" y2="360" class="grid"/>
+  <line x1="550" y1="270" x2="80" y2="270" class="grid"/>
+  <line x1="550" y1="180" x2="80" y2="180" class="grid"/>
+  <line x1="550" y1="90" x2="80" y2="90" class="grid"/>
+
+  <!-- ROC diagonal -->
+  <line x1="80" y1="450" x2="550" y2="90" class="diag"/>
+  <text x="380" y="370" class="note">random baseline (AUC = 0.5)</text>
+
+  <!-- ROC area fill -->
+  <polygon class="fillRoc"
+           points="80,450 94,410 122,360 160,300 210,245 280,190 360,145 450,118 550,100 550,450"/>
+
+  <!-- ROC curve -->
+  <polyline class="curveRoc"
+            points="80,450 94,410 122,360 160,300 210,245 280,190 360,145 450,118 550,100"/>
+
+  <circle cx="122" cy="360" r="5" class="dotRoc"/>
+  <circle cx="280" cy="190" r="5" class="dotRoc"/>
+  <circle cx="450" cy="118" r="5" class="dotRoc"/>
+  <text x="130" y="350" class="note">high threshold</text>
+  <text x="290" y="180" class="note">mid threshold</text>
+  <text x="460" y="108" class="note">low threshold</text>
+  <text x="360" y="130" class="subtitle">AUC-ROC H 0.90</text>
+
+  <!-- ROC ticks/labels -->
+  <text x="76" y="468" class="tick">0.0</text>
+  <text x="170" y="468" class="tick">0.2</text>
+  <text x="264" y="468" class="tick">0.4</text>
+  <text x="358" y="468" class="tick">0.6</text>
+  <text x="452" y="468" class="tick">0.8</text>
+  <text x="544" y="468" class="tick">1.0</text>
+  <text x="56" y="454" class="tick">0.0</text>
+  <text x="56" y="364" class="tick">0.2</text>
+  <text x="56" y="274" class="tick">0.4</text>
+  <text x="56" y="184" class="tick">0.6</text>
+  <text x="56" y="94" class="tick">0.8</text>
+  <text x="38" y="96" class="tick">1.0</text>
+  <text x="265" y="495" class="label">FPR</text>
+  <text x="18" y="275" class="label" transform="rotate(-90 18,275)">TPR (Recall)</text>
+
+  <!-- Right panel: PR -->
+  <text x="700" y="80" class="subtitle">PR Curve</text>
+  <rect x="670" y="90" width="470" height="360" fill="#ffffff" stroke="#e5e7eb"/>
+
+  <!-- PR grid -->
+  <line x1="670" y1="450" x2="1140" y2="450" class="axis"/>
+  <line x1="670" y1="450" x2="670" y2="90" class="axis"/>
+  <line x1="764" y1="450" x2="764" y2="90" class="grid"/>
+  <line x1="858" y1="450" x2="858" y2="90" class="grid"/>
+  <line x1="952" y1="450" x2="952" y2="90" class="grid"/>
+  <line x1="1046" y1="450" x2="1046" y2="90" class="grid"/>
+  <line x1="1140" y1="360" x2="670" y2="360" class="grid"/>
+  <line x1="1140" y1="270" x2="670" y2="270" class="grid"/>
+  <line x1="1140" y1="180" x2="670" y2="180" class="grid"/>
+  <line x1="1140" y1="90" x2="670" y2="90" class="grid"/>
+
+  <!-- prevalence baseline -->
+  <line x1="670" y1="414" x2="1140" y2="414" class="diag"/>
+  <text x="870" y="407" class="note">positive rate baseline</text>
+
+  <!-- PR area fill -->
+  <polygon class="fillPr"
+           points="670,122 720,135 770,149 830,170 900,202 980,252 1060,324 1140,378 1140,450 670,450"/>
+
+  <!-- PR curve -->
+  <polyline class="curvePr"
+            points="670,122 720,135 770,149 830,170 900,202 980,252 1060,324 1140,378"/>
+
+  <circle cx="720" cy="135" r="5" class="dotPr"/>
+  <circle cx="900" cy="202" r="5" class="dotPr"/>
+  <circle cx="1060" cy="324" r="5" class="dotPr"/>
+  <text x="730" y="126" class="note">high threshold</text>
+  <text x="910" y="192" class="note">mid threshold</text>
+  <text x="1070" y="314" class="note">low threshold</text>
+  <text x="930" y="130" class="subtitle">AUC-PR H 0.72</text>
+
+  <!-- PR ticks/labels -->
+  <text x="666" y="468" class="tick">0.0</text>
+  <text x="760" y="468" class="tick">0.2</text>
+  <text x="854" y="468" class="tick">0.4</text>
+  <text x="948" y="468" class="tick">0.6</text>
+  <text x="1042" y="468" class="tick">0.8</text>
+  <text x="1134" y="468" class="tick">1.0</text>
+  <text x="646" y="454" class="tick">0.0</text>
+  <text x="646" y="364" class="tick">0.2</text>
+  <text x="646" y="274" class="tick">0.4</text>
+  <text x="646" y="184" class="tick">0.6</text>
+  <text x="646" y="94" class="tick">0.8</text>
+  <text x="628" y="96" class="tick">1.0</text>
+  <text x="860" y="495" class="label">Recall</text>
+  <text x="608" y="275" class="label" transform="rotate(-90 608,275)">Precision</text>
+</svg>

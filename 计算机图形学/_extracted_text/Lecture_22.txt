@@ -1,0 +1,804 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 22:
+Animation (cont.)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Final project: extended by 1 week
+• Homework 7: 175 submissions in total
+- Resubmission is welcomed
+- May decrease its weight in your final score
+• Homework 8 will be released soon today
+• Course certification with my signature
+- Will be sent out in electronic version
+after final project and resubmissions
+
+- Sign up for “Certification Request” (like a homework)
+• Last lecture of this course :(
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+Single particle simulation
+
+• Explicit Euler method
+• Instability and improvements
+Rigid body simulation
+Fluid simulation
+Advertisements!
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Single Particle Simulation
+Velocity vector field
+indicated by arrows
+
+First study motion of a single
+particle
+
+The
+func
+
+• Later, generalize to a
+
+multitude of particles
+
+x=
+form
+field
+
+To start, assume motion of
+particle determined by a
+velocity vector field that is a
+function of position and time:
+
+v(x, t)
+
+GAMES101
+
+Path traveled by
+particle in velocity field
+
+4
+
+Witkin and Baraff
+
+Figure 1: The
+derivative functio
+Lingqi Yan, UC Santa Barbara
+
+Ordinary Differential Equation (ODE)
+Computing position of particle
+over time requires solving a firstorder ordinary
+differential
+Start
+Here
+equation:
+
+dx
+= ẋ = v(x, t)
+dt
+“First-order” refers to the first
+derivative the
+beingvectors…
+taken.
+Follow
+“Ordinary” means no “partial”
+derivatives, i.e. x is just a
+function of t
+
+Witkin and Baraff
+
+Initial Value Problem
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Solving for Particle Position
+We can solve the ODE, subject to a given initial particle position
+x0, by using forward numerical integration
+
+Start Here
+
+Starting
+position x0
+
+Follow the vectors…
+Witkin and Baraff
+
+Initial Value Problem
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Euler’s Method
+Euler’s Method (a.k.a. Forward Euler, Explicit Euler)
+
+• Simple iterative method
+• Commonly used
+• Very inaccurate
+• Most often goes unstable
+t+ t
+
+=x +
+
+t+ t
+
+t
+
+x
+ẋ
+<latexit sha1_base64="tb160qKmd9vRZZjHifAuGjsKgjc=">AAACpHicfVHbSgMxEM2u93pb9dGXYPECStkVQX0QBH3QB6FV1xa625JNUw1mLySzYln2z/wK3/wb03YVe8GBkMOcMzmTmSARXIFtfxnmzOzc/MLiUml5ZXVt3drYfFJxKilzaSxi2QiIYoJHzAUOgjUSyUgYCFYPXq/6fP2NScXj6BF6CfND8hzxLqcEdKptfXhBLDqqF+ore89bGRx610wAwZDjvQs8Qef4EP8osHc0IvA6MWhV3gLPK00l/nv+j+h/k1+XtlW2K/Yg8CRwClBGRVTb1qc2oWnIIqCCKNV07AT8jEjgVLC85KWKJYS+kmfW1DAiIVN+Nphyjnd1poO7sdQnAjzI/q3ISKj6PWplSOBFjXP95DSumUL3zM94lKTAIjo06qYCQ4z7K8MdLhkF0dOAUMl1r5i+EEko6MWW9BCc8S9PAve4cl6xayfly9tiGotoG+2gA+SgU3SJblAVuYgaO8aNUTPuzX3zznww3aHUNIqaLTQSZusbLdfSwA==</latexit>
+
+GAMES101
+
+t
+
+= ẋ +
+7
+
+t ẋ
+
+t
+
+t ẍ
+
+t
+
+Lingqi Yan, UC Santa Barbara
+
+Euler’s Method - Errors
+With numerical integration, errors accumulate
+Euler integration is particularly bad
+
+Example:
+
+x
+
+t+ t
+
+t
+
+=x +
+
+t v(x, t)
+
+t
+
+<latexit sha1_base64="LrLmWxd2lQCNLGZVU6vAMxN0FLg=">AAACTXicbVFNSwMxEM3W7/pV9eglWJRKS9mKoB4EQQ96U7Ba6LYlm07b0OwHyaxYlv2FXsSbP8OLBxUxWytY60DI4703zOTFDaXQaNvPVmZqemZ2bn4hu7i0vLKaW1u/0UGkOFR5IANVc5kGKXyookAJtVAB81wJt27/NNVv70BpEfjXOAih4bGuLzqCMzRUKweOG8i2Hnjmiu+TZoxF5wwkMooJ3TmmE3JCi/THQZ3SmOEuKYz7S7jbRMfJtnJ5u2wPi06CygjkyaguW7knpx3wyAMfuWRa1yt2iI2YKRRcQpJ1Ig0h433WhbqBPvNAN+JhHAndNkybdgJljo90yP7uiJmn0xWN02PY03+1lPxPq0fYOWzEwg8jBJ9/D+pEkmJA02xpWyjgKAcGMK6E2ZXyHlOMo/mBNITK3ydPgupe+ahsX+3nTy5GacyTTbJFCqRCDsgJOSeXpEo4eSAv5I28W4/Wq/VhfX5bM9aoZ4OMVWbuC2MrtVA=</latexit>
+
+Solution path
+Euler estimate with small time step
+Euler estimate with large time step
+
+x(t + Δt) = x(t) + Δt
+Witkin and Baraff
+
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Instability of the Euler Method
+
+Ina
+Inac
+Err
+Erro
+cir
+circl
+you
+your
+
+The Euler method (explicit / forward)
+
+x
+
+t+ t
+
+t
+
+=x +
+
+t v(x, t)
+
+t
+
+<latexit sha1_base64="LrLmWxd2lQCNLGZVU6vAMxN0FLg=">AAACTXicbVFNSwMxEM3W7/pV9eglWJRKS9mKoB4EQQ96U7Ba6LYlm07b0OwHyaxYlv2FXsSbP8OLBxUxWytY60DI4703zOTFDaXQaNvPVmZqemZ2bn4hu7i0vLKaW1u/0UGkOFR5IANVc5kGKXyookAJtVAB81wJt27/NNVv70BpEfjXOAih4bGuLzqCMzRUKweOG8i2Hnjmiu+TZoxF5wwkMooJ3TmmE3JCi/THQZ3SmOEuKYz7S7jbRMfJtnJ5u2wPi06CygjkyaguW7knpx3wyAMfuWRa1yt2iI2YKRRcQpJ1Ig0h433WhbqBPvNAN+JhHAndNkybdgJljo90yP7uiJmn0xWN02PY03+1lPxPq0fYOWzEwg8jBJ9/D+pEkmJA02xpWyjgKAcGMK6E2ZXyHlOMo/mBNITK3ydPgupe+ahsX+3nTy5GacyTTbJFCqRCDsgJOSeXpEo4eSAv5I28W4/Wq/VhfX5bM9aoZ4OMVWbuC2MrtVA=</latexit>
+
+Two key problems:
+
+• Inaccuracies increase as time step
+Δt increases
+
+problem that can cause simulation
+to diverge
+
+GAMES101
+
+9
+
+Witkin and Baraff
+
+• Instability is a common, serious
+
+Ins
+Insta
+Ne
+Nep
+
+Figure
+Above: the
+thereal
+realintegral
+integralcurves
+curvesform
+formc
+Figure 4:
+4: Above:
+outward,
+becauseeach
+eachstep
+step
+on
+the
+current
+circl
+outward, because
+on
+the
+current
+circle’
+Lingqi
+Yan,
+UC
+Santa Barbara
+
+Errors and Instability
+Solving by numerical integration with finite differences
+leads to two problems:
+Errors
+
+• Errors at each time step accumulate.
+
+Accuracy decreases as simulation proceeds
+
+• Accuracy may not be critical in graphics applications
+Instability
+
+• Errors can compound, causing the simulation to diverge even
+when the underlying system does not
+
+• Lack of stability is a fundamental problem in simulation, and
+cannot be ignored
+
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Instability: A Disastrous Example
+
+[PLAYERUNKNOWN’S BATTLEGROUNDS, https://www.youtube.com/watch?v=Bz8n6GBAsys]
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Combating Instability
+
+Some Methods to Combat Instability
+Midpoint method / Modified Euler
+
+• Average velocities at start and endpoint
+Adaptive step size
+
+• Compare one step and two half-steps, recursively, until
+error is acceptable
+
+Implicit methods
+
+• Use the velocity at the next time step (hard)
+Position-based / Verlet integration
+
+• Constrain positions and velocities of particles after time
+step
+
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Midpoint Method
+Midpoint method
+
+• Compute Euler step (a)
+• Compute derivative at midpoint of
+
+a
+
+• Update position using midpoint
+
+b
+
+Euler step (b)
+derivative (c)
+
+xmid = x(t) +
+x(t +
+
+t) = x(t) +
+
+t/2 · v(x(t), t)
+
+a.
+
+b.
+c
+
+t · v(xmid , t)
+
+c.
+Witkin and Baraff
+
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Modified Euler
+Modified Euler
+
+• Average velocity at start and end of step
+• Better results
+
+t t
+t+ t
+x
+=x +
+(ẋ + ẋ
+)
+2
+t+ t
+t
+t
+ẋ
+= ẋ + t ẍ
+t+ t
+
+t
+
+2
+(
+t)
+t+ t
+t
+t
+t
+x
+= x + t ẋ +
+ẍ
+2
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Adaptive Step Size
+xT
+
+Adaptive step size
+
+• Technique for choosing step size based
+
+xT/2
+
+on error estimate
+
+• Very practical technique
+• But may need very small steps!
+Repeat until error is below threshold:
+
+• Compute xT an Euler step, size T
+• Compute xT/2 two Euler steps, size T/2
+• Compute error || xT – xT/2 ||
+• If (error > threshold) reduce step size
+and try again
+
+GAMES101
+
+16
+
+Slide credit:
+Funkhouser
+Lingqi Yan,
+UC Santa Barbara
+
+Implicit Euler Method
+Implicit methods
+
+• Informally called backward methods
+• Use derivatives in the future, for the current step
+x
+
+t+ t
+
+=x +
+
+ẋ
+
+t+ t
+
+t
+
+<latexit sha1_base64="PX3upQgEZv3UwBdF6ALU1jBgheI=">AAACvHichZFZSwMxEMez61XrVfXRl2BRBKVsRfAAsaAP+lbBWqFbazadamz2IJktlmW/pPjitzE9xB6iAyF/Zn6Tmcx4kRQaHefTsmdm5+YXMovZpeWV1bXc+sa9DmPFocJDGaoHj2mQIoAKCpTwEClgvieh6rUve/FqB5QWYXCH3QjqPnsOREtwhsbVyH24XiibuuubK3lLHxPcd69AIqOY0t1zOhVO6T79Jqh7MAa4zRANNf6K62b/ZSYrjUB/1/vhRrC0kcs7BadvdFoUhyJPhlZu5N5NRR77ECCXTOta0YmwnjCFgktIs26sIWK8zZ6hZmTAfND1pD/9lO4YT5O2QmVOgLTvHc1ImK97DRvSZ/iiJ2M952+xWoytk3oigihGCPigUCuWFEPaWyVtCgUcZdcIxpUwvVL+whTjaBaeNUMoTn55WlQOC6cF5/YoX7oZTiNDtsg22SNFckxK5JqUSYVw68x6soT1al/YYLdtf4Da1jBnk4yZ3fkCPz/b6g==</latexit>
+
+GAMES101
+
+t
+
+= ẋ +
+
+17
+
+t+ t
+
+t ẋ
+
+t+ t
+
+t ẍ
+
+Lingqi Yan, UC Santa Barbara
+
+Implicit Euler Method
+Implicit methods
+
+• Informally called backward methods
+• Use derivatives in the future, for the current step
+x
+
+t+ t
+
+=x +
+
+ẋ
+
+t+ t
+
+t
+
+<latexit sha1_base64="PX3upQgEZv3UwBdF6ALU1jBgheI=">AAACvHichZFZSwMxEMez61XrVfXRl2BRBKVsRfAAsaAP+lbBWqFbazadamz2IJktlmW/pPjitzE9xB6iAyF/Zn6Tmcx4kRQaHefTsmdm5+YXMovZpeWV1bXc+sa9DmPFocJDGaoHj2mQIoAKCpTwEClgvieh6rUve/FqB5QWYXCH3QjqPnsOREtwhsbVyH24XiibuuubK3lLHxPcd69AIqOY0t1zOhVO6T79Jqh7MAa4zRANNf6K62b/ZSYrjUB/1/vhRrC0kcs7BadvdFoUhyJPhlZu5N5NRR77ECCXTOta0YmwnjCFgktIs26sIWK8zZ6hZmTAfND1pD/9lO4YT5O2QmVOgLTvHc1ImK97DRvSZ/iiJ2M952+xWoytk3oigihGCPigUCuWFEPaWyVtCgUcZdcIxpUwvVL+whTjaBaeNUMoTn55WlQOC6cF5/YoX7oZTiNDtsg22SNFckxK5JqUSYVw68x6soT1al/YYLdtf4Da1jBnk4yZ3fkCPz/b6g==</latexit>
+
+t
+
+= ẋ +
+
+t+ t
+
+t ẋ
+
+t+ t
+
+t ẍ
+
+and ẋ
+• Solve nonlinear problem for x
+• Use root-finding algorithm, e.g. Newton’s method
+• Offers much better stability
+t+ t
+
+GAMES101
+
+18
+
+t+ t
+
+Lingqi Yan, UC Santa Barbara
+
+Implicit Euler Method
+How to determine / quantize “stability”?
+
+• We use the local truncation error (every step) /
+total accumulated error (overall)
+
+• Absolute values do not matter, but the orders w.r.t. step
+• Implicit Euler has order 1, which means that
+- Local truncation error: O(h2) and
+(h is the step, i.e. ∆t)
+- Global truncation error: O(h)
+• Understanding of O(h)
+- If we halve h, we can expect the error to halve as well
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Runge-Kutta Families
+A family of advanced methods for solving ODEs
+
+• Especially good at dealing with non-linearity
+• It’s order-four version is the most widely used, a.k.a. RK4
+Initial condition:
+
+RK4 solution:
+
+where
+
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Position-Based / Verlet Integration
+Idea:
+
+• After modified Euler forward-step, constrain positions of
+particles to prevent divergent, unstable behavior
+
+• Use constrained positions to calculate velocity
+• Both of these ideas will dissipate energy, stabilize
+Pros / cons
+
+• Fast and simple
+• Not physically based, dissipates energy (error)
+Details in Assignment 8
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Rigid Body Simulation
+Simple case
+
+• Similar to simulating a particle
+• Just consider a bit more properties
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Fluid Simulation
+
+A Simple Position-Based Method
+Key idea
+
+• Assuming water is composed of small rigid-body spheres
+• Assuming the water cannot be compressed (i.e. const. density)
+• So, as long as the density changes somewhere,
+
+it should be “corrected” via changing the positions of particles
+
+• You need to know the
+
+gradient of the density
+anywhere w.r.t. each
+particle’s position
+
+• Update? Just gradient
+descent!
+
+[Macklin et al.]
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Eulerian vs. Lagrangian
+Two different views to simulating large collections of matters
+(“质点法”)
+
+(“⽹格法”)
+
+https://www.youtube.com/watch?v=iDIzLkic1pY
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Material Point Method (MPM)
+Hybrid, combining Eulerian and Lagrangian views
+
+• Lagrangian: consider particles carrying material properties
+• Eulerian: use a grid to do numerical integration
+• Interaction: particles
+transfer properties to
+the grid, grid performs
+update, then interpolate back to particles
+
+[Stomakhin et al. 2014]
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Congratulations!
+
+GAMES101
+
+Rasterization
+
+Geometry
+
+Light Transport
+
+Animation / simulation
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Advertisements
+
+GAMES：图形学在线交流平台
+GAMES: Graphics And Mixed Environment Symposium
+
+• 2017年6月创建，主页：http://games-cn.org
+• 宗旨：学术界与产业界交流与合作的平台
+• 线上活动：
+• 每周四晚8:00-9:30《在线报告》
+• 2020年2月开始推出《在线课程》
+• 所有活动的视频及PPT都可在线学习和下载
+• 【加入GAMES微信群方法】
+• 步骤1：在微信中加“gamesrobot3” 为好友
+• 步骤2：回复“GAMES”即可获取入群邀请
+• 【前7群基本已满（每群500人），现在加第8群】
+
+学术会议：Chinagraph 2020
+（第十三届中国计算机图形学大会）
+• 主页：https://chinagraph2020.xmu.edu.cn/
+• 重要日期
+• 投稿日期：2020年6月21日 （录用论文将推荐到期刊发表）
+• 会议日期：2020年10月23-25日，厦门，厦门大学
+特邀报告
+
+Henry Fuchs
+UNC at Chapel Hill
+
+Richard Hao Zhang
+Simon Fraser University
+
+会前课程
+
+学术会议：ChinaVR 2020
+（第二十届中国虚拟现实大会）
+• 主页：https://www.chinavr.info
+• 重要日期
+• 投稿日期：2020年5月30日 （录用论文将推荐到期刊发表）
+• 会议日期：2020年9月18-20日，长春，吉林动画学院
+
+• 会前课程
+• 课程1：轻量级移动WebVR示范应用开发
+• 组织者：贾金原（同济大学、吉林动画学院）
+
+• 课程2：SLAM for AR
+• 组织者：章国锋（浙江大学）
+
+• 课程3：虚拟现实中的真实行走漫游
+• 组织者：傅孝明（中国科学技术大学）
+
+• 课程4：高品质移动游戏开发实战
+• 组织者：张鑫（侑虎科技）
+
+• 其他：主题论坛、创新与挑战赛、企业展览
+
+GAMES 201
+
+Advanced Physics Engines 2020: A
+Hands-on Tutorial
+
+⾼级物理引擎实战2020（基于太极编程语⾔）
+Yuanming Hu
+胡渊鸣
+MIT CSAIL
+麻省理⼯学院 计算机科学与⼈⼯智能实验室
+
+⾼级物理引擎实战2020
+✦ 课程⽬标：⾃⼰动⼿打造影视级物理引擎
+✦ 适合⼈群：0-99岁的计算机图形学爱好者
+✦ 预备知识：⾼等数学、Python或任何⼀⻔程序设计语⾔
+✦ 课程安排：每周⼀北京时间晚上20:30-21:30
+
+共10节课
+
+✦ 课程内容：Taichi语⾔基础 刚体 液体 烟雾 弹塑性体 PIC/FLIP法 Krylov-⼦
+
+空间求解器 预条件 ⽆矩阵法 多重⽹格 弱形式与有限元 隐式积分器 ⾟积分
+器 拓扑优化 带符号距离场 ⾃由表⾯追踪 物质点法 ⼤规模物理效果渲染 现
+代处理器微架构 内存层级 并⾏编程 GPU编程 稀疏数据结构 可微编程…
+
+2020年六⼀⼉童节开课 不⻅不散！
+
+Any Other Rendering Courses?
+Real-Time High Quality Rendering (in seminar style)
+
+• Soft Shadows and Environment Lighting
+• Precomputed Radiance Transfer
+• Image-Based Rendering
+• Non-Photorealistic Rendering
+• Interactive Global Illumination
+• Real-time Ray Tracing & DLSS, etc.
+
+[PRT by Wang et al.]
+
+[DLSS 2.0 by NVIDIA]
+
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Any Other Rendering Courses?
+Advanced Image Synthesis
+
+• Part 1: Advanced Light Transport
+• Part 2: Advanced Appearance Modeling
+• Part 3: Emerging Technology for Rendering
+• Foundations for rendering research!
+My Rendering Equation
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Interested in Rendering Research?
+• It is not because of teaching that I was recognized by the
+community…, but for research!
+
+• In rendering research, I hold the human record of 7 first-authored
+SIGGRAPH1 papers during Ph.D.
+
+"Lingqi Yan, first of his name, the unrejected, author of seven papers, breaker of the
+record, and the chicken eater." -- Born to be Legendary, by Lifan Wu, UCSD
+
+• Join my group and
+
+become legendary!
+
+1 ACM Transaction on Graphics (ToG)
+
+GAMES101
+
+Credit: Naruto
+36
+
+Credit: Hearthstone
+Lingqi Yan, UC Santa Barbara
+
+Special Thanks to All of You!
+(And thank Prof. Ren Ng for many of the slides!)
+
+

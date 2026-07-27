@@ -1,0 +1,56 @@
+=== Page 74 ===
+序列标注任务
+• NER评估指标
+– Precision，Recall，F1
+– True Positive (TP): 𝐷和𝐷+中标注完全一致的命名实体数目
+– False Positive (FP): 𝐷中系统识别出但参考答案𝐷+中没有的命名实体数目
+– False Negative (FN): 𝐷+参考答案中存在但𝐷中系统未识别出的命名实体数
+目
+𝑇𝑃 𝑇𝑃 2𝑃𝑅
+Precision = , Recall = , F1 =
+𝑇𝑃+𝐹𝑃 𝑇𝑃+𝐹𝑁 𝑃+𝑅
+2026/4/28 《自然语言处理课件》by 虞剑飞 74
+=== Page 75 ===
+序列标注任务
+• NER评估指标
+– Precision，Recall，F1
+• TP, FP, FN = ?
+• Precision, Recall, F1 = ?
+2026/4/28 《自然语言处理课件》by 虞剑飞 75
+=== Page 76 ===
+序列标注任务
+• NER评估指标
+– Precision，Recall，F1
+2026/4/28 国科大南京学院《人工智能原理与算法》 76
+=== Page 77 ===
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+– 序列标注任务
+– 机器阅读理解
+– 自然语言推断、文本生成、看图说话等
+2026/4/28 《自然语言处理课件》by 虞剑飞 77
+=== Page 78 ===
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD, Rajpurkar et al., 2016)
+– 包含10万个（问题，原文，答案）三元组
+– 让标注人员提出最多5个基于文章内容的问题并提供正确答案，且答案出
+现在原文中
+– 也叫作抽取式问答（Extractive Question Answering）
+Question: Which team won Super Bowl 50?
+Passage
+Super Bowl 50 was an American football game to determine the
+champion of the National Football League (NFL) for the 2015 season.
+The American Football Conference (AFC) champion DenverBroncos
+defeated the National Football Conference (NFC) champion Carolina
+Panthers 24–10 to earn their third Super Bowl title. The game was
+played on February 7, 2016, at Levi's Stadium in the San Francisco Bay
+Area at Santa Clara, California.
+2026/4/28 《自然语言处理课件》by 虞剑飞 78

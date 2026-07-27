@@ -1,0 +1,58 @@
+# Paper A / R3: core replication config (NF4 + DQ + all-linear LoRA)
+experiment_id: R3
+run_name: r3_qlora_nf4_dq_alllinear
+
+# Prefer model id for portability; can be overridden by:
+# 1) train_qlora.py --model-name-or-path ...
+# 2) env var MODEL_NAME_OR_PATH
+model_name_or_path: D:/models/Qwen2.5-7B-Instruct
+
+# Created by scripts/prepare_data.py (replace with your actual dataset)
+train_file: data/processed/paper_a_core/train.jsonl
+validation_file: data/processed/paper_a_core/val.jsonl
+test_file: data/processed/paper_a_core/test.jsonl
+output_dir: outputs/r3_qlora_nf4_dq_alllinear
+
+max_samples: 0 # 0 means use full dataset
+max_seq_length: 512
+seed: 42
+
+# QLoRA core (Paper A, must keep)
+use_4bit: true
+bnb_4bit_quant_type: nf4
+bnb_4bit_use_double_quant: true
+bnb_4bit_compute_dtype: float16
+gradient_checkpointing: true
+optim: paged_adamw_32bit
+# Optional: set per-GPU memory cap for model loading/paging (MB).
+# For RTX 4060 8GB, start around 7200~7600 if needed.
+max_memory_mb: 6000
+
+# LoRA (Paper A aligned)
+lora_r: 64
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target_modules: all-linear
+
+# Training
+num_train_epochs: 3
+learning_rate: 2.0e-4
+weight_decay: 0.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.03
+per_device_train_batch_size: 1
+per_device_eval_batch_size: 1
+gradient_accumulation_steps: 16
+logging_steps: 10
+save_strategy: steps
+save_steps: 10
+eval_steps: 200
+save_total_limit: 6
+# 当前 Windows/8GB 环境里，第一次保存卡死点落在 optimizer.pt 写入。
+# 周期 checkpoint 只保存 adapter/model；续训是权重级继续，不严格恢复 optimizer/scheduler。
+save_only_model: true
+# 下班前创建 outputs/r3_qlora_nf4_dq_alllinear/STOP_TRAINING，
+# 脚本会在下一个 optimizer step 强制保存 checkpoint，然后自动退出。
+stop_after_save_file: STOP_TRAINING
+bf16: false
+fp16: true

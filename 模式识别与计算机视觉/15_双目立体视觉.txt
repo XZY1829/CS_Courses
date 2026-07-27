@@ -1,0 +1,1202 @@
+第三次作业
+✓第三次作业课后会发在群里
+✓截止时间6.21号，提交至
+nju_prcv26@163.com
+✓邮件名，作业名：姓名+学号+第三次作业。作业开头也
+
+请写上姓名+学号。
+✓只写前两题即可，3、4题有余力感兴趣的同学可以尝试。
+
+1
+
+Given a point in one image,
+multiplying by the essential matrix will tell us
+the epipolar line in the second view.
+
+So if
+
+and
+
+then
+
+Does this look familiar?
+
+Camera-camera transform just like world-camera transform
+
+These three vectors are coplanar
+
+If these three vectors are coplanar
+
+then
+
+If these three vectors are coplanar
+
+dot product of orthogonal vectors
+
+then
+
+cross-product: vector orthogonal to plane
+
+If these three vectors are coplanar
+
+then
+
+If these three vectors are coplanar
+
+then
+
+putting it together
+rigid motion
+
+coplanarity
+
+Linear algebra reminder: cross product
+Cross product
+
+Can also be written as a matrix multiplication
+
+Skew symmetric
+
+putting it together
+rigid motion
+
+use skew-symmetric matrix
+to represent cross product
+
+coplanarity
+
+putting it together
+rigid motion
+
+coplanarity
+
+putting it together
+rigid motion
+
+coplanarity
+
+putting it together
+rigid motion
+
+coplanarity
+
+Essential Matrix
+[Longuet-Higgins 1981]
+
+properties of the E matrix
+Longuet-Higgins equation
+
+(2D points expressed in camera coordinate system)
+
+properties of the E matrix
+Longuet-Higgins equation
+
+Epipolar lines
+
+(2D points expressed in camera coordinate system)
+
+properties of the E matrix
+Longuet-Higgins equation
+
+Epipolar lines
+
+Epipoles
+(2D points expressed in camera coordinate system)
+
+Given a point in one image,
+multiplying by the essential matrix will tell us
+the epipolar line in the second view.
+
+Assumption:
+2D points expressed in camera coordinate system (i.e., intrinsic matrices are identities)
+
+How do you generalize
+to non-identity intrinsic
+matrices?
+
+The fundamental matrix
+
+The
+fundamental matrix
+is a
+generalization
+of the
+essential matrix,
+where the assumption of
+Identity matrices
+is removed
+
+The essential matrix operates on image points expressed in
+2D coordinates expressed in the camera coordinate system
+
+camera
+point
+
+image
+point
+
+The essential matrix operates on image points expressed in
+2D coordinates expressed in the camera coordinate system
+
+camera
+point
+
+image
+point
+
+Writing out the epipolar constraint in terms of image coordinates
+
+Same equation works in image coordinates!
+
+it maps pixels to epipolar lines
+
+F
+
+properties of the E matrix
+Longuet-Higgins equation
+
+Epipolar lines
+
+Epipoles
+
+F
+
+F
+F
+
+(points in image coordinates)
+
+F
+F
+
+Breaking down the fundamental matrix
+
+Depends on both intrinsic and extrinsic parameters
+
+Breaking down the fundamental matrix
+
+Depends on both intrinsic and extrinsic parameters
+
+How would you solve for F?
+
+The 8-point algorithm
+
+Assume you have M matched image points
+
+Each correspondence should satisfy
+
+How would you solve for the 3 x 3 F matrix?
+
+Assume you have M matched image points
+
+Each correspondence should satisfy
+
+How would you solve for the 3 x 3 F matrix?
+SVD!
+
+Assume you have M matched image points
+
+Each correspondence should satisfy
+
+How would you solve for the 3 x 3 F matrix?
+Set up a homogeneous linear system with 9 unknowns
+
+How many equation do you get from one correspondence?
+
+ONE correspondence gives you ONE equation
+
+Set up a homogeneous linear system with 9 unknowns
+
+How many equations do you need?
+
+Each point pair (according to epipolar constraint)
+contributes only one scalar equation
+
+Note: This is different from the Homography estimation where
+each point pair contributes 2 equations.
+
+We need at least 8 points
+
+Hence, the 8 point algorithm!
+
+How do you solve a homogeneous linear system?
+
+How do you solve a homogeneous linear system?
+
+Total Least Squares
+minimize
+subject to
+
+How do you solve a homogeneous linear system?
+
+Total Least Squares
+minimize
+subject to
+
+SVD!
+
+Eight-Point Algorithm
+1. (Normalize points)
+2. Construct the M x 9 matrix A
+3. Find the SVD of A
+4. Entries of F are the elements of column of V
+
+corresponding to the least singular value
+4. (Enforce rank 2 constraint on F)
+
+5. (Un-normalize F)
+
+Eight-Point Algorithm
+1. (Normalize points)
+2. Construct the M x 9 matrix A
+3. Find the SVD of A
+4. Entries of F are the elements of column of V
+
+corresponding to the least singular value
+4. (Enforce rank 2 constraint on F)
+5. (Un-normalize F)
+
+See Hartley-Zisserman
+for why we do this
+
+Eight-Point Algorithm
+1. (Normalize points)
+2. Construct the M x 9 matrix A
+3. Find the SVD of A
+4. Entries of F are the elements of column of V
+
+corresponding to the least singular value
+4. (Enforce rank 2 constraint on F)
+5. (Un-normalize F)
+
+How do we do this?
+
+Eight-Point Algorithm
+1. (Normalize points)
+2. Construct the M x 9 matrix A
+3. Find the SVD of A
+4. Entries of F are the elements of column of V
+
+corresponding to the least singular value
+4. (Enforce rank 2 constraint on F)
+5. (Un-normalize F)
+
+How do we do this?
+
+SVD!
+
+Enforcing rank constraints
+Problem: Given a matrix F, find the matrix F’ of rank k that is closest to F,
+
+min
+
+𝐹 − 𝐹′ 2
+
+𝐹′
+rank 𝐹 ′ =𝑘
+Solution: Compute the singular value decomposition of F,
+
+𝐹 = 𝑈Σ𝑉𝑇
+Form a matrix Σ’ by replacing all but the k largest singular values in Σ with 0.
+Then the problem solution is the matrix F’ formed as,
+
+𝐹 ′ = 𝑈Σ ′ 𝑉 𝑇
+
+Eight-Point Algorithm
+1. (Normalize points)
+2. Construct the M x 9 matrix A
+3. Find the SVD of A
+4. Entries of F are the elements of column of V
+
+corresponding to the least singular value
+4. (Enforce rank 2 constraint on F)
+
+5. (Un-normalize F)
+
+Example
+
+epipolar lines
+
+Where is the epipole?
+
+How would you compute it?
+
+The epipole is in the right null space of F
+
+How would you solve for the epipole?
+
+模式识别与计算机视觉
+双目立体视觉
+张振宇
+南京大学智能科学与技术学院
+2026
+54
+
+How many point correspondences are required to solve
+the triangulation problem (i.e., recover a 3D point)?
+
+How many point correspondences are
+required to solve for the fundamental
+matrix?
+
+Overview of today’s lecture
+• Revisiting triangulation.
+• Disparity.
+
+• Stereo rectification.
+• Stereo matching.
+
+• Improving stereo matching.
+• Structured light.
+
+Revisiting triangulation
+
+How would you reconstruct 3D points?
+
+Left image
+
+Right image
+
+How would you reconstruct 3D points?
+
+Left image
+1. Select point in one image (how?)
+
+Right image
+
+How would you reconstruct 3D points?
+
+Left image
+1. Select point in one image (how?)
+2. Form epipolar line for that point in second image (how?)
+
+Right image
+
+How would you reconstruct 3D points?
+
+Left image
+1. Select point in one image (how?)
+2. Form epipolar line for that point in second image (how?)
+3. Find matching point along line (how?)
+
+Right image
+
+How would you reconstruct 3D points?
+
+Left image
+1.
+2.
+3.
+4.
+
+Select point in one image (how?)
+Form epipolar line for that point in second image (how?)
+Find matching point along line (how?)
+Perform triangulation (how?)
+
+Right image
+
+Triangulation
+3D point
+
+left image
+
+left camera with matrix
+
+right image
+
+right camera with matrix
+
+How would you reconstruct 3D points?
+
+Left image
+1.
+2.
+3.
+4.
+
+Select point in one image (how?)
+Form epipolar line for that point in second image (how?)
+Find matching point along line (how?)
+Perform triangulation (how?)
+
+Right image
+What are the disadvantages
+of this procedure?
+
+Stereo rectification
+
+What’s different between these two images?
+
+Objects that are close move more or less?
+
+The amount of horizontal movement is
+inversely proportional to …
+
+The amount of horizontal movement is
+inversely proportional to …
+
+… the distance from the camera.
+
+More formally…
+
+3D point
+
+image plane
+
+camera center
+
+camera center
+
+image plane
+
+(baseline)
+
+How is X related to x?
+
+(baseline)
+
+(baseline)
+
+How is X related to x’?
+
+(baseline)
+
+(baseline)
+
+(baseline)
+
+Disparity
+(wrt to camera origin of image plane)
+
+(baseline)
+
+Disparity
+inversely proportional
+to depth
+
+(True/False) It is possible to have a 3D
+point resulting in 0 disparity.
+
+What other vision system uses
+disparity for depth sensing?
+
+Is disparity the only depth cue
+the human visual system uses?
+
+So can I compute depth from any two
+images of the same object?
+
+So can I compute depth from any two
+images of the same object?
+
+1. Need sufficient baseline
+2. Images need to be ‘rectified’ first (make epipolar lines horizontal)
+
+1. Rectify images
+(make epipolar lines horizontal)
+2. For each pixel
+a. Find epipolar line
+b. Scan line for best match
+c. Compute depth from disparity
+
+How can you make the epipolar lines horizontal?
+
+3D point
+
+image plane
+
+camera center
+
+camera center
+
+What’s special about these two cameras?
+
+When are epipolar lines horizontal?
+
+When this relationship holds:
+
+x
+
+R=I
+
+x’
+t
+
+t = (T, 0, 0)
+
+It’s hard to make the image planes exactly parallel
+
+How can you make the epipolar lines horizontal?
+
+Use stereo rectification?
+
+What is stereo rectification?
+
+What is stereo rectification?
+Reproject image
+planes onto a
+common plane
+parallel to the line
+between camera
+centers
+
+How can you do this?
+
+What is stereo rectification?
+Reproject image
+planes onto a
+common plane
+parallel to the line
+between camera
+centers
+Need two
+homographies (3x3
+transform), one for
+each input image
+reprojection
+C. Loop and Z. Zhang. Computing Rectifying Homographies for Stereo Vision.Computer Vision and Pattern Recognition, 1999.
+
+Stereo Rectification
+1. Rotate the right camera by R
+(aligns camera coordinate system orientation only)
+
+2. Rotate (rectify) the left camera so that the epipole
+is at infinity
+3. Rotate (rectify) the right camera so that the epipole
+is at infinity
+4. Adjust the scale
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+rotate by R
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+rotate by Rrect
+
+rotate by Rrect
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+scale by H
+
+scale by H
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Let’s visualize the four configurations…
+
+Camera Icon
+
+optical axis
+
+image plane
+
+camera center
+
+Find the configuration where the point is in front of both cameras
+
+Find the configuration where the points is in front of both cameras
+
+Find the configuration where the points is in front of both cameras
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+When do epipolar
+lines become
+horizontal?
+
+Parallel cameras
+
+Where is the epipole?
+
+Parallel cameras
+
+epipole at infinity
+
+Setting the epipole to infinity
+(Building Rrect from e)
+
+Let
+
+Given:
+
+epipole e
+(using SVD on E)
+(translation from E)
+
+epipole coincides with translation vector
+
+cross product of e and
+the direction vector of
+the optical axis
+
+orthogonal vector
+
+If
+
+and
+
+then
+
+orthogonal
+
+If
+
+and
+
+orthogonal
+
+then
+
+Where is this point located on the image plane?
+
+If
+
+and
+
+orthogonal
+
+then
+
+Where is this point located on the image plane?
+At x-infinity
+
+Stereo Rectification Algorithm
+1. Estimate E using the 8 point algorithm (SVD)
+2. Estimate the epipole e (SVD of E)
+
+3.Build Rrect from e
+4. Decompose E into R and T
+
+5.Set R1=Rrect and R2 = RRrect
+6. Rotate each left camera point (warp image)
+[x’ y’ z’] = R1 [x y z]
+7. Rectified points as p = f/z’[x’ y’ z’]
+
+8.Repeat 6 and 7 for right camera points using R2
+
+What can we do after
+rectification?
+
+Stereo matching
+
+Depth Estimation via Stereo Matching
+
+1. Rectify images
+(make epipolar lines horizontal)
+2. For each pixel
+a. Find epipolar line
+b. Scan line for best match
+c. Compute depth from disparity
+
+How would
+you do this?
+
+Reminder from filtering
+How do we detect an edge?
+
+Reminder from filtering
+How do we detect an edge?
+• We filter with something that looks like an edge.
+
+* 1 0 -1
+horizontal edge filter
+
+*
+original
+
+1
+0
+-1
+
+We can think of linear filtering as a way to evaluate
+how similar an image is locally to some template.
+
+vertical edge filter
+
+Find this template
+How do we detect the template
+
+in the following image?
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+output
+
+image
+
+Solution 1: Filter the image using the template as filter kernel.
+
+What will
+the output
+look like?
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+
+output
+
+image
+
+Solution 1: Filter the image using the template as filter kernel.
+
+What went wrong?
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+
+output
+
+image
+
+Solution 1: Filter the image using the template as filter kernel.
+
+Increases for higher
+local intensities.
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+
+template mean
+
+output
+
+image
+
+Solution 2: Filter the image using a zero-mean template.
+
+What will
+the output
+look like?
+
+Find this template
+How do we detect the template
+
+in he following image?
+output
+filter
+
+template mean
+
+output
+
+True detection
+
+thresholding
+image
+
+False
+detections
+
+Solution 2: Filter the image using a zero-mean template.
+
+What went wrong?
+
+Find this template
+How do we detect the template
+
+in he following image?
+output
+filter
+
+template mean
+
+output
+
+Not robust to highcontrast areas
+image
+
+Solution 2: Filter the image using a zero-mean template.
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+output
+
+image
+
+Solution 3: Use sum of squared differences (SSD).
+
+What will
+the output
+look like?
+
+Find this template
+How do we detect the template
+
+in he following image?
+1-output
+filter
+
+output
+
+True detection
+
+thresholding
+image
+
+Solution 3: Use sum of squared differences (SSD).
+
+What could go wrong?
+
+Find this template
+How do we detect the template
+
+in he following image?
+1-output
+filter
+
+output
+
+Not robust to local
+intensity changes
+image
+
+Solution 3: Use sum of squared differences (SSD).
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+Observations so far:
+
+• subtracting mean deals with brightness bias
+• dividing by standard deviation removes contrast bias
+
+Can we combine the two effects?
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+
+template mean
+
+output
+
+local patch mean
+image
+
+Solution 4: Normalized cross-correlation (NCC).
+
+What will
+the output
+look like?
+
+Find this template
+How do we detect the template
+
+in he following image?
+1-output
+
+True detections
+
+thresholding
+
+Solution 4: Normalized cross-correlation (NCC).
+
+Find this template
+How do we detect the template
+
+in he following image?
+1-output
+
+True detections
+
+thresholding
+
+Solution 4: Normalized cross-correlation (NCC).
+
+What is the best method?
+It depends on whether you care about speed or invariance.
+
+• Zero-mean: Fastest, very sensitive to local intensity.
+• Sum of squared differences: Medium speed, sensitive to intensity offsets.
+
+• Normalized cross-correlation: Slowest, invariant to contrast and brightness.
+
+Stereo Block Matching
+Left
+
+Right
+
+scanline
+
+Matching cost
+disparity
+
+Slide a window along the epipolar line and compare contents of
+that window with the reference window in the left image
+• Matching cost: SSD or normalized correlation
+•
+
+SSD
+
+Normalized cross-correlation
+
+Similarity Measure
+
+Formula
+
+Sum of Absolute Differences (SAD)
+
+Sum of Squared Differences (SSD)
+
+Zero-mean SAD
+
+Locally scaled SAD
+
+Normalized Cross Correlation (NCC)
+
+SAD
+
+SSD
+
+NCC
+
+Ground truth
+
+Effect of window size
+
+W= 3
+
+W = 20
+
+Effect of window size
+
+W= 3
+
+W = 20
+
+Smaller window
++ More detail
+- More noise
+
+Larger window
++ Smoother disparity maps
+- Less detail
+- Fails near boundaries
+
+When will stereo block matching fail?
+
+When will stereo block matching fail?
+
+textureless regions
+
+repeated patterns
+
+specularities
+
+Improving stereo matching
+
+Block matching
+
+Ground truth
+
+What are some problems with the result?
+
+How can we improve depth estimation?
+
+How can we improve depth estimation?
+Too many discontinuities.
+We expect disparity values to change slowly.
+Let’s make an assumption:
+depth should change smoothly
+
+Stereo matching as …
+
+Energy Minimization
+
+What defines a good stereo correspondence?
+1. Match quality
+– Want each pixel to find a good match in the other image
+2. Smoothness
+– If two pixels are adjacent, they should (usually) move about the same
+amount
+
+data term
+
+{
+
+{
+
+energy function
+(for one pixel)
+
+smoothness term
+
+Want each pixel to find a good match
+in the other image
+
+Adjacent pixels should (usually)
+move about the same amount
+
+(block matching result)
+
+(smoothness function)
+
+data term
+SSD distance between windows
+centered at I(x, y) and J(x+ d(x,y),y)
+
+SSD distance between windows
+centered at I(x, y) and J(x+ d(x,y),y)
+
+smoothness term
+
+: set of neighboring pixels
+4-connected
+neighborhood
+
+8-connected
+neighborhood
+
+smoothness term
+
+L1 distance
+
+“Potts model”
+
+One possible solution…
+
+Dynamic Programming
+
+Can minimize this independently per scanline
+using dynamic programming (DP)
+: minimum cost of solution such that d(x,y) = d
+
+Match only
+
+Match & smoothness (via graph cut)
+
+Ground Truth
+
+Y. Boykov, O. Veksler, and R. Zabih, Fast Approximate Energy Minimization via Graph Cuts, PAMI 2001
+
+Structured light
+
+Use controlled (“structured”) light to make correspondences easier
+
+Disparity between laser points on
+the same scanline in the images
+determines the 3-D coordinates of
+the laser point on object
+
+Use controlled (“structured”) light to make correspondences easier
+
+Structured light and two cameras
+laser
+
+I
+
+J
+
+Structured light and one camera
+
+Projector acts like
+“reverse” camera
+I
+
+J
+
+Example: Laser scanner
+
+Digital Michelangelo Project
+http://graphics.stanford.edu/projects/mich/
+
+

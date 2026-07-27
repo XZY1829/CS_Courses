@@ -1,0 +1,903 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 9:
+Shading 3 (Texture Mapping cont.)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• About homework
+- Homework 1 is being graded
+- Homework 2
+- 271 submissions so far
+- Homework 3 will be released soon
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lectures
+• Shading 1 & 2
+- Blinn-Phong reflectance model
+- Shading models / frequencies
+- Graphics Pipeline
+- Texture mapping
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Shading 3
+- Barycentric coordinates
+- Texture queries
+- Applications of textures
+
+• Shadow mapping
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Interpolation Across Triangles:
+Barycentric Coordinates
+(重⼼坐标)
+
+Interpolation Across Triangles
+Why do we want to interpolate?
+
+• Specify values at vertices
+• Obtain smoothly varying values across triangles
+What do we want to interpolate?
+
+• Texture coordinates, colors, normal vectors, …
+How do we interpolate?
+
+• Barycentric coordinates
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Barycentric Coordinates
+A coordinate system for triangles (↵, , )
+
+C
+
+(x, y) = ↵ A +
+↵+
+(x, y)
+B
+A
+GAMES101
+
+7
+
+B+ C
++
+
+=1
+
+Inside the triangle if
+all three coordinates
+are non-negative
+
+Lingqi Yan, UC Santa Barbara
+
+Barycentric Coordinates
+What’s the barycentric coordinate of A?
+
+C
+
+(↵, , ) = (1, 0, 0)
+(x, y) = ↵ A +
+
+B+ C
+
+=A
+B
+A
+GAMES101
+
+(x, y)
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Barycentric Coordinates
+Geometric viewpoint — proportional areas
+
+C
+
+AB
+
+AA
+AC
+B
+
+AA
+↵=
+AA + AB + AC
+AB
+=
+AA + AB + AC
+AC
+=
+AA + AB + AC
+
+A
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Barycentric Coordinates
+What’s the barycentric coordinate of the centroid?
+
+C
+1 1 1
+(↵, , ) = 3 , 3 , 3
+1
+1
+1
+(x, y) = 3 A + 3 B + 3 C
+
+(x, y)
+B
+A
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Barycentric Coordinates: Formulas
+C
+(x, y) = ↵ A +
+(x, y) = ↵ A +
+B
+
+B+ C
+
+↵+ +
+B+ C
+
+=1
+
+A
+
+(x
+↵=
+(xA
+(x
+=
+(xB
+=1 ↵
+GAMES101
+
+xB )(yC
+xB )(yC
+xC )(yA
+xC )(yA
+
+yB ) + (y yB )(xC xB )
+yB ) + (yA yB )(xC xB )
+yC ) + (y yC )(xA xC )
+yC ) + (yB yC )(xA xC )
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Using Barycentric Coordinates
+Linearly interpolate values at vertices
+
+VC
+V = ↵ VA +
+V
+
+VB
+
+V B + VC
+
+VA, VB, VC can be
+positions, texture
+coordinates, color,
+normal, depth,
+material attributes…
+
+VA
+However, barycentric coordinates are not invariant under projection!
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Applying Textures
+
+Simple Texture Mapping: Diffuse Color
+Usually a pixel’s center
+
+for each rasterized screen sample (x,y):
+(u,v) = evaluate texture coordinate at (x,y)
+texcolor = texture.sample(u,v);
+set sample’s color to texcolor;
+
+Using barycentric
+coordinates!
+
+Usually the diﬀuse albedo Kd
+(recall the Blinn-Phong reflectance model)
+
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Texture Magnification
+
+(What if the texture is too small?)
+
+Texture Magnification - Easy Case
+Generally don’t want this — insufficient texture resolution
+A pixel on a texture — a texel (纹理元素、纹素)
+
+Nearest
+GAMES101
+
+Bilinear
+16
+
+Bicubic
+Lingqi Yan, UC Santa Barbara
+
+Bilinear Interpolation
+
+Want to sample
+texture value f(x,y) at
+red point
+Black points indicate
+texture sample
+locations
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Bilinear Interpolation
+
+u01
+
+u00
+
+GAMES101
+
+u11
+Take 4 nearest sample
+locations, with texture
+values as labeled.
+
+u10
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Bilinear Interpolation
+
+u01
+
+u11
+And fractional offsets,
+(s,t) as shown
+
+t
+u00 s u10
+
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Bilinear Interpolation
+Linear interpolation (1D)
+
+lerp(x, v0 , v1 ) = v0 + x(v1
+
+u01
+
+u11
+
+v0 )
+
+u0 = lerp(s, u00 , u10)
+u1 = lerp(s, u01 , u11)
+u = lerp(t, u0 , u1)
+
+t
+u00 s u10
+
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Bilinear Interpolation
+u1
+Linear interpolation (1D)
+
+lerp(x, v0 , v1 ) = v0 + x(v1
+
+u01
+
+u11
+
+v0 )
+
+u0 = lerp(s, u00 , u10)
+u = lerp(s, u01 , u11)
+
+1
+Two helper lerps (horizontal)
+
+t
+u00 s u10
+
+u0 = lerp(s,uu=00lerp(t,
+, u10 ) u0 , u1)
+u1 = lerp(s, u01 , u11 )
+f (x, y) = lerp(t, u0 , u1 )
+
+u0
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Bilinear Interpolation
+u1
+Linear interpolation (1D)
+
+lerp(x, v0 , v1 ) = v0 + x(v1
+
+u01
+
+u11
+
+v0 )
+
+u0 = lerp(s, u00 , u10)
+u = lerp(s, u01 , u11)
+
+Two helper lerps 1
+
+t
+u00 s u10
+
+u0 = lerp(s,uu=00lerp(t,
+, u10 ) u0 , u1)
+u1 = lerp(s, u01 , u11 )
+u0 = lerp(s, u00 , u10 )
+f (x, y) = lerp(t, u0 , u1 )
+u1 =lerp,
+lerp(s,
+u01 , u11 )
+Final vertical
+to get result:
+f (x, y) = lerp(t, u0 , u1 )
+
+u0
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Texture Magnification - Easy Case
+Bilinear interpolation usually gives pretty good results
+at reasonable costs
+
+Nearest
+GAMES101
+
+Bilinear
+23
+
+Bicubic
+Lingqi Yan, UC Santa Barbara
+
+Texture Magnification (hard case)
+(What if the texture is too large?)
+
+Point Sampling Textures — Problem
+
+Moire
+
+Jaggies
+
+Reference
+
+GAMES101
+
+Point sampled
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Screen Pixel “Footprint” in Texture
+
+Upsampling
+upsampling
+(Magnification)
+magnification
+
+GAMES101
+
+downsampling
+Downsampling
+(Minification)
+minification
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Will Supersampling Do Antialiasing?
+Yes! But costly!
+
+512x supersampling
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing — Supersampling？
+Will supersampling work?
+
+• Yes, high quality, but costly
+• When highly minified, many texels in pixel footprint
+• Signal frequency too large in a pixel
+• Need even higher sampling frequency
+Let’s understand this problem in another way
+
+• What if we don’t sample?
+• Just need to get the average value within a range!
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Point Query vs. (Avg.) Range Query
+
+upsampling
+magnification
+
+GAMES101
+
+downsampling
+minification
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Different Pixels -> Different-Sized Footprints
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Mipmap
+
+Allowing (fast, approx., square) range queries
+
+Mipmap (L. Williams 83)
+“Mip” comes from the Latin “multum in parvo", meaning a multitude in a small space
+
+Level 0 = 128x128
+
+Level 1 = 64x64
+
+Level 2 = 32x32
+
+Level 3 = 16x16
+
+Level 4 = 8x8
+
+Level 5 = 4x4
+
+Level 6 = 2x2
+
+Level 7 = 1x1
+
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Mipmap (L. Williams 83)
+D
+D=2
+D=1
+D=0
+
+v
+u
+
+“Mip hierarchy”
+level = D
+What is the storage overhead of a mipmap?
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Computing Mipmap Level D
+
+v
+
+u
+Screen space (x,y)
+
+Texture space (u,v)
+
+Estimate texture footprint using texture coordinates of
+neighboring screen samples
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Computing Mipmap Level D
+
+(u,v)01
+
+v
+
+(u,v)00
+
+(u,v)10
+
+du/dx
+dv/dx
+
+L
+
+u
+D = log2 L
+GAMES101
+
+0s
+✓
+
+1
+s
+◆ 2 ✓ ◆2 ✓ ◆2 ✓ ◆ 2
+du
+dv
+du
+dv A
++
+,
++
+dx
+dx
+dy
+dy
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+L = max @
+
+Computing Mipmap Level D
+
+(u,v)01
+
+v
+
+(u,v)00
+
+(u,v)10
+
+du/dx
+
+L
+
+dv/dx
+
+L
+
+u
+D = log2 L
+GAMES101
+
+0s
+✓
+
+L = max @
+
+1
+s
+◆ 2 ✓ ◆2 ✓ ◆2 ✓ ◆ 2
+du
+dv
+du
+dv A
++
+,
++
+dx
+dx
+dy
+dy
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Visualization of Mipmap Level
+
+D rounded to nearest integer level
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Trilinear Interpolation
+
+Mipmap Level D
+
+Mipmap Level D+1
+
+Bilinear result
+
+Bilinear result
+
+Linear interpolation based on continuous D value
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Visualization of Mipmap Level
+
+Trilinear filtering: visualization of continuous D
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Mipmap Limitations
+
+Point sampling
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Mipmap Limitations
+
+Supersampling 512x (assume this is correct)
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Mipmap Limitations
+Overblur
+Why?
+
+Mipmap trilinear sampling
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Anisotropic Filtering
+
+Better than Mipmap!
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Irregular Pixel Footprint in Texture
+
+GAMES101
+
+image space
+
+texture space
+
+Screen space
+
+Texture space
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Anisotropic Filtering
+Ripmaps and summed area tables
+
+• Can look up axis-aligned
+rectangular zones
+
+• Diagonal footprints still a problem
+Wikipedia
+
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+space the contours of Q are concentric ellipses (Figure 8),
+but when mapped to screen space, they are nearly circular. Since Q is parabolic it is proportional to r2, where r is
+the distance from the center of a pixel in screen space.
+This radius r is just the parameter needed when indexing
+a kernel, so Q can serve two purposes: inclusion testing
+and kernel indexing.
+The kernel f(r) is stored in a weight lookup table,
+WTAB. Rather than index WTAB by r, which would
+necessitate the calculation of r =V at each pixel, we
+define
+WTAB[ Q]=f( \fQ)
+so that the array can be indexed directly by Q.
+Warping a lookup table for computational efficiency is
+a useful trick that has been applied by others3"7 A good
+kernel to use is the Gaussian f(r) = e-ar, shown in Figure
+9, for which WTAB[Q] = e-aQ. The Gaussian is preferred
+to the theoretically optimal sinc kernel because it decays
+much more quickly. By properly scaling A, B, C, and F, the
+length of the WTAB array can be controlled to minimize
+quantization artifacts (several thousand entries have
+proven sufficient). The parameters F and a can be tuned
+to adjust the filter cutoff radius and the degree of pixel
+overlap.
+To evaluate Q efficiently, we employ the method of
+finite differences. Since Q is quadratic, two additions
+suffice to update Q from one pixel to the next? The
+following pseudocode implements the EWA filter for
+monochrome pictures (it is easily modified for color).
+Integer variables are lowercase; floating-point variables
+are uppercase.
+
+Anisotropic Filtering
+
+Ripmaps and summed area tables
+
+• Can look up axis-aligned
+rectangular zones
+
+• Diagonal footprints still a problem
+EWA filtering
+
+• Use multiple lookups
+• Weighted average
+tax, J
+Vx*Vx+Vy*Vy
+Mipmap
+hierarchy
+still helps
+•
+• Can handle irregular footprints
+
+Q = (C*V+B*U)*V+A*U*U
+for u=ul to u2 do begin
+1* ignore pixel if Q out of range *1
+if Q<F then begin
+WEIGHT = WTAB[floor(Q)]
+1* read and weight texture pixel */
+NUM NUM+WEIGHT*texture[v,u]
+/* DEN is denominator (for normalization) */
+DEN DEN+WEIGHT
+end
+-
+
+=
+
+Q = Q+DQ
+
+DQ = DQ+DDQ
+end
+end
+return(NUM/DEN)
+end
+This implementation can be optimized further by removing redundant calculations from the v loop and, with
+proper checking, by using integer variables throughout.
+The EWA filter computes the weighted average of
+elliptical areas incrementally, requiring one floating-point
+multiply, four floating-point adds, one integerization, and
+one table lookup per texture pixel. Blinn et al.'s method,
+which is the most similar to EWA, appears to have
+
+Wikipedia
+
+1* Let texture[v,uJ be a 2-dimensional array holding texture *1
+< Compute texture space ellipse center (UO,VO)
+from screen coordinates (x,y) >
+. Compute
+
+(Ux,Vx)
+
+au av and (Uy,Vy) =
+ai a
+
+ax
+
+ay.
+.]
+
+/* Now find ellipse corresponding to a circular pixel: */
+
+A
+
+-
+
+B - -2.*(Ux*Vx+Uy*Vy)
+C - UX*UX+Uy*Uy
+
+F Ux*Vy-Uy*Vx
+F F*F
+< scale A, B, C, and F equally so that F - WTAB length >
+-
+
+-
+
+/* Ellipse is AU2+BUV+CV2=F, where U=u-UO, V=v-VO *1
+EWA(UO,VO,A,B,C,F)
+June 1986
+
+GAMES101
+
+Greene
+& Heckbert
+Figure 8. Contours
+of elliptical
+paraboloid Q ‘86
+and box
+around Q = F. Dots are centers of texture space pixels.
+25
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

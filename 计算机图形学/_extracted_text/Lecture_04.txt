@@ -1,0 +1,1298 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 4:
+Transformation Cont.
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcement
+• Homework 0 will be released TODAY
+• This lecture will be diﬃcult :)
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lecture
+• Transformation
+- Why study transformation
+- 2D transformations: rotation, scale, shear
+- Homogeneous coordinates
+- Composite transform
+- 3D transformations
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• 3D transformations
+• Viewing (观测) transformation
+- View (视图) / Camera transformation
+- Projection (投影) transformation
+- Orthographic (正交) projection
+- Perspective (透视) projection
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+3D Transformations
+Use homogeneous coordinates again:
+
+• 3D point = (x, y, z, 1)T
+• 3D vector = (x, y, z, 0)T
+Use
+4×4 matrices
+In general,
+(x, y, z,for
+w)affine
+(w != transformations
+0) is the 3D point:
+⇥
+
+⇥
+a y/w,
+b c z/w)
+tx
+x
+x
+(x/w,
+⇧d e f ty ⌃ ⇧y ⌃
+⇧y ⌃
+⇧ ⌃ = ⇧
+⌃·⇧ ⌃
+⇤ g h i tz ⌅ ⇤ z ⌅
+⇤z ⌅
+1
+0 0 0 1
+1
+GAMES101
+CS184/284A
+
+⇥
+
+5
+
+Lingqi Yan, UC Santa
+RenBarbara
+Ng
+
+Use homogeneous coordinates again:
+3D point = (x, y, z, 1)T
+•
+3D Transformations
+• 3D vector = (x, y, z, 0)T
+Use homogeneous coordinates again:
+Use 4×4 matrices for affine transformations
+• 3D point = (x, y, z, 1)T
+⇥
+
+⇥
+
+⇥
+a
+b
+c
+t
+x
+x
+x
+T
+= (x,
+y,
+z,
+0)
+• 3D vector ⇧
+⌃
+⇧d e f ty ⌃ ⇧y ⌃
+y
+⇧ ⌃ = ⇧
+⌃·⇧ ⌃
+⇤ g h i tz ⌅ ⇤ z ⌅
+⇤z ⌅
+1 for affine
+0 0transformations
+0 1
+1
+Use 4×4 matrices
+⇥
+⇥
+⇥
+a b c tx
+x
+x
+What’s the order?
+⌃
+⇧
+⌃
+⇧
+⌃
+⇧
+y
+d
+e
+f
+t
+y
+y
+CS184/284A
+⇧ ⌃
+⇧Translation first?
+⌃·⇧ ⌃
+Linear Transform
+first
+or
+=
+⇤ g h i tz ⌅ ⇤ z ⌅
+⇤z ⌅
+1
+0 0 0 1
+1
+
+GAMES101
+
+6
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+3D Transformations
+Scale
+
+Translation
+
+Coordinate Change
+(Frame-to-world)
+
+1
+⇧0
+T(tx , ty , tz ) = ⇧
+⇤0
+0
+
+F(u, v, w, o) =
+CS184/284A
+
+GAMES101
+
+0
+sy
+0
+0
+
+sx
+⇧0
+S(sx , sy , sz ) = ⇧
+⇤0
+0
+
+7
+
+
+
+u
+0
+
+⇥
+
+0
+0
+sz
+0
+
+0
+0⌃
+⌃
+0⌅
+1
+⇥
+
+0
+1
+0
+0
+
+0 tx
+0 ty ⌃
+⌃
+1 tz ⌅
+0 1
+
+v
+0
+
+w
+0
+
+o
+1
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+3D Transformations
+Rotation around x-, y-, or z-axis
+1
+⇧0
+Rx ( ) = ⇧
+⇤0
+0
+
+0
+cos
+sin
+0
+
+cos
+⇧ 0
+Ry ( ) = ⇧
+⇤ sin
+0
+
+CS184/284A
+
+GAMES101
+
+cos
+⇧ sin
+Rz ( ) = ⇧
+⇤ 0
+0
+
+sin
+0
+cos
+0
+
+sin
+cos
+0
+0
+8
+
+Rotation
+around
+x-axis
+
+⇥
+
+0
+sin
+cos
+0
+0
+1
+0
+0
+
+y
+
+0
+0
+1
+0
+
+0
+0⌃
+⌃
+0⌅
+1
+⇥
+0
+0⌃
+⌃
+0⌅
+1
+⇥
+0
+0⌃
+⌃
+0⌅
+1
+
+x
+
+z
+
+Anything strange about Ry?
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+3D Rotations
+Compose any 3D rotation from Rx, Ry, Rz?
+
+Rxyz ( , ⇥, ⇤) = Rx ( ) Ry (⇥) Rz (⇤)
+
+• So-called Euler angles
+• Often used in flight simulators: roll, pitch, yaw
+
+CS184/284A
+
+GAMES101
+
+9
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Rodrigues’ Rotation Formula
+Rotation by angle α around axis n
+R(n, ↵) = cos(↵) I + (1
+
+0
+
+0
+cos(↵)) nnT + sin(↵) @ nz
+ny
+|
+
+How to prove this magic formula?
+
+nz
+0
+nx
+{z
+N
+
+1
+
+ny
+nx A
+0
+}
+
+Matrix
+N
+computes
+a
+cross-product:
+N
+x
+=
+n
+×
+x
+• Check
+out the supplementary material on the course website!
+• Assume orthonormal system e1, e2, n
+Rn = n
+
+CS184/284A
+
+GAMES101
+
+Re1
+
+= cos e1 + sin e2
+
+Re2
+
+=
+
+sin e1 + cos e2
+10
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• 3D transformations
+• Viewing transformation
+- View / Camera transformation
+- Projection transformation
+- Orthographic projection
+- Perspective projection
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+View / Camera Transformation
+• What is view transformation?
+• Think about how to take a photo
+- Find a good place and arrange people (model transformation)
+- Find a good “angle” to put the camera (view transformation)
+- Cheese! (projection transformation)
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+View / Camera Transformation
+• How to perform view transformation?
+• Define the camera first
+
+Up direction
+
+- Position ~e
+- Look-at / gaze direction ĝ
+- Up direction t̂
+<latexit sha1_base64="fruLMXButdm+3hKupgnEySA42HE=">AAAB7nicbVBNS8NAEJ3Ur1q/oh69LBbBU0lE0GPRi8cK9gPaUDbbSbt0swm7m0IJ/RFePCji1d/jzX/jts1BWx8MPN6bYWZemAqujed9O6WNza3tnfJuZW//4PDIPT5p6SRTDJssEYnqhFSj4BKbhhuBnVQhjUOB7XB8P/fbE1SaJ/LJTFMMYjqUPOKMGiu1exNkOc76btWreQuQdeIXpAoFGn33qzdIWBajNExQrbu+l5ogp8pwJnBW6WUaU8rGdIhdSyWNUQf54twZubDKgESJsiUNWai/J3Iaaz2NQ9sZUzPSq95c/M/rZia6DXIu08ygZMtFUSaIScj8dzLgCpkRU0soU9zeStiIKsqMTahiQ/BXX14nraua79X8x+tq/a6IowxncA6X4MMN1OEBGtAEBmN4hld4c1LnxXl3PpatJaeYOYU/cD5/AJUEj7c=</latexit>
+<latexit
+
+<latexit sha1_base64="JRmPpRc6+ziFmRSUNjVSJ5Dkido=">AAAB7nicbVDLSgNBEOz1GeMr6tHLYBA8hV0R9Bj04jGCeUCyhNnJbDJkdmaZ6RXCko/w4kERr36PN//GSbIHTSxoKKq66e6KUiks+v63t7a+sbm1Xdop7+7tHxxWjo5bVmeG8SbTUptORC2XQvEmCpS8kxpOk0jydjS+m/ntJ26s0OoRJykPEzpUIhaMopPavRHFfDjtV6p+zZ+DrJKgIFUo0OhXvnoDzbKEK2SSWtsN/BTDnBoUTPJpuZdZnlI2pkPedVTRhNswn587JedOGZBYG1cKyVz9PZHTxNpJErnOhOLILnsz8T+vm2F8E+ZCpRlyxRaL4kwS1GT2OxkIwxnKiSOUGeFuJWxEDWXoEiq7EILll1dJ67IW+LXg4apavy3iKMEpnMEFBHANdbiHBjSBwRie4RXevNR78d69j0XrmlfMnMAfeJ8/lmePuA==</latexit>
+
+Position
+
+<latexit sha1_base64="qTVnGIGoy9VTmA6RVP920/L8OkE=">AAAB7nicbVDLSgNBEOz1GeMr6tHLYBA8hV0R9Bj04jGCeUCyhNnJbDJkdmaZ6RXCko/w4kERr36PN//GSbIHTSxoKKq66e6KUiks+v63t7a+sbm1Xdop7+7tHxxWjo5bVmeG8SbTUptORC2XQvEmCpS8kxpOk0jydjS+m/ntJ26s0OoRJykPEzpUIhaMopPavRHFHKf9StWv+XOQVRIUpAoFGv3KV2+gWZZwhUxSa7uBn2KYU4OCST4t9zLLU8rGdMi7jiqacBvm83On5NwpAxJr40ohmau/J3KaWDtJIteZUBzZZW8m/ud1M4xvwlyoNEOu2GJRnEmCmsx+JwNhOEM5cYQyI9ythI2ooQxdQmUXQrD88ippXdYCvxY8XFXrt0UcJTiFM7iAAK6hDvfQgCYwGMMzvMKbl3ov3rv3sWhd84qZE/gD7/MHqiiPxQ==</latexit>
+
+(assuming perp. to look-at)
+
+GAMES101
+
+Loo
+
+k-a
+
+13
+
+t di
+
+rec
+tion
+
+Lingqi Yan, UC Santa Barbara
+
+View / Camera Transformation
+• Key observation
+- If the camera and all objects move together,
+the “photo” will be the same
+
+Y
+
+==
+(0, 0, 0)
+
+-Z
+
+X
+
+• How about that we always transform the camera to
+- The origin, up at Y, look at -Z
+- And transform the objects along with the camera
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+View / Camera Transformation
+• Transform the camera by Mview
+<latexit sha1_base64="qUG8zMQxKJZhoh6+ZB/njTmSiQk=">AAAB73icbVBNS8NAEJ34WetX1aOXxSJ4KokIeix68SJUsB/QhrLZTtqlm03c3VRK6J/w4kERr/4db/4bt20O2vpg4PHeDDPzgkRwbVz321lZXVvf2CxsFbd3dvf2SweHDR2nimGdxSJWrYBqFFxi3XAjsJUopFEgsBkMb6Z+c4RK81g+mHGCfkT7koecUWOl1l03G3F8mnRLZbfizkCWiZeTMuSodUtfnV7M0gilYYJq3fbcxPgZVYYzgZNiJ9WYUDakfWxbKmmE2s9m907IqVV6JIyVLWnITP09kdFI63EU2M6ImoFe9Kbif147NeGVn3GZpAYlmy8KU0FMTKbPkx5XyIwYW0KZ4vZWwgZUUWZsREUbgrf48jJpnFc8t+LdX5Sr13kcBTiGEzgDDy6hCrdQgzowEPAMr/DmPDovzrvzMW9dcfKZI/gD5/MHWiWQKQ==</latexit>
+
+- So it’s located at the origin, up at Y, look at -Z
+t̂
+
+• Mview in math?
+
+<latexit sha1_base64="qTVnGIGoy9VTmA6RVP920/L8OkE=">AAAB7nicbVDLSgNBEOz1GeMr6tHLYBA8hV0R9Bj04jGCeUCyhNnJbDJkdmaZ6RXCko/w4kERr36PN//GSbIHTSxoKKq66e6KUiks+v63t7a+sbm1Xdop7+7tHxxWjo5bVmeG8SbTUptORC2XQvEmCpS8kxpOk0jydjS+m/ntJ26s0OoRJykPEzpUIhaMopPavRHFHKf9StWv+XOQVRIUpAoFGv3KV2+gWZZwhUxSa7uBn2KYU4OCST4t9zLLU8rGdMi7jiqacBvm83On5NwpAxJr40ohmau/J3KaWDtJIteZUBzZZW8m/ud1M4xvwlyoNEOu2GJRnEmCmsx+JwNhOEM5cYQyI9ythI2ooQxdQmUXQrD88ippXdYCvxY8XFXrt0UcJTiFM7iAAK6hDvfQgCYwGMMzvMKbl3ov3rv3sWhd84qZE/gD7/MHqiiPxQ==</latexit>
+
+~e
+<latexit sha1_base64="fruLMXButdm+3hKupgnEySA42HE=">AAAB7nicbVBNS8NAEJ3Ur1q/oh69LBbBU0lE0GPRi8cK9gPaUDbbSbt0swm7m0IJ/RFePCji1d/jzX/jts1BWx8MPN6bYWZemAqujed9O6WNza3tnfJuZW//4PDIPT5p6SRTDJssEYnqhFSj4BKbhhuBnVQhjUOB7XB8P/fbE1SaJ/LJTFMMYjqUPOKMGiu1exNkOc76btWreQuQdeIXpAoFGn33qzdIWBajNExQrbu+l5ogp8pwJnBW6WUaU8rGdIhdSyWNUQf54twZubDKgESJsiUNWai/J3Iaaz2NQ9sZUzPSq95c/M/rZia6DXIu08ygZMtFUSaIScj8dzLgCpkRU0soU9zeStiIKsqMTahiQ/BXX14nraua79X8x+tq/a6IowxncA6X4MMN1OEBGtAEBmN4hld4c1LnxXl3PpatJaeYOYU/cD5/AJUEj7c=</latexit>
+<latexit
+
+- Translates e to origin
+- Rotates g to -Z
+- Rotates t to Y
+- Rotates (g x t) To X
+- Difficult to write!
+
+<latexit sha1_base64="JRmPpRc6+ziFmRSUNjVSJ5Dkido=">AAAB7nicbVDLSgNBEOz1GeMr6tHLYBA8hV0R9Bj04jGCeUCyhNnJbDJkdmaZ6RXCko/w4kERr36PN//GSbIHTSxoKKq66e6KUiks+v63t7a+sbm1Xdop7+7tHxxWjo5bVmeG8SbTUptORC2XQvEmCpS8kxpOk0jydjS+m/ntJ26s0OoRJykPEzpUIhaMopPavRHFfDjtV6p+zZ+DrJKgIFUo0OhXvnoDzbKEK2SSWtsN/BTDnBoUTPJpuZdZnlI2pkPedVTRhNswn587JedOGZBYG1cKyVz9PZHTxNpJErnOhOLILnsz8T+vm2F8E+ZCpRlyxRaL4kwS1GT2OxkIwxnKiSOUGeFuJWxEDWXoEiq7EILll1dJ67IW+LXg4apavy3iKMEpnMEFBHANdbiHBjSBwRie4RXevNR78d69j0XrmlfMnMAfeJ8/lmePuA==</latexit>
+
+ĝ
+
+Y
+
+-Z
+X
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+View / Camera Transformation
+• Mview in math?
+<latexit sha1_base64="qUG8zMQxKJZhoh6+ZB/njTmSiQk=">AAAB73icbVBNS8NAEJ34WetX1aOXxSJ4KokIeix68SJUsB/QhrLZTtqlm03c3VRK6J/w4kERr/4db/4bt20O2vpg4PHeDDPzgkRwbVz321lZXVvf2CxsFbd3dvf2SweHDR2nimGdxSJWrYBqFFxi3XAjsJUopFEgsBkMb6Z+c4RK81g+mHGCfkT7koecUWOl1l03G3F8mnRLZbfizkCWiZeTMuSodUtfnV7M0gilYYJq3fbcxPgZVYYzgZNiJ9WYUDakfWxbKmmE2s9m907IqVV6JIyVLWnITP09kdFI63EU2M6ImoFe9Kbif147NeGVn3GZpAYlmy8KU0FMTKbPkx5XyIwYW0KZ4vZWwgZUUWZsREUbgrf48jJpnFc8t+LdX5Sr13kcBTiGEzgDDy6hCrdQgzowEPAMr/DmPDovzrvzMW9dcfKZI/gD5/MHWiWQKQ==</latexit>
+
+- Let’s write Mview = Rview Tview
+- Translate e to origin
+<latexit sha1_base64="xHF1BYcc/r6NW/eK+ByaqBNbREc=">AAACAnicbZDLSgMxFIbP1Futt1FX4iZYBFdlRgTdCEU3boQqvUE7DJk0bUMzmSHJVMpQ3Pgqblwo4tancOfbmLaz0NYDIR//fw7J+YOYM6Ud59vKLS2vrK7l1wsbm1vbO/buXl1FiSS0RiIeyWaAFeVM0JpmmtNmLCkOA04bweB64jeGVCoWiaoexdQLcU+wLiNYG8m3D279dMjow/jyPoNqdvt20Sk500KL4GZQhKwqvv3V7kQkCanQhGOlWq4Tay/FUjPC6bjQThSNMRngHm0ZFDikykunK4zRsVE6qBtJc4RGU/X3RIpDpUZhYDpDrPtq3puI/3mtRHcvvJSJONFUkNlD3YQjHaFJHqjDJCWajwxgIpn5KyJ9LDHRJrWCCcGdX3kR6qcl1ym5d2fF8lUWRx4O4QhOwIVzKMMNVKAGBB7hGV7hzXqyXqx362PWmrOymX34U9bnD15TmAs=</latexit>
+
+2
+
+1
+60
+Tview = 6
+40
+0
+
+0
+1
+0
+0
+
+0
+0
+1
+0
+
+<latexit sha1_base64="7v4QSZEjspNepsEFl4IrOfaqQeg=">AAACVnicbZHPS8MwFMfTTt2cv6oevQSH4mWjFUEvwtCLxwnbFNZR0uxtBtO0JKk6y/5Jveif4kXMus7fDx58+bz3kpdvwoQzpV331bJLC4tL5cpydWV1bX3D2dzqqjiVFDo05rG8DokCzgR0NNMcrhMJJAo5XIW359P61R1IxWLR1uME+hEZCTZklGiDAidqB9kdg/vJqR/CiIksjIiW7GHi4X3sFll/CAD7fq7nvD7+YnNefwzgG8qxD2LweWjg1NyGmwf+K7xC1FARrcB58gcxTSMQmnKiVM9zE93PiNSMcphU/VRBQugtGUHPSEEiUP0st2WC9wwZ4GEsTQqNc/p9IiORUuMoNJ1mvxv1uzaF/9V6qR6e9DMmklSDoLOLhinHOsZTj/GASaCaj40gVDKzK6Y3RBKqzU9UjQne7yf/Fd3Dhuc2vMujWvOssKOCdtAuOkAeOkZNdIFaqIMoekZvlm2VrBfr3V60y7NW2ypmttGPsJ0Pd6epqQ==</latexit>
+
+3
+
+xe
+ye 7
+7
+ze 5
+1
+
+- Rotate g to -Z, t to Y, (g x t) To X
+- Consider its inverse rotation: X to (g x t), Y to t, Z to -g
+2
+
+xĝ⇥t̂
+6 yĝ⇥t̂
+1
+Rview = 6
+4 zĝ⇥t̂
+0
+<latexit sha1_base64="ZiDOGk5piCsajb0S1Eo3WOdKGjI=">AAACrXicdVFNbxMxEPVu+SgphRSOXCyiIoTUdBchtZdKVblwDIi0hThdeZ3JxqrXu7JnSzbW/jt+ATf+Dc4mQqSlI4315s0b+XmclkpajKLfQbj14OGjx9tPOjtPd5897+69OLdFZQQMRaEKc5lyC0pqGKJEBZelAZ6nCi7S64/L/sUNGCsL/RXrEsY5z7ScSsHRU0n355fE3Uj40Vy5g7g5YSlkUrs052jkvJknjs04uqxhKHOwbYFNQ9/QeYLt6Q6yZRlRxmh9v7xu5fWGfHG/fNHKFxvyqAWrjBnoyV+bSbcX9aM26F0Qr0GPrGOQdH+xSSGqHDQKxa0dxVGJY8cNSqGg6bDKQsnFNc9g5KHm3t3Ytdtu6L5nJnRaGJ8aacv+O+F4bm2dp17p/c3s7d6S/F9vVOH0eOykLisELVYXTStFsaDLr6MTaUCgqj3gwkjvlYoZN1yg/+COX0J8+8l3wfn7fhz1488feqdn63Vsk1fkNXlLYnJETsknMiBDIoJ3wSD4FnwPD8NhyMKrlTQM1jMvyUaE2R/Nvc91</latexit>
+
+GAMES101
+
+xt
+yt
+zt
+0
+
+x g
+y g
+z g
+0
+
+3
+0
+07
+7
+05
+1
+
+WHY?
+
+16
+
+2
+
+xĝ⇥t̂
+6 xt
+Rview = 6
+4x g
+0
+
+yĝ⇥t̂
+yt
+y g
+0
+
+zĝ⇥t̂
+zt
+z g
+0
+
+3
+
+0
+07
+7
+05
+1
+
+Lingqi Yan, UC Santa Barbara
+
+View / Camera Transformation
+• Summary
+- Transform objects together with the camera
+- Until camera’s at the origin, up at Y, look at -Z
+
+• Also known as ModelView Transformation
+• But why do we need this?
+- For projection transformation!
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• 3D transformations
+• Viewing transformation
+- View / Camera transformation
+- Projection transformation
+- Orthographic projection
+- Perspective projection
+
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Projection Transformation
+• Projection in Computer Graphics
+- 3D to 2D
+- Orthographic projection
+- Perspective projection
+
+Orthographic
+projection
+
+Perspective
+projection
+
+Fig. 7.1 from Fundamentals of Computer Graphics, 4th Edition
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Projection Transformation
+• Perspective projection vs. orthographic projection
+
+https://stackoverflow.com/questions/36573283/from-perspective-picture-to-orthographic-picture
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Orthographic Projection
+• A simple way of understanding
+- Camera located at origin, looking at -Z, up at Y (looks familiar?)
+- Drop Z coordinate
+- Translate and scale the resulting rectangle to [-1, 1]2
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Orthographic Projection
+• In general
+- We want to map a cuboid [l, r] x [b, t] x [f, n] to
+
+the “canonical (正则、规范、标准)” cube [-1, 1]3
+
+t
+
+f
+
+y
+
+y
+
+n
+l
+
+r
+z
+
+GAMES101
+
+b
+
+y
+
+Translate
+x
+
+x
+z
+
+Scale
+
+x
+z
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Orthographic Projection
+• Slightly diﬀerent orders (to the “simple way”)
+- Center cuboid by translating
+- Scale into “canonical” cube
+t
+
+f
+
+y
+
+y
+
+n
+l
+
+r
+z
+
+GAMES101
+
+b
+
+y
+
+Translate
+x
+
+x
+z
+
+Scale
+
+x
+z
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Orthographic Projection
+• Transformation matrix?
+- Translate (center to origin) first, then scale (length/width/height to 2)
+2 2
+
+r l
+
+6 0
+Mortho = 6
+4 0
+0
+
+<latexit sha1_base64="u8/BLw7fEet5/HcZUdx/JAiPmO8=">AAAC+XicbZJNaxsxEIa124+k7kec5tiLqEkpGJtVKDSXQmgvuRRSqJOA1xitrLVFtNIizYYaoX/SSw8tpdf+k976byrbG2OvOzDwMs+r0eysslIKC0nyN4rv3X/wcG//Uevxk6fPDtqHzy+trgzjA6alNtcZtVwKxQcgQPLr0nBaZJJfZTcfFvzqlhsrtPoM85KPCjpVIheMQiiND6ODj2OnDcy0f5dmfCqUywoKRnzxOM0NZe7EO9OTHr/CyTrTdCnWBuhlvgm3DKqX+yZcJEm5mqxvbA5ANpy9VS/TlT40vOtDtil0s01656ip6uZNujvDuN1J+sky8K4gteigOi7G7T/pRLOq4AqYpNYOSVLCyFEDgknuW2lleUnZDZ3yYZCKFtyO3PLPeXwcKhOcaxNSAV5WN084Wlg7L8J2j8N8M9tki+L/2LCC/HTkhCor4IqtLsoriUHjxTPAE2E4AzkPgjIjwqyYzWjYEoTH0gpLIM1P3hWXJ32S9MmnN52z9/U69tEL9BK9RgS9RWfoHF2gAWLRbfQ1+h79iF38Lf4Z/1pZ46g+c4S2Iv79D5zd3MY=</latexit>
+
+t
+
+f
+
+l
+
+r
+z
+
+GAMES101
+
+0
+0
+
+2
+t b
+
+2
+
+0
+0
+
+n f
+
+0
+
+0
+1
+60
+07
+76
+05 40
+1 0
+
+0
+1
+0
+0
+
+0
+0
+1
+0
+
+3
+
+r+l
+2
+t+b 7
+2 7
+n+f 5
+2
+
+1
+
+y
+
+y
+
+n
+b
+
+0
+
+32
+
+y
+
+Translate
+x
+
+x
+z
+
+Scale
+
+x
+z
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Orthographic Projection
+• Caveat
+- Looking at / along -Z is making near and far not intuitive (n > f)
+- FYI: that’s why OpenGL (a Graphics API) uses left hand coords.
+t
+
+f
+
+y
+
+y
+
+n
+l
+
+r
+z
+
+GAMES101
+
+b
+
+y
+
+Translate
+x
+
+x
+z
+
+Scale
+
+x
+z
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• Most common in Computer Graphics, art, visual system
+• Further objects are smaller
+• Parallel lines not parallel; converge to single point
+Image
+Plane Plane, or
+of Pro
+jection
+
+A
+A’
+B
+B’
+
+Center of projection
+(camera/eye location)
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• Euclid was wrong??!!
+
+https://en.wikipedia.org/wiki/Parallel_(geometry)
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• Before we move on
+• Recall: property of homogeneous coordinates
+- (x, y, z, 1), (kx, ky, kz, k != 0), (xz, yz, z2, z != 0) all represent
+the same point (x, y, z) in 3D
+
+- e.g. (1, 0, 0, 1) and (2, 0, 0, 2) both represent (1, 0, 0)
+
+• Simple, but useful
+
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• How to do perspective projection
+- First “squish” the frustum into a cuboid (n -> n, f -> f) (Mpersp->ortho)
+- Do orthographic projection (Mortho, already known!)
+
+Frustum
+
+Cuboid
+
+n
+
+f
+
+n
+
+f
+
+Fig. 7.13 from Fundamentals of Computer Graphics, 4th Edition
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• In order to find a transformation
+- Recall the key idea: Find the relationship between transformed
+points (x’, y’, z’) and the original points (x, y, z)
+Y
+
+(x, y, z)
+(x’, y’, z’)
+
+similar
+triangle
+
+n
+y = y
+z
+0
+
+Z
+n
+
+<latexit sha1_base64="gYCqVp7QCzxySMpbJ4utMPl9GkQ=">AAAB+HicbVBNS8NAEJ3Ur1o/GvXoZbGInkoigl6EohePFewHtKFstpt26WYTdjdCGvJLvHhQxKs/xZv/xm2bg7Y+GHi8N8PMPD/mTGnH+bZKa+sbm1vl7crO7t5+1T44bKsokYS2SMQj2fWxopwJ2tJMc9qNJcWhz2nHn9zN/M4TlYpF4lGnMfVCPBIsYARrIw3sanp20w8kJpnIs2meDuyaU3fmQKvELUgNCjQH9ld/GJEkpEITjpXquU6svQxLzQineaWfKBpjMsEj2jNU4JAqL5sfnqNTowxREElTQqO5+nsiw6FSaeibzhDrsVr2ZuJ/Xi/RwbWXMREnmgqyWBQkHOkIzVJAQyYp0Tw1BBPJzK2IjLGJQZusKiYEd/nlVdK+qLtO3X24rDVuizjKcAwncA4uXEED7qEJLSCQwDO8wps1tV6sd+tj0Vqyipkj+APr8wcmipNn</latexit>
+
+z
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• In order to find a transformation
+- Find the relationship between transformed points (x’, y’, z’)
+and the original points (x, y, z)
+
+n
+y = y
+z
+0
+
+<latexit sha1_base64="gYCqVp7QCzxySMpbJ4utMPl9GkQ=">AAAB+HicbVBNS8NAEJ3Ur1o/GvXoZbGInkoigl6EohePFewHtKFstpt26WYTdjdCGvJLvHhQxKs/xZv/xm2bg7Y+GHi8N8PMPD/mTGnH+bZKa+sbm1vl7crO7t5+1T44bKsokYS2SMQj2fWxopwJ2tJMc9qNJcWhz2nHn9zN/M4TlYpF4lGnMfVCPBIsYARrIw3sanp20w8kJpnIs2meDuyaU3fmQKvELUgNCjQH9ld/GJEkpEITjpXquU6svQxLzQineaWfKBpjMsEj2jNU4JAqL5sfnqNTowxREElTQqO5+nsiw6FSaeibzhDrsVr2ZuJ/Xi/RwbWXMREnmgqyWBQkHOkIzVJAQyYp0Tw1BBPJzK2IjLGJQZusKiYEd/nlVdK+qLtO3X24rDVuizjKcAwncA4uXEED7qEJLSCQwDO8wps1tV6sd+tj0Vqyipkj+APr8wcmipNn</latexit>
+
+n
+x = x (similar to y’)
+z
+0
+
+<latexit sha1_base64="9Vy/9JhE+ej/RY4O2ZmdE3kknpU=">AAAB+HicbVBNS8NAEJ3Ur1o/GvXoZbGInkoigl6EohePFewHtKFstpt26WYTdjfSNuSXePGgiFd/ijf/jds2B219MPB4b4aZeX7MmdKO820V1tY3NreK26Wd3b39sn1w2FRRIgltkIhHsu1jRTkTtKGZ5rQdS4pDn9OWP7qb+a0nKhWLxKOexNQL8UCwgBGsjdSzy+Ozm24gMUlFlk6zcc+uOFVnDrRK3JxUIEe9Z391+xFJQio04VipjuvE2kux1IxwmpW6iaIxJiM8oB1DBQ6p8tL54Rk6NUofBZE0JTSaq78nUhwqNQl90xliPVTL3kz8z+skOrj2UibiRFNBFouChCMdoVkKqM8kJZpPDMFEMnMrIkNsYtAmq5IJwV1+eZU0L6quU3UfLiu12zyOIhzDCZyDC1dQg3uoQwMIJPAMr/BmTa0X6936WLQWrHzmCP7A+vwBI3STZQ==</latexit>
+
+• In homogeneous coordinates,
+
+0 1
+0
+1 mult. 0
+1
+x
+nx/z
+nx
+By C
+B ny/z C by z B
+C
+ny
+B C)B
+C == B
+C
+@z A
+@unknownA
+@still unknownA
+1
+1
+z
+<latexit sha1_base64="nZO54NGfca8TDoXBiZdVBA1kZVc=">AAACrHicbVFNTxsxEPVuvyD9SuHIxWpUqb2ku6gSXJBQuXArIAKp4lXkdWYTK157Zc+WLKv8uv4Dbv03eJOoCgkjefz0ZubZM5MWSjqMon9B+OLlq9dvdnZbb9+9//Cx/WnvxpnSCugJo4ztp9yBkhp6KFFBv7DA81TBbTo9a+K3f8A6afQ1VgUkOR9rmUnB0VPD9l+Wwljqusg5WjmbzyhjtGrcfeNiBnr0P0jZlRxPkFtr7uhGoZ59X1Toankzz09sXpd6qs2dnj+jdnKyLbKUWBdwKJVilK4L3T8RGrY7UTdaGN0G8Qp0yMouhu0HNjKizEGjUNy5QRwVmNTcohQK5i1WOii4mPIxDDzUPAeX1Ithz+kXz4xoZqw/GumCXa+oee5clac+s+nAbcYa8rnYoMTsOKmlLkoELZYPZaWiaGizOTqSFgSqygMurPR/pWLCLRfo99vyQ4g3W94GN4fdOOrGlz86pz9X49ghB+Qz+UpickROyTm5ID0igm/Br6Af/A674XU4CJNlahisavbJEwuzR7Y51SQ=</latexit>
+
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• So the “squish” (persp to ortho) projection does this
+0 1 0
+1
+x
+nx
+By C B ny C
+(4⇥4)
+C=B
+C
+Mpersp!ortho B
+@ z A @unknownA
+1
+z
+<latexit sha1_base64="9YCEgySZyET2l27Cv8DYo61N3vw=">AAACfnicbVHLThsxFPVMXzSlbSjLbtxGINqq6QyKBJtKqN2wQaJSA0hxGnmcm8SKx7bsO0A6ms/gx9jxLd3UM0QVhF7J1tE599j3kVklPSbJTRQ/evzk6bO1560X6y9fvW5vvDnxpnAC+sIo484y7kFJDX2UqODMOuB5puA0m3+v9dNzcF4a/RMXFoY5n2o5kYJjoEbtq6NRaYNuKXNyOkPunLmgxuHMVL/KnR5DmYOnvQ8Vy2AqdWlzjk5eVpeUMbqor9/1lTLQ438i/UpX0nWTrxsDC9zM5WWh59pc6Kp55J5/1O4k3aQJ+hCkS9Ahyzgeta/Z2IgiB41Cce8HaWJxWHKHUiioWqzwYLmY8ykMAtQ8NDUsm/FVdCswYzoxLhyNtGHvOkqee7/Is5BZV+5XtZr8nzYocLI/LKW2BYIWtx9NCkXR0HoXdCwdCFSLALhwMtRKxYw7LjBspBWGkK62/BCc7HbTpJv+6HUOvi3HsUbekvdkh6RkjxyQQ3JM+kSQP9G76GP0KSbxdvw5/nKbGkdLzya5F/H+Xzk1wwo=</latexit>
+
+• Already good enough to figure out part of Mpersp->ortho
+0
+n
+B0
+Mpersp!ortho = B
+@?
+0
+<latexit sha1_base64="5wR38YN7MeBsxyA3t6hOFh5Zdpo=">AAACYXicbVBNTxsxEPVuUz5CgYUec7GIQJyiXYREL1URvfRSKZUIRMpGkdeZJBZe27JnKdEqf7K3XrjwR+oNqzR8jPTkp/dm7PHLjBQO4/hvEH5ofNzY3Npu7nza3duPDg5vnC4shx7XUtt+xhxIoaCHAiX0jQWWZxJus7vvlX97D9YJra5xbmCYs6kSE8EZemkUPfwclcb7hqZWTGfIrNW/qbY404uvaQZToUqTM7TiYaHoCY1XSNMlUevCN0/+o+6okFRnCmq8umwUteNOvCz6liQ1aZO6uqPoTzrWvMhBIZfMuUESGxyWzKLgEhbNtHBgGL9jUxh4qlgOblguE1rQY6+M6URbD4V0qa5PlCx3bp5nvtPvN3OvvUp8zxsUOPkyLIUyBYLizw9NCklR0ypuOhYWOMq5J4xb4XelfMYs4+hDb/oQktdffktuzjpJ3El+nbcvr+o4tkiLHJFTkpALckl+kC7pEU4eg0awG+wFT+F2GIWHz61hUM98Ji8qbP0DL02s1Q==</latexit>
+
+GAMES101
+
+32
+
+1
+
+0 0 0
+n 0 0C
+C
+? ? ?A
+0 1 0
+
+WHY?
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• How to figure out the third row of Mpersp->ortho
+
+0
+- Any information that we can use?
+n
+B0
+Mpersp!ortho = B
+@?
+0
+<latexit sha1_base64="5wR38YN7MeBsxyA3t6hOFh5Zdpo=">AAACYXicbVBNTxsxEPVuUz5CgYUec7GIQJyiXYREL1URvfRSKZUIRMpGkdeZJBZe27JnKdEqf7K3XrjwR+oNqzR8jPTkp/dm7PHLjBQO4/hvEH5ofNzY3Npu7nza3duPDg5vnC4shx7XUtt+xhxIoaCHAiX0jQWWZxJus7vvlX97D9YJra5xbmCYs6kSE8EZemkUPfwclcb7hqZWTGfIrNW/qbY404uvaQZToUqTM7TiYaHoCY1XSNMlUevCN0/+o+6okFRnCmq8umwUteNOvCz6liQ1aZO6uqPoTzrWvMhBIZfMuUESGxyWzKLgEhbNtHBgGL9jUxh4qlgOblguE1rQY6+M6URbD4V0qa5PlCx3bp5nvtPvN3OvvUp8zxsUOPkyLIUyBYLizw9NCklR0ypuOhYWOMq5J4xb4XelfMYs4+hDb/oQktdffktuzjpJ3El+nbcvr+o4tkiLHJFTkpALckl+kC7pEU4eg0awG+wFT+F2GIWHz61hUM98Ji8qbP0DL02s1Q==</latexit>
+
+• Observation: the third row is responsible for z’
+
+1
+
+0 0 0
+n 0 0C
+C
+? ? ?A
+0 1 0
+
+- Any point on the near plane will not change
+- Any point’s z on the far plane will not change
+
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• Any point on the near plane will not change
+0 1
+0 1
+0 1
+0 1 0
+1
+x
+x
+nx
+x
+nx
+replace
+B
+C
+B
+C
+B
+C
+B
+C
+B
+C
+z
+with
+n
+y
+y
+ny
+y C B ny C
+(4⇥4)
+B C ) B C == B 2 C
+B
+Mpersp!ortho @ A = @
+@n A
+@n A
+@n A
+z
+unknownA
+1
+1
+n
+1
+z
+<latexit sha1_base64="Rgv8ma+pWaANoPAAKsPdBWNLMVw=">AAACg3iclVFNTwIxEO2uoohfqEcvjURjYoK7hEQvJEQvHtHIR8Ii6ZYBGrrdTdtVyIY/4s/y5r+xuxCj4MVJOn15b146nfEjzpR2nE/L3tjMbW3ndwq7e/sHh8Wj45YKY0mhSUMeyo5PFHAmoKmZ5tCJJJDA59D2J/ep3n4FqVgonvUsgl5ARoINGSXaUP3iu+fDiIkkCoiWbDqfYs/DszSJNLkeiMG3iL0nNhprImX4hv9lrNXwqkFkDrGwvFSy65epXyw5ZScLvA7cJSihZTT6xQ9vENI4AKEpJ0p1XSfSvYRIzSiHecGLFUSETsgIugYKEoDqJdkM5/jcMAM8DKU5QuOM/elISKDULPBNpelvrFa1lPxL68Z6eNtLmIhiDYIuHhrGHOsQpwvBAyaBaj4zgFDJTK+YjokkVJu1FcwQ3NUvr4NWpew6ZfexWqrfLceRR6foDF0iF92gOnpADdRE1ELWhXVtOXbOvrIrdnVRaltLzwn6FXbtC3MlwjI=</latexit>
+
+<latexit sha1_base64="9YCEgySZyET2l27Cv8DYo61N3vw=">AAACfnicbVHLThsxFPVMXzSlbSjLbtxGINqq6QyKBJtKqN2wQaJSA0hxGnmcm8SKx7bsO0A6ms/gx9jxLd3UM0QVhF7J1tE599j3kVklPSbJTRQ/evzk6bO1560X6y9fvW5vvDnxpnAC+sIo484y7kFJDX2UqODMOuB5puA0m3+v9dNzcF4a/RMXFoY5n2o5kYJjoEbtq6NRaYNuKXNyOkPunLmgxuHMVL/KnR5DmYOnvQ8Vy2AqdWlzjk5eVpeUMbqor9/1lTLQ438i/UpX0nWTrxsDC9zM5WWh59pc6Kp55J5/1O4k3aQJ+hCkS9Ahyzgeta/Z2IgiB41Cce8HaWJxWHKHUiioWqzwYLmY8ykMAtQ8NDUsm/FVdCswYzoxLhyNtGHvOkqee7/Is5BZV+5XtZr8nzYocLI/LKW2BYIWtx9NCkXR0HoXdCwdCFSLALhwMtRKxYw7LjBspBWGkK62/BCc7HbTpJv+6HUOvi3HsUbekvdkh6RkjxyQQ3JM+kSQP9G76GP0KSbxdvw5/nKbGkdLzya5F/H+Xzk1wwo=</latexit>
+
+(0 0 A B)
+• So the third row must be of the0form
+1
+
+0
+
+<latexit sha1_base64="qVcHsPCvwxEnxEvGQyxpiwV+lqE=">AAACRXicbVBNSwMxEM36WevXqkcvwaJ4KrtF0ItQ68VjBfsB3Vqy6bQNzWaXJCstS/+cF+/e/AdePCjiVbNtEds6MMPjvTdk8vyIM6Ud58VaWl5ZXVvPbGQ3t7Z3du29/aoKY0mhQkMeyrpPFHAmoKKZ5lCPJJDA51Dz+9epXnsAqVgo7vQwgmZAuoJ1GCXaUC3b83zoMpFEAdGSDUYOPsFpX5kueSDav8qccYA9Dw/TIdLhznjxJcbivtCyc07eGRdeBO4U5NC0yi372WuHNA5AaMqJUg3XiXQzIVIzymGU9WIFEaF90oWGgYIEoJrJOIURPjZMG3dCaVpoPGb/biQkUGoY+MZpzuypeS0l/9Mase5cNBMmoliDoJOHOjHHOsRppLjNJFDNhwYQKpm5FdMekYRqE3zWhODOf3kRVAt518m7t2e5YmkaRwYdoiN0ilx0joroBpVRBVH0iF7RO/qwnqw369P6mliXrOnOAZop6/sHM0SwRw==</latexit>
+
+GAMES101
+
+0
+
+A
+
+x
+By C
+2
+B
+C
+B @ A=n
+n
+1
+34
+
+n2 has nothing
+to do with x and y
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• What do we have now?
+0 0
+<latexit sha1_base64="qVcHsPCvwxEnxEvGQyxpiwV+lqE=">AAACRXicbVBNSwMxEM36WevXqkcvwaJ4KrtF0ItQ68VjBfsB3Vqy6bQNzWaXJCstS/+cF+/e/AdePCjiVbNtEds6MMPjvTdk8vyIM6Ud58VaWl5ZXVvPbGQ3t7Z3du29/aoKY0mhQkMeyrpPFHAmoKKZ5lCPJJDA51Dz+9epXnsAqVgo7vQwgmZAuoJ1GCXaUC3b83zoMpFEAdGSDUYOPsFpX5kueSDav8qccYA9Dw/TIdLhznjxJcbivtCyc07eGRdeBO4U5NC0yi372WuHNA5AaMqJUg3XiXQzIVIzymGU9WIFEaF90oWGgYIEoJrJOIURPjZMG3dCaVpoPGb/biQkUGoY+MZpzuypeS0l/9Mase5cNBMmoliDoJOHOjHHOsRppLjNJFDNhwYQKpm5FdMekYRqE3zWhODOf3kRVAt518m7t2e5YmkaRwYdoiN0ilx0joroBpVRBVH0iF7RO/qwnqw369P6mliXrOnOAZop6/sHM0SwRw==</latexit>
+
+0 1
+x
+By C
+C = n2
+A B B
+@n A
+1
+
+An + B = n
+
+2
+
+<latexit sha1_base64="cV93bogGcvzIGlyEVosDDkQywA8=">AAAB83icbVDLSgNBEOz1GeMr6tHLYBAEIewGQS9CjBePEcwDkjXMTnqTIbOzy8ysEEJ+w4sHRbz6M978GyfJHjSxoKGo6qa7K0gE18Z1v52V1bX1jc3cVn57Z3dvv3Bw2NBxqhjWWSxi1QqoRsEl1g03AluJQhoFApvB8HbqN59QaR7LBzNK0I9oX/KQM2qs1LmR5JxUyTWRj+VuoeiW3BnIMvEyUoQMtW7hq9OLWRqhNExQrduemxh/TJXhTOAk30k1JpQNaR/blkoaofbHs5sn5NQqPRLGypY0ZKb+nhjTSOtRFNjOiJqBXvSm4n9eOzXhlT/mMkkNSjZfFKaCmJhMAyA9rpAZMbKEMsXtrYQNqKLM2JjyNgRv8eVl0iiXPLfk3V8UK9UsjhwcwwmcgQeXUIE7qEEdGCTwDK/w5qTOi/PufMxbV5xs5gj+wPn8ASPyj8k=</latexit>
+
+• Any point’s z on the far plane will not change
+0 1
+0 1
+0 1
+0
+0
+0
+B0C
+B0C
+B0C
+B C ) B C == B 2 C
+@f A
+@f A
+@f A
+1
+1
+f
+
+Af + B = f 2
+<latexit sha1_base64="dUsWxJ1iy60PPvO5Ug0Huo9Tni8=">AAAB83icbVDLSgNBEOz1GeMr6tHLYBAEIewGQS9CjBePEcwDkjXMTnqTIbOzy8ysEEJ+w4sHRbz6M978GyfJHjSxoKGo6qa7K0gE18Z1v52V1bX1jc3cVn57Z3dvv3Bw2NBxqhjWWSxi1QqoRsEl1g03AluJQhoFApvB8HbqN59QaR7LBzNK0I9oX/KQM2qs1LkJyTmpkmsSPpa7haJbcmcgy8TLSBEy1LqFr04vZmmE0jBBtW57bmL8MVWGM4GTfCfVmFA2pH1sWypphNofz26ekFOr9EgYK1vSkJn6e2JMI61HUWA7I2oGetGbiv957dSEV/6YyyQ1KNl8UZgKYmIyDYD0uEJmxMgSyhS3txI2oIoyY2PK2xC8xZeXSaNc8tySd39RrFSzOHJwDCdwBh5cQgXuoAZ1YJDAM7zCm5M6L8678zFvXXGymSP4A+fzBwtSj7k=</latexit>
+
+<latexit sha1_base64="m2OuDPSbSe1+rLBFqELXXuZdYDk=">AAACgXiclVFNSwMxEM1u/aj1q+rRS7AKerDsFkFBCkUvHqtYW+jWkk1n29Bsdkmyaln6P/xd3vwzYrotYq0IDmTyeG8emcz4MWdKO867ZeeWlldW82uF9Y3Nre3izu6DihJJoUEjHsmWTxRwJqChmebQiiWQ0OfQ9IfXE735BFKxSNzrUQydkPQFCxgl2lDd4qvnQ5+JNA6Jluxl7GDPw1kKJsn1QPS+ROzdsf5AEymjZ/wvY7WK/zA8VrJrztItlpyykwVeBO4MlNAs6t3im9eLaBKC0JQTpdquE+tOSqRmlMO44CUKYkKHpA9tAwUJQXXSbIJjfGSYHg4iaY7QOGO/O1ISKjUKfVNp+huon9qE/E1rJzq46KRMxIkGQacPBQnHOsKTdeAek0A1HxlAqGSmV0wHRBKqzdIKZgjuzy8vgodK2XXK7u1ZqXY1G0ce7aMDdIxcdI5q6AbVUQNR9GEdWqdW2c7ZJ7ZjV6altjXz7KG5sC8/AUJ+wG4=</latexit>
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• Solve for A and B
+An + B = n2
+
+A=n+f
+B = nf
+
+<latexit sha1_base64="cV93bogGcvzIGlyEVosDDkQywA8=">AAAB83icbVDLSgNBEOz1GeMr6tHLYBAEIewGQS9CjBePEcwDkjXMTnqTIbOzy8ysEEJ+w4sHRbz6M978GyfJHjSxoKGo6qa7K0gE18Z1v52V1bX1jc3cVn57Z3dvv3Bw2NBxqhjWWSxi1QqoRsEl1g03AluJQhoFApvB8HbqN59QaR7LBzNK0I9oX/KQM2qs1LmR5JxUyTWRj+VuoeiW3BnIMvEyUoQMtW7hq9OLWRqhNExQrduemxh/TJXhTOAk30k1JpQNaR/blkoaofbHs5sn5NQqPRLGypY0ZKb+nhjTSOtRFNjOiJqBXvSm4n9eOzXhlT/mMkkNSjZfFKaCmJhMAyA9rpAZMbKEMsXtrYQNqKLM2JjyNgRv8eVl0iiXPLfk3V8UK9UsjhwcwwmcgQeXUIE7qEEdGCTwDK/w5qTOi/PufMxbV5xs5gj+wPn8ASPyj8k=</latexit>
+
+Af + B = f
+
+<latexit sha1_base64="1zIaFRyhT2WN+k3aHKqzTsYGb10=">AAAB8HicbVDLSgNBEOz1GeMr6tHLYBAEIeyKoBch6sVjBPOQZAmzk9lkyDyWmVkhLPkKLx4U8ernePNvnCR70MSChqKqm+6uKOHMWN//9paWV1bX1gsbxc2t7Z3d0t5+w6hUE1oniivdirChnElat8xy2ko0xSLitBkNbyd+84lqw5R8sKOEhgL3JYsZwdZJj9foCkl0iuJuqexX/CnQIglyUoYctW7pq9NTJBVUWsKxMe3AT2yYYW0Z4XRc7KSGJpgMcZ+2HZVYUBNm04PH6NgpPRQr7UpaNFV/T2RYGDMSkesU2A7MvDcR//PaqY0vw4zJJLVUktmiOOXIKjT5HvWYpsTykSOYaOZuRWSANSbWZVR0IQTzLy+Sxlkl8CvB/Xm5epPHUYBDOIITCOACqnAHNagDAQHP8ApvnvZevHfvY9a65OUzB/AH3ucPYuWO0Q==</latexit>
+
+2
+
+<latexit sha1_base64="Df63RBUG32geAUdl7q2iGx/W34A=">AAAB7nicbVBNS8NAEJ3Ur1q/qh69LBbBiyURQS9CqRePFewHtKFstpN26WYTdjdCCf0RXjwo4tXf481/47bNQVsfDDzem2FmXpAIro3rfjuFtfWNza3idmlnd2//oHx41NJxqhg2WSxi1QmoRsElNg03AjuJQhoFAtvB+G7mt59QaR7LRzNJ0I/oUPKQM2qs1K6TW3Ihw3654lbdOcgq8XJSgRyNfvmrN4hZGqE0TFCtu56bGD+jynAmcFrqpRoTysZ0iF1LJY1Q+9n83Ck5s8qAhLGyJQ2Zq78nMhppPYkC2xlRM9LL3kz8z+umJrzxMy6T1KBki0VhKoiJyex3MuAKmRETSyhT3N5K2IgqyoxNqGRD8JZfXiWty6rnVr2Hq0qtnsdRhBM4hXPw4BpqcA8NaAKDMTzDK7w5ifPivDsfi9aCk88cwx84nz+5RI6A</latexit>
+
+<latexit sha1_base64="dUsWxJ1iy60PPvO5Ug0Huo9Tni8=">AAAB83icbVDLSgNBEOz1GeMr6tHLYBAEIewGQS9CjBePEcwDkjXMTnqTIbOzy8ysEEJ+w4sHRbz6M978GyfJHjSxoKGo6qa7K0gE18Z1v52V1bX1jc3cVn57Z3dvv3Bw2NBxqhjWWSxi1QqoRsEl1g03AluJQhoFApvB8HbqN59QaR7LBzNK0I9oX/KQM2qs1LkJyTmpkmsSPpa7haJbcmcgy8TLSBEy1LqFr04vZmmE0jBBtW57bmL8MVWGM4GTfCfVmFA2pH1sWypphNofz26ekFOr9EgYK1vSkJn6e2JMI61HUWA7I2oGetGbiv957dSEV/6YyyQ1KNl8UZgKYmIyDYD0uEJmxMgSyhS3txI2oIoyY2PK2xC8xZeXSaNc8tySd39RrFSzOHJwDCdwBh5cQgXuoAZ1YJDAM7zCm5M6L8678zFvXXGymSP4A+fzBwtSj7k=</latexit>
+
+• Finally, every entry in Mpersp->ortho is known!
+• What’s next?
+- Do orthographic projection (Mortho) to finish
+- Mpersp = Mortho Mpersp!ortho
+<latexit sha1_base64="WpPNOtMiJjLpI1J0etlrsOBg8DM=">AAACFnicbZDLSgMxFIYz9VbrrerSTbAIbiwzIuhGKLpxI1SwF2hLyaSZTmgmGZIzShnmKdz4Km5cKOJW3Pk2phdBWw8EPv7/HE7O78eCG3DdLye3sLi0vJJfLaytb2xuFbd36kYlmrIaVULppk8ME1yyGnAQrBlrRiJfsIY/uBz5jTumDVfyFoYx60SkL3nAKQErdYtH1900tn6cnVtSGkKV/UhtzfshEK3VPZ443WLJLbvjwvPgTaGEplXtFj/bPUWTiEmgghjT8twYOinRwKlgWaGdGBYTOiB91rIoScRMJx2fleEDq/RwoLR9EvBY/T2RksiYYeTbzohAaGa9kfif10ogOOukXMYJMEkni4JEYFB4lBHucc0oiKEFQjW3f8U0JJpQsLEUbAje7MnzUD8ue27ZuzkpVS6mceTRHtpHh8hDp6iCrlAV1RBFD+gJvaBX59F5dt6c90lrzpnO7KI/5Xx8A9QUoQc=</latexit>
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+
+

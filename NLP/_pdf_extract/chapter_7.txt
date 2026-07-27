@@ -1,0 +1,1154 @@
+Pages: 107
+
+--- Page 1 ---
+自然语言处理
+循环神经网络
+7.
+虞剑飞
+南京大学智能科学与技术学院
+2026.4.29
+2026/4/28 《自然语言处理课件》by 虞剑飞 1
+
+--- Page 2 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+2026/4/28 《自然语言处理课件》by 虞剑飞 2
+
+--- Page 3 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+2026/4/28 《自然语言处理课件》by 虞剑飞 3
+
+--- Page 4 ---
+引言
+• 前向神经网络
+– 相邻两层之间存在单向连接，每层的节点之间是无连接的（无循环）
+• 输入和输出的维数都是固定的，不能任意改变
+• 无法处理变长序列数据
+(a) 全连接层
+(b) 卷积层
+2026/4/28 《自然语言处理课件》by 虞剑飞 4
+
+--- Page 5 ---
+引言
+• 前向神经网络
+– 假设每次输入都是独立的，也就是说每次网络的输出只依赖于当前的输
+入。
+2026/4/28 《自然语言处理课件》by 虞剑飞 5
+
+--- Page 6 ---
+引言
+• 如何给网络增加记忆能力？
+– 延时神经网络（Time Delay Neural
+Network，TDNN）
+• 建立一个额外的延时单元，用来存
+储网络的历史信息（可以包括输入、
+输出、隐状态等）
+(𝑙) 𝑙−1 𝑙−1 (𝑙−1)
+𝒉 = 𝑓(𝒉 , 𝒉 , ⋯ , 𝒉
+)
+𝑡 𝑡 𝑡−1 𝑡−𝐾
+• 这样，前馈网络就具有了短期记忆
+的能力。
+https://www.researchgate.net/publication/12314435_Neural_s
+ystem_identification_model_of_human_sound_localization
+2026/4/28 《自然语言处理课件》by 虞剑飞 6
+
+--- Page 7 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+2026/4/28 《自然语言处理课件》by 虞剑飞 7
+
+--- Page 8 ---
+循环神经网络
+• 循环神经网络（Recurrent Neural Network, RNN）
+– 通过使用带自反馈的神经元，能够处理任意长度的时序数据。
+𝒉 = 𝑓(𝒉 , 𝒙 )
+𝑡 𝑡−1 𝑡
+– 循环神经网络比前馈神经网络更加符合生物神经网络的结构。
+– 循环神经网络已经被广泛应用在语音识别、语言模型以及自
+然语言生成等任务上
+2026/4/28 《自然语言处理课件》by 虞剑飞 8
+
+--- Page 9 ---
+循环神经网络
+• 循环神经网络（Recurrent Neural Network, RNN）
+– 按时间展开
+2026/4/28 《自然语言处理课件》by 虞剑飞 9
+
+--- Page 10 ---
+循环神经网络
+• 简单循环网络（Simple Recurrent Neural Network, SRNN）
+– 状态更新：
+𝒉 = 𝑓(𝑼𝒉 + 𝑾𝒙 + 𝒃)
+𝑡 𝑡−1 𝒕
+2026/4/28 《自然语言处理课件》by 虞剑飞 10
+
+--- Page 11 ---
+循环神经网络
+• 应用到基于机器学习的自然语言处理任务
+– 序列到类别
+– 同步的序列到序列模式
+– 异步的序列到序列模式
+2026/4/28 《自然语言处理课件》by 虞剑飞 11
+
+--- Page 12 ---
+循环神经网络
+• 应用到基于机器学习的自然语言处理任务
+– 序列到类别
+2026/4/28 《自然语言处理课件》by 虞剑飞 12
+
+--- Page 13 ---
+循环神经网络
+• 应用到基于机器学习的自然语言处理任务
+带着愉悦的心情
+看了这部电影
+– 例如情感分类
+Positive (正面)
+Positive (正面)
+这部电影太糟了
+Negative (负面)
+…
+…
+我 觉 得 太 好 了
+2026/4/28 《自然语言处理课件》by 虞剑飞 13
+
+--- Page 14 ---
+循环神经网络
+• 应用到基于机器学习的自然语言处理任务
+– 同步的序列到序列模式
+2026/4/28 《自然语言处理课件》by 虞剑飞 14
+
+--- Page 15 ---
+循环神经网络
+• 应用到基于机器学习的自然语言处理任务
+– 例如中文分词
+S S S B E B E
+他 说 的 确 实 在 理
+2026/4/28 《自然语言处理课件》by 虞剑飞 15
+
+--- Page 16 ---
+循环神经网络
+• 应用到基于机器学习的自然语言处理任务
+– 异步的序列到序列模式
+2026/4/28 《自然语言处理课件》by 虞剑飞 16
+
+--- Page 17 ---
+循环神经网络
+• 应用到基于机器学习的自然语言处理任务
+– 例如机器翻译
+机 器 学 习 。
+m l
+e
+<
+a a
+e
+c r
+h n o
+i i s
+n n >
+e g
+2026/4/28 《自然语言处理课件》by 虞剑飞 17
+
+--- Page 18 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+2026/4/28 《自然语言处理课件》by 虞剑飞 18
+
+--- Page 19 ---
+循环神经网络
+• 参数学习
+– 给定一个训练样本(𝒙, 𝒚)，其中
+• 𝒙 = (𝒙 , ⋯, 𝒙 ) 为长度是T 的输入序列，
+1 𝑻
+• 𝒚 = 𝒚 , ⋯, 𝒚 是长度为T 的标签序列。
+1 𝑻
+– 时刻t的瞬时损失函数为 ℒ = ℒ(𝒚 , 𝑔 𝒉 )
+𝑡 𝑡 𝑡
+𝑇
+– 总损失函数为 ℒ = ෍ ℒ
+𝑡
+𝑡=1
+2026/4/28 《自然语言处理课件》by 虞剑飞 19
+
+--- Page 20 ---
+循环神经网络
+• 参数学习
+– 梯度：随时间反向传播算法 (Back Propagation Through Time, BPTT)
+𝒉 = 𝑓 𝒛 ; 𝒛 = 𝑼𝒉 + 𝑾𝒙 + 𝒃
+𝑡 𝑡 𝑡 𝑡−1 𝑡
+𝑇 𝑡 𝑡−1
+𝜕ℒ
+= ෍ ෍ 𝛿 𝒉 𝑇 𝛿 = 𝛿 ෑ( 𝑼 𝑇 𝑓 ′ (𝒛 ))
+𝑡,𝑘 𝑘−1 𝑡,𝑘 𝑡,𝑡 𝜏
+𝜕𝑈
+𝑡=1 𝑘=1 𝜏=𝑘
+δ 为第t时刻的损失对第k步隐藏神经元的净输入z 的导数
+t,k k
+2026/4/28 《自然语言处理课件》by 虞剑飞 20
+
+--- Page 21 ---
+循环神经网络
+• 梯度消失/爆炸
+– 梯度
+𝑇 𝑡
+𝜕ℒ
+𝑇
+= ෍ ෍ 𝛿 𝒉
+𝑡,𝑘 𝑘−1
+𝜕𝑈
+𝑡=1 𝑘=1
+– 其中
+𝑡−1
+𝑇 ′
+𝛿 = 𝛿 ෑ( 𝑼 𝑓 (𝒛 ))
+𝑡,𝑘 𝑡,𝑡 𝜏
+𝜏=𝑘 𝜸
+𝑡−𝑘
+≅ 𝛿 𝜸
+𝑡,𝑡
+由于梯度爆炸或消失问题，实际上只能学习到短周期的依
+赖关系。这就是所谓的长程依赖问题。
+2026/4/28 《自然语言处理课件》by 虞剑飞 21
+
+--- Page 22 ---
+循环神经网络
+• 长程依赖问题
+– 循环神经网络在时间维度上非常深
+• 梯度消失或梯度爆炸
+• 如何改进？
+– 梯度爆炸问题
+• 权重衰减
+• 梯度截断
+– 梯度消失问题
+• 改进模型
+2026/4/28 《自然语言处理课件》by 虞剑飞 22
+
+--- Page 23 ---
+循环神经网络
+• 改进方法
+𝑡−1
+– 循环边改为线性依赖关系
+𝑇 ′
+𝛿 = 𝛿 ෑ( 𝑼 𝑓 (𝒛 ))
+𝑡,𝑘 𝑡,𝑡 𝜏
+𝜸
+𝒉 = 𝑓(𝑼𝒉 + 𝑾𝒙 + 𝒃) 𝜏=𝑘
+𝑡 𝑡−1 𝑡
+𝑡−𝑘
+≅ 𝛿 𝜸
+𝑡,𝑡
+𝒉 = 𝒉 + 𝑾𝒙 + 𝒃
+𝑡 𝑡−1 𝑡
+𝒉 = 𝒉 + 𝒈(𝒙 ; 𝜃)
+𝑡 𝑡−1 𝑡
+– 增加非线性
+𝒉 = 𝒉 + 𝒈(𝒙 , 𝒉 ; 𝜃)
+𝑡 𝑡−1 𝑡 𝑡−1
+2026/4/28 《自然语言处理课件》by 虞剑飞 23
+
+--- Page 24 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+2026/4/28 《自然语言处理课件》by 虞剑飞 24
+
+--- Page 25 ---
+基于门控的循环神经网络
+• 门控机制
+– 长程依赖问题
+– 门控机制
+• 控制信息的累积速度，包括有选择地加入新的信息，并有选择地遗忘之前历
+史累计的信息
+– 基于门控机制的循环神经网络（Gated RNN）
+• 门控循环单元（Gated Recurrent Unit, GRU）
+• 长短期记忆神经网络（Long Short-Term Memory, LSTM）
+2026/4/28 《自然语言处理课件》by 虞剑飞 25
+
+--- Page 26 ---
+基于门控的循环神经网络
+• 门控循环单元（Gated Recurrent Unit, GRU）
+𝒉 = 𝒉 + 𝒈(𝒙 , 𝒉 ; 𝜃)
+𝑡 𝑡−1 𝑡 𝑡−1
+𝒉 = 𝒛 ⨀𝒉 + (1 − 𝒛 )⨀𝒈(𝒙 , 𝒉 ; 𝜃)
+𝑡 𝑡 𝑡−1 𝑡 𝑡 𝑡−1
+更新门
+෩
+𝒛 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 ) 𝒉 = tanh(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 )
+𝑡 𝑧 𝑡 𝑧 𝑡−1 𝑧 𝑡 ℎ 𝑡 ℎ 𝑡−1 ℎ
+重置门
+෩
+𝒓 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 ) 𝒉 = tanh(𝑾 𝒙 + 𝑼 𝒓 ⨀𝒉 + 𝒃 )
+𝑡 𝑟 𝑡 𝑟 𝑡−1 𝑟 𝑡 ℎ 𝑡 ℎ 𝑡 𝑡−1 ℎ
+2026/4/28 《自然语言处理课件》by 虞剑飞 26
+
+--- Page 27 ---
+基于门控的循环神经网络
+• 门控循环单元（Gated Recurrent Unit, GRU）
+重置门
+෩
+𝒓 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 ) 𝒉 = tanh(𝑾 𝒙 + 𝑼 𝒓 ⨀𝒉 + 𝒃 )
+𝑡 𝑟 𝑡 𝑟 𝑡−1 𝑟 𝑡 ℎ 𝑡 ℎ 𝑡 𝑡−1 ℎ
+෩
+𝒛 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 ) 𝒉 = 𝒛 ⨀𝒉 + (1 − 𝒛 )⨀𝒉
+𝑡 𝑧 𝑡 𝑧 𝑡−1 𝑧 𝑡 𝑡 𝑡−1 𝑡 𝑡
+更新门
+2026/4/28 《自然语言处理课件》by 虞剑飞 27
+
+--- Page 28 ---
+基于门控的循环神经网络
+• 长短期记忆神经网络（Long Short-Term Memory, LSTM）
+𝒄෤ = tanh(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 )
+𝑡 𝑐 𝑡 𝑐 𝑡−1 𝑐
+𝒄 = 𝒇 ⨀𝒄 + 𝒊 ⨀𝒄෤
+𝑡 𝑡 𝑡−1 𝑡 𝑡
+𝒉 = 𝒐 ⨀tanh(𝒄 )
+𝑡 𝑡 𝑡
+𝒊 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 )
+𝑡 𝑖 𝑡 𝑖 𝑡−1 𝑖
+𝒇 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 )
+𝑡 𝑓 𝑡 𝑓 𝑡−1 𝑓
+𝒐 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝒃 )
+𝑡 𝑜 𝑡 𝑜 𝑡−1 𝑜
+2026/4/28 《自然语言处理课件》by 虞剑飞 28
+
+--- Page 29 ---
+基于门控的循环神经网络
+• LSTM的各种变体
+– 没有遗忘门
+𝒄 = 𝒄 + 𝒊 ⨀𝒄෤
+𝑡 𝑡−1 𝑡 𝑡
+– 耦合输入门和遗忘门
+𝒇 + 𝒊 = 1
+𝑡 𝑡
+– peephole连接
+𝒊 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝑽 𝒄 + 𝒃 )
+𝑡 𝑖 𝑡 𝑖 𝑡−1 𝑖 𝑡−1 𝑖
+𝒇 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝑽 𝒄 + 𝒃 )
+𝑡 𝑓 𝑡 𝑓 𝑡−1 𝑓 𝑡−1 𝑓
+𝒐 = 𝜎(𝑾 𝒙 + 𝑼 𝒉 + 𝑽 𝒄 + 𝒃 )
+𝑡 𝑜 𝑡 𝑜 𝑡−1 𝑜 𝑡 𝑜
+2026/4/28 《自然语言处理课件》by 虞剑飞 29
+
+--- Page 30 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+2026/4/28 《自然语言处理课件》by 虞剑飞 30
+
+--- Page 31 ---
+深度循环神经网络
+• 堆叠循环神经网络
+2026/4/28 《自然语言处理课件》by 虞剑飞 31
+
+--- Page 32 ---
+深度循环神经网络
+• 双向循环神经网络
+2026/4/28 《自然语言处理课件》by 虞剑飞 32
+
+--- Page 33 ---
+深度循环神经网络
+• 代码
+– 情感分类（RNN/GRU/LSTM）
+2026/4/28 《自然语言处理课件》by 虞剑飞 33
+
+--- Page 34 ---
+深度循环神经网络
+• 代码
+– 情感分类
+2026/4/28 《自然语言处理课件》by 虞剑飞 34
+
+--- Page 35 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+2026/4/28 《自然语言处理课件》by 虞剑飞 35
+
+--- Page 36 ---
+递归神经网络
+• 循环神经网络
+– 用于处理任意长度的时序数据
+– 如何处理具有预定义结构的数据？
+• 程序语言的句法结构
+2026/4/28 《自然语言处理课件》by 虞剑飞 36
+
+--- Page 37 ---
+递归神经网络
+• 循环神经网络
+– 用于处理任意长度的时序数据
+– 如何处理具有预定义结构的数据？
+• 自然语言的句法结构
+2026/4/28 《自然语言处理课件》by 虞剑飞 37
+
+--- Page 38 ---
+递归神经网络
+• 递归神经网络（Recursive Neural Network, RvNN）
+– Richard Socher, et al. 2011.
+𝒙
+1
+𝒉 = 𝑓 𝑾 + 𝒃 ,
+1 𝒙
+2
+𝒙
+3
+𝒉 = 𝑓 𝑾 + 𝒃 ,
+2 𝒙
+4
+𝒉
+1
+𝒉 = 𝑓 𝑾 + 𝒃
+3
+𝒉
+2
+2026/4/28 《自然语言处理课件》by 虞剑飞 38
+
+--- Page 39 ---
+递归神经网络
+• 退化为循环神经网络
+– 循环神经网络是递归神经网络的特例
+𝒉 = 𝑓(𝒉 , 𝒙 )
+𝑡 𝑡−1 𝑡
+2026/4/28 《自然语言处理课件》by 虞剑飞 39
+
+--- Page 40 ---
+递归神经网络
+• 示例
+– 给定一个语法树
+S
+VP
+PP
+NP
+NP
+9
+5 7 8 9 4
+1
+3 1 5 1 3
+The cat sat on the mat.
+2026/4/28 《自然语言处理课件》by 虞剑飞 40
+
+--- Page 41 ---
+递归神经网络
+• 示例
+– 给定一个语法树
+S
+VP
+PP
+NP
+3
+NP
+3
+9
+5 7 8 9 4
+1
+3 1 5 1 3
+The cat sat on the mat.
+2026/4/28 《自然语言处理课件》by 虞剑飞 41
+
+--- Page 42 ---
+递归神经网络
+• 示例
+– 给定一个语法树 5
+S
+4
+VP
+7
+3
+8
+PP
+3
+5
+NP
+2 3
+NP
+3
+9
+5 7 8 9 4
+1
+3 1 5 1 3
+The cat sat on the mat.
+2026/4/28 《自然语言处理课件》by 虞剑飞 42
+
+--- Page 43 ---
+递归神经网络
+• 标准递归神经网络
+2026/4/28 《自然语言处理课件》by 虞剑飞 43
+
+--- Page 44 ---
+递归神经网络
+• Syntactically-Untied RvNN
+– 不同的句法成分类别对应不同的聚合函数
+2026/4/28 《自然语言处理课件》by 虞剑飞 44
+
+--- Page 45 ---
+递归神经网络
+• Matrix-Vector Recursive Neural Network (Richard Socher et al, 2012)
+– 每个节点由一个向量和一个矩阵来共同表示
+2026/4/28 《自然语言处理课件》by 虞剑飞 45
+
+--- Page 46 ---
+递归神经网络
+• Recursive Neural Tensor Network (Richard Socher et al, 2013)
+– 聚合时引入张量运算
+2026/4/28 《自然语言处理课件》by 虞剑飞 46
+
+--- Page 47 ---
+递归神经网络
+• Stanford Sentiment TreeBank (SST)
+– 实验结果
+2026/4/28 《自然语言处理课件》by 虞剑飞 47
+
+--- Page 48 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+2026/4/28 《自然语言处理课件》by 虞剑飞 48
+
+--- Page 49 ---
+注意力机制
+• 引言
+– 阅读理解
+Facebook bAbi tasks
+1 John moved to the bedroom.
+2 Mary grabbed the football there.
+3 Sandra journeyed to the bedroom.
+4 Sandra went back to the hallway.
+5 Mary moved to the garden.
+6 Mary journeyed to the office.
+Where is the football?
+2026/4/28 《自然语言处理课件》by 虞剑飞 49
+
+--- Page 50 ---
+注意力机制
+• 引言
+– 阅读理解
+Facebook bAbi tasks
+1 John moved to the bedroom.
+2 Mary grabbed the football there.
+3 Sandra journeyed to the bedroom.
+4 Sandra went back to the hallway.
+5 Mary moved to the garden.
+6 Mary journeyed to the office.
+Where is the football? office
+2026/4/28 《自然语言处理课件》by 虞剑飞 50
+
+--- Page 51 ---
+注意力机制
+• 引言
+– 机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+2026/4/28 《自然语言处理课件》by 虞剑飞 51
+
+--- Page 52 ---
+注意力机制
+• 引言
+– 大脑中的注意力
+• 人脑每个时刻接收的外界输入信息非常多，包括来源于视觉、听觉、触觉的
+各种各样的信息。
+• 但就视觉来说，眼睛每秒钟都会发送千万比特的信息给视觉神经系统。
+• 人脑通过注意力来解决信息超载问题。
+2026/4/28 《自然语言处理课件》by 虞剑飞 52
+
+--- Page 53 ---
+注意力机制
+• 引言
+– 注意力示例
+2026/4/28 《自然语言处理课件》by 虞剑飞 53
+
+--- Page 54 ---
+注意力机制
+• 引言
+– 注意力示例
+• 当一个人在吵闹的鸡尾酒会上和朋友聊天时，尽管周围噪音干扰很多，他还
+是可以听到朋友的谈话内容，而忽略其他人的声音。
+• 同时，如果未注意到的背景声中有重要的词（比如他的名字），他会马上注
+意到。
+2026/4/28 《自然语言处理课件》by 虞剑飞 54
+
+--- Page 55 ---
+注意力机制
+• 引言
+– 注意力实验
+所有黑色牌的数字之和为多少？
+2026/4/28 《自然语言处理课件》by 虞剑飞 55
+
+--- Page 56 ---
+注意力机制
+• 注意力模型
+– 软性注意力机制（soft attention mechanism）
+– 注意力机制可以分为两步
+• 计算注意力分布𝛼 ，
+𝛼 = 𝑝 𝑧 = 𝑛 𝑿, 𝒒
+𝑛
+= softmax(𝑠 𝒙 , 𝒒 ) 𝑠(𝒙 , 𝒒) 打分函数
+𝑛 𝑛
+exp(𝑠 𝒙 ,𝒒 )
+𝑛
+=
+σ𝑁 exp(𝑠 𝒙 ,𝒒 )
+𝑗=1 𝑗
+• 根据𝛼来计算输入信息的加权平均。
+𝑁
+𝑎𝑡𝑡 𝑿, 𝒒 = ෍ 𝛼 𝒙
+𝑛 𝑛
+𝑛=1
+= 𝔼 𝒙
+𝑧~𝑝(𝑧|𝑿,𝒒) 𝑧
+2026/4/28 《自然语言处理课件》by 虞剑飞 56
+
+--- Page 57 ---
+注意力机制
+• 注意力模型
+– 注意力打分函数𝑠(𝑥 , 𝑞)
+𝑛
+加性模型 𝑠 𝒙, 𝒒 = 𝒒 𝑇 tanh(𝑾𝒙 + 𝒃)
+点积模型 𝑠 𝒙, 𝒒 = 𝒙 𝑇 𝒒
+𝑇
+𝒙 𝒒
+缩放点积模型 𝑠 𝒙, 𝒒 =
+𝐷
+双线性模型 𝑠 𝒙, 𝒒 = 𝒙 𝑇 𝑾𝒒
+2026/4/28 《自然语言处理课件》by 虞剑飞 57
+
+--- Page 58 ---
+注意力机制
+• 注意力机制举例
+Sofmax layer
+注意力分布
+q s s s s
+x1 x2 x3 x4
+2026/4/28 《自然语言处理课件》by 虞剑飞 58
+
+--- Page 59 ---
+注意力机制
+• 注意力机制举例
+– 课堂练习
+?
+q
+1
+Sofmax layer
+1 注意力分布
+1
+1 dot dot dot
+product product product
+1 0 1
+0 2 1
+1 0 1
+0 2 1
+x1 x2 x3
+2026/4/28 《自然语言处理课件》by 虞剑飞 59
+
+--- Page 60 ---
+注意力机制
+• 常见的注意力模型
+– 句子分类
+2026/4/28 《自然语言处理课件》by 虞剑飞 60
+
+--- Page 61 ---
+注意力机制
+• 常见的注意力模型
+– 文档分类
+2026/4/28 《自然语言处理课件》by 虞剑飞 61
+
+--- Page 62 ---
+注意力机制
+• 常见的注意力模型
+– 机器翻译
+2026/4/28 《自然语言处理课件》by 虞剑飞 62
+
+--- Page 63 ---
+注意力机制
+• 常见的注意力模型
+– 机器翻译
+2026/4/28 《自然语言处理课件》by 虞剑飞 63
+
+--- Page 64 ---
+注意力机制
+• Hierarchical Attention Network
+– 代码实现
+2026/4/28 《自然语言处理课件》by 虞剑飞 64
+
+--- Page 65 ---
+注意力机制
+• Hierarchical Attention Network
+– 代码实现
+2026/4/28 《自然语言处理课件》by 虞剑飞 65
+
+--- Page 66 ---
+注意力机制
+• Hierarchical Attention Network
+– 代码实现
+2026/4/28 《自然语言处理课件》by 虞剑飞 66
+
+--- Page 67 ---
+注意力机制
+• Hierarchical Attention Network
+– 代码实现
+2026/4/28 《自然语言处理课件》by 虞剑飞 67
+
+--- Page 68 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+– 序列标注任务
+– 机器阅读理解
+– 自然语言推断、文本生成、看图说话等
+2026/4/28 《自然语言处理课件》by 虞剑飞 68
+
+--- Page 69 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+– 序列标注任务
+– 机器阅读理解
+– 自然语言推断、文本生成、看图说话等
+2026/4/28 《自然语言处理课件》by 虞剑飞 69
+
+--- Page 70 ---
+序列标注任务
+• 中文分词 (Chinese Word Segmentation, CWS)
+– 中文分词就是将连续的字序列按照一定的规范重新组合成语义独立词序
+列的过程。
+S S S B E B E
+他 说 的 确 实 在 理
+2026/4/28 《自然语言处理课件》by 虞剑飞 70
+
+--- Page 71 ---
+序列标注任务
+• 词性标注 (Part-Of-Speech Tagging, POS Tagging)
+– 指为分词结果中的每个单词标注一个正确的词性的程序，也即确定每个
+词是名词、动词、形容词或者其他词性的过程。
+2026/4/28 《自然语言处理课件》by 虞剑飞 71
+
+--- Page 72 ---
+序列标注任务
+• 命名实体识别 (Named Entity Recognition, NER)
+– 识别出待处理文本中提及的命名实体，主要包括人名(PER) 、机构名
+(ORG)、地名(LOC)、时间、日期和货币等七类实体
+– 人名（例如“乔布斯”）、地名（例如“北京”）、组织机构名（例如
+“中国科学院”）、时间（例如“10点30分”）、日期（例如“2017年6
+月1日”）、货币（例 如“1000美元”）、百分比（例如“百分之五
+十”）
+– 由于时间、日期、货币和百分比规则性强，利用模板或正则表达式基本
+可处理
+– 人名、地名和组织机构名是关注重点
+– 大部分现有数据集主要识别四类实体，包括人名(PER) 、机构名(ORG)、
+地名(LOC)以及其他专有名词 (Miscellaneous)
+2026/4/28 《自然语言处理课件》by 虞剑飞 72
+
+--- Page 73 ---
+序列标注任务
+• 命名实体识别
+– 包含两个任务：实体检测和实体分类
+• 实体检测：检测出文本中哪些词串属于
+实体，也即发现实体的左边界和右边界
+• 实体分类：判别检测出的实体具体属于
+哪个类别
+中国/LOC 很大。
+陈明亮/PER 是一所小学的校长。
+北京市发改委/ORG 出台了政策。
+国科大/ORG 是最近新成立的一所大学。
+转换为基于字的序列标注问题
+中/B-LOC 国/I-LOC 很/O 大/O 。
+陈/B-PER 明/I-PER 亮/I-PER 是/O 一/O 所/O 小/O 学/O 的/O 校/O 长/O 。
+北/B-ORG 京/I-ORG 市/I-ORG 发/I-ORG 改/I-ORG 委/I-ORG 出/O 台/O 了/O 政/O 策/O 。
+国/B-ORG 科/I-ORG 大/I-ORG 是/O 最/O 近/O 新/O 成/O 立/O 的/O 一/O 所/O 大/O 学/O 。
+2026/4/28 《自然语言处理课件》by 虞剑飞 73
+
+--- Page 74 ---
+序列标注任务
+• NER评估指标
+– Precision，Recall，F1
+– True Positive (TP): 𝐷和𝐷+中标注完全一致的命名实体数目
+– False Positive (FP): 𝐷中系统识别出但参考答案𝐷+中没有的命名实体数目
+– False Negative (FN): 𝐷+参考答案中存在但𝐷中系统未识别出的命名实体数
+目
+𝑇𝑃 𝑇𝑃 2𝑃𝑅
+Precision = , Recall = , F1 =
+𝑇𝑃+𝐹𝑃 𝑇𝑃+𝐹𝑁 𝑃+𝑅
+2026/4/28 《自然语言处理课件》by 虞剑飞 74
+
+--- Page 75 ---
+序列标注任务
+• NER评估指标
+– Precision，Recall，F1
+• TP, FP, FN = ?
+• Precision, Recall, F1 = ?
+2026/4/28 《自然语言处理课件》by 虞剑飞 75
+
+--- Page 76 ---
+序列标注任务
+• NER评估指标
+– Precision，Recall，F1
+2026/4/28 国科大南京学院《人工智能原理与算法》 76
+
+--- Page 77 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+– 序列标注任务
+– 机器阅读理解
+– 自然语言推断、文本生成、看图说话等
+2026/4/28 《自然语言处理课件》by 虞剑飞 77
+
+--- Page 78 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD, Rajpurkar et al., 2016)
+– 包含10万个（问题，原文，答案）三元组
+– 让标注人员提出最多5个基于文章内容的问题并提供正确答案，且答案出
+现在原文中
+– 也叫作抽取式问答（Extractive Question Answering）
+Question: Which team won Super Bowl 50?
+Passage
+Super Bowl 50 was an American football game to determine the
+champion of the National Football League (NFL) for the 2015 season.
+The American Football Conference (AFC) champion DenverBroncos
+defeated the National Football Conference (NFC) champion Carolina
+Panthers 24–10 to earn their third Super Bowl title. The game was
+played on February 7, 2016, at Levi's Stadium in the San Francisco Bay
+Area at Santa Clara, California.
+2026/4/28 《自然语言处理课件》by 虞剑飞 78
+
+--- Page 79 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– 验证集和测试集每个问题含有3个Ground-Truth答案
+Along with non-governmental and nonstate schools, what is another name for private schools?
+Gold answers: (1) independent (2) independent schools (3) independent schools
+Along with sport and art, what is a type of talent scholarship?
+Gold answers: (1) academic (2) academic (3) academic
+Rather than taxation, what are private schools largely funded by?
+Gold answers: (1) tuition (2) charging their students tuition (3) tuition
+2026/4/28 《自然语言处理课件》by 虞剑飞 79
+
+--- Page 80 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– 评估指标
+• Exact match(EM): 1/0 accuracy on whether you match one of the 3 answers
+• F1: Take system and each gold answer as bag of words, evaluate, and take the max.
+𝑇𝑃 𝑇𝑃 2𝑃𝑅
+Precision = , Recall = , F1 =
+𝑇𝑃+𝐹𝑃 𝑇𝑃+𝐹𝑁 𝑃+𝑅
+Along with non-governmental and nonstate schools, what is another name for private schools?
+Gold answers: (1) independent (2) independent schools (3) independent schools
+1) System answers: independent schools; bag-of-words: {independent, schools} Precision = 2 /
+2 = 1; Recall: 2 / 2 = 1; F1 = 2 / 2 = 1
+2) System answers: independent schools; bag-of-words: {independent} Precision =
+1/2 = 0.5; Recall: 1 / 1 = 1; F1 = (2*0.5*1) / 1.5 = 0.67
+2026/4/28 《自然语言处理课件》by 虞剑飞 80
+
+--- Page 81 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– 评估指标
+• Exact match(EM): 1/0 accuracy on whether you match one of the 3 answers
+• F1: Take system and each gold answer as bag of words, evaluate, and take the max.
+𝑇𝑃 𝑇𝑃 2𝑃𝑅
+Precision = , Recall = , F1 =
+𝑇𝑃+𝐹𝑃 𝑇𝑃+𝐹𝑁 𝑃+𝑅
+Along with non-governmental and nonstate schools, what is another name for private schools?
+Gold answers: (1) independent (2) independent schools (3) independent schools
+1) System answers: independent; bag-of-words: {independent} Precision = 1/ 1 = 1; Recall: 1 /
+1 = 1; F1 = 2 / 2 = 1
+2) System answers: independent; bag-of-words: {independent, schools} Precision = 1
+/ 1 = 1; Recall: 1 / 2 = 0.5; F1 = (2*1*0.5) / 1.5 = 0.67
+2026/4/28 《自然语言处理课件》by 虞剑飞 81
+
+--- Page 82 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+https://rajpurkar.github.io/SQuAD-explorer/
+2026/4/28 《自然语言处理课件》by 虞剑飞 82
+
+--- Page 83 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– leaderboard
+https://rajpurkar.github.io/SQuAD-explorer/
+2026/4/28 《自然语言处理课件》by 虞剑飞 83
+
+--- Page 84 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– Match-LSTM
+• Sequence Model
+Shuohang, WANG and Jing JIANG. Machine comprehension using match-LSTM and answer pointer. (2017). ICLR 2017
+2026/4/28 《自然语言处理课件》by 虞剑飞 84
+
+--- Page 85 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– Match-LSTM
+• Boundary Model
+Shuohang, WANG and Jing JIANG. Machine comprehension using match-LSTM and answer pointer. (2017). ICLR 2017
+2026/4/28 《自然语言处理课件》by 虞剑飞 85
+
+--- Page 86 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– Match-LSTM
+• 实验结果
+Shuohang, WANG and Jing JIANG. Machine comprehension using match-LSTM and answer pointer. (2017). ICLR 2017
+2026/4/28 《自然语言处理课件》by 虞剑飞 86
+
+--- Page 87 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– Bi-Directional Attention Flow (BiDAF)
+Seo, Minjoon, Aniruddha Kembhavi, Ali Farhadi, and Hannaneh Hajishirzi. "Bidirectional attention flow for machine
+comprehension." (2017). ICLR 2017
+2026/4/28 《自然语言处理课件》by 虞剑飞 87
+
+--- Page 88 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– Bi-Directional Attention Flow (BiDAF)
+• 实验结果
+Seo, Minjoon, Aniruddha Kembhavi, Ali Farhadi, and Hannaneh Hajishirzi. "Bidirectional attention flow for machine
+comprehension." (2017). ICLR 2017
+2026/4/28 《自然语言处理课件》by 虞剑飞 88
+
+--- Page 89 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– R-Net
+Wang, Wenhui, Nan Yang, Furu Wei, Baobao Chang, and Ming Zhou. "Gated self-matching networks for reading comprehension
+and question answering." In Proceedings of ACL, pp. 189-198. 2017.
+2026/4/28 《自然语言处理课件》by 虞剑飞 89
+
+--- Page 90 ---
+机器阅读理解
+• Stanford Question Answering Dataset (SQuAD)
+– R-Net
+• 实验结果
+Wang, Wenhui, Nan Yang, Furu Wei, Baobao Chang, and Ming Zhou. "Gated self-matching networks for reading comprehension
+and question answering." In Proceedings of ACL, pp. 189-198. 2017.
+2026/4/28 《自然语言处理课件》by 虞剑飞 90
+
+--- Page 91 ---
+机器阅读理解
+• Stanford Question Answering Dataset V2.0 (SQuAD 2.0, Rajpurkar et
+al., 2018)
+– SQuAD 1.0缺点
+• 所有问题都能从文章中找到答案
+– SQuAD 2.0
+• 训练集中1/3问题没有答案，而验证或者测试集中1/2问题没有答案
+• 对于没有答案的问题，只有回答出no answer是EM和F1 score才为1，其他情况
+EM和F1 score均为0
+2026/4/28 《自然语言处理课件》by 虞剑飞 91
+
+--- Page 92 ---
+机器阅读理解
+• Stanford Question Answering Dataset V2.0 (SQuAD 2.0)
+When did Genghis Khan kill Great Khan?
+Gold Answers: <No Answer>
+Prediction: 1234 [from Microsoft nlnet]
+2026/4/28 《自然语言处理课件》by 虞剑飞 92
+
+--- Page 93 ---
+机器阅读理解
+• Stanford Question Answering Dataset V2.0 (SQuAD 2.0)
+– leaderboard
+2026/4/28 《自然语言处理课件》by 虞剑飞 93
+
+--- Page 94 ---
+机器阅读理解
+• Open-Domain Question Answering (Chen, et al. 2017)
+Q: How many of Warsaw's inhabitants
+spoke Polish in 1933?
+Document Document
+Retriever Reader
+833,500
+2026/4/28 《自然语言处理课件》by 虞剑飞 94
+
+--- Page 95 ---
+循环神经网络
+• 7.1 引言
+• 7.2 循环神经网络
+• 7.3 参数学习
+• 7.4 长程依赖问题
+• 7.5 基于门控的循环神经网络
+• 7.6 深度循环神经网络
+• 7.7 递归神经网络
+• 7.8 注意力机制
+• 7.9 循环神经网络以及注意力机制的应用
+– 序列标注任务
+– 机器阅读理解
+– 自然语言推断、文本生成、看图说话等
+2026/4/28 《自然语言处理课件》by 虞剑飞 95
+
+--- Page 96 ---
+自然语言推断
+• 自然语言推断（Natural Language Inference）
+– 输入为两个句子
+• 前提（Premise）
+• 假设（Hypothesis）
+– 输出为两个句子之间的关系
+• 蕴含（entailment）
+• 对立（contradiction）
+• 中立（neutral）
+2026/4/28 《自然语言处理课件》by 虞剑飞 96
+
+--- Page 97 ---
+自然语言推断
+• 典型模型
+ESIM
+BiLSTM
+2026/4/28 《自然语言处理课件》by 虞剑飞 97
+
+--- Page 98 ---
+代码注释或代码生成
+• Python代码注释生成示例
+2026/4/28 《自然语言处理课件》by 虞剑飞 98
+
+--- Page 99 ---
+作词机
+• RNN在“学习”过汪峰全部作品后自动生成的歌词
+– https://github.com/phunterlau/wangfeng-rnn
+我在这里中的夜里
+就像一场是一种生命的意旪
+就像我的生活变得在我一样
+可我们这是一个知道
+我只是一天你会怎吗
+可我们这是我们的是不要为你
+我们想这有一种生活的时候
+2026/4/28 《自然语言处理课件》by 虞剑飞 99
+
+--- Page 100 ---
+作诗
+• RNN在“学习”过所有的唐诗宋词
+2026/4/28 《自然语言处理课件》by 虞剑飞 100
+
+--- Page 101 ---
+基于序列到序列的机器翻译
+• 序列到序列模型（Sequence-to-Sequence）
+– 一个RNN用来编码
+– 另一个RNN用来解码
+2026/4/28 《自然语言处理课件》by 虞剑飞 101
+
+--- Page 102 ---
+看图说话
+• Image Captioning
+2026/4/28 《自然语言处理课件》by 虞剑飞 102
+
+--- Page 103 ---
+看图说话
+• Image Captioning
+2026/4/28 《自然语言处理课件》by 虞剑飞 103
+
+--- Page 104 ---
+Visual Question Answering (VQA)
+• 基于视觉的问答
+– Given an image and a natural language question about the image, the task is
+to provide an accurate natural language answer
+2026/4/28 《自然语言处理课件》by 虞剑飞 104
+
+--- Page 105 ---
+对话系统
+• Dialogue System
+https://github.com/lukalabs/cakechat
+2026/4/28 《自然语言处理课件》by 虞剑飞 105
+
+--- Page 106 ---
+课程作业
+• 基于循环神经网络的命名实体识别
+– 问题描述
+• 利用循环神经网络，识别出CoNLL-2003数据集的实体以及类别
+– 数据集
+• CONLL 2003
+• 链接： https://www.clips.uantwerpen.be/conll2003/ner/
+– 要求
+• Tensorflow或者Pytorch实现
+– 评价指标
+• Precision、Recall、F1
+– 参考资料
+• 《神经网络与深度学习》 第6、11章
+• https://arxiv.org/pdf/1603.01354.pdf
+• https://arxiv.org/pdf/1603.01360.pdf
+2026/4/28 《自然语言处理课件》by 虞剑飞 106
+
+--- Page 107 ---
+欢迎提问！
+2026/4/28 《自然语言处理课件》by 虞剑飞 107
+

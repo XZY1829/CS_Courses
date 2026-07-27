@@ -1,0 +1,50 @@
+# Improvement I1: DoRA (Weight-Decomposed Low-Rank Adaptation)
+# All else same as R3, only enable use_dora=True
+experiment_id: I1
+run_name: i1_dora
+
+model_name_or_path: D:/models/Qwen2.5-7B-Instruct
+
+train_file: data/processed/paper_a_core/train.jsonl
+validation_file: data/processed/paper_a_core/val.jsonl
+test_file: data/processed/paper_a_core/test.jsonl
+output_dir: outputs/i1_dora
+
+max_samples: 0
+max_seq_length: 512
+seed: 42
+
+# QLoRA core (same as R3)
+use_4bit: true
+bnb_4bit_quant_type: nf4
+bnb_4bit_use_double_quant: true
+bnb_4bit_compute_dtype: float16
+gradient_checkpointing: true
+optim: paged_adamw_32bit
+max_memory_mb: 6000
+
+# LoRA (same as R3) + DoRA
+lora_r: 64
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target_modules: all-linear
+use_dora: true
+
+# Training (same as R3)
+num_train_epochs: 3
+learning_rate: 2.0e-4
+weight_decay: 0.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.03
+per_device_train_batch_size: 1
+per_device_eval_batch_size: 1
+gradient_accumulation_steps: 16
+logging_steps: 10
+save_strategy: steps
+save_steps: 10
+eval_steps: 200
+save_total_limit: 6
+save_only_model: true
+stop_after_save_file: STOP_TRAINING
+bf16: false
+fp16: true

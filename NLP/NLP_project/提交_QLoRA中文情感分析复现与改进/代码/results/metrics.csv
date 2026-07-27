@@ -1,0 +1,17 @@
+exp_id,method,paper_ref,dataset,metric,value,seed,notes,owner,date
+R2,qlora_nf4_dq_smoke,QLoRA Table3,ChnSentiCorp,accuracy,0.900000,42,,team,2026-05-24
+R2,qlora_nf4_dq_smoke,QLoRA Table3,ChnSentiCorp,macro_f1,0.898990,42,,team,2026-05-24
+R2,qlora_nf4_dq_smoke,QLoRA Table3,ChnSentiCorp,accuracy,0.900000,42,,xzy,2026-05-26
+R2,qlora_nf4_dq_smoke,QLoRA Table3,ChnSentiCorp,macro_f1,0.898990,42,,xzy,2026-05-26
+R3,qlora_nf4_dq_alllinear,QLoRA Table3,ChnSentiCorp,accuracy,0.950000,42,,xzy,2026-06-02
+R3,qlora_nf4_dq_alllinear,QLoRA Table3,ChnSentiCorp,macro_f1,0.949875,42,,xzy,2026-06-02
+R1,zero_shot,baseline,ChnSentiCorp,accuracy,0.901667,42,,xzy,2026-06-03
+R1,zero_shot,baseline,ChnSentiCorp,macro_f1,0.901006,42,,xzy,2026-06-03
+A3,qlora_nf4_dq_rank16,ablation,ChnSentiCorp,accuracy,0.940833,42,ablation: lora_r=16 vs r=64,xzy,2026-06-04
+A3,qlora_nf4_dq_rank16,ablation,ChnSentiCorp,macro_f1,0.940549,42,ablation: lora_r=16 vs r=64,xzy,2026-06-04
+A1,qlora_nf4_no_dq,ablation,ChnSentiCorp,accuracy,0.940000,42,ablation: disable double quantization,wdy,2026-06-05
+A1,qlora_nf4_no_dq,ablation,ChnSentiCorp,macro_f1,0.939771,42,ablation: disable double quantization,wdy,2026-06-05
+A2,qlora_fp4_dq,ablation,ChnSentiCorp,accuracy,0.935833,42,ablation: fp4 instead of nf4,wdy,2026-06-06
+A2,qlora_fp4_dq,ablation,ChnSentiCorp,macro_f1,0.935667,42,ablation: fp4 instead of nf4,wdy,2026-06-06
+I1,qlora_nf4_dq_dora,DoRA (Liu et al. 2024),ChnSentiCorp,accuracy,0.959167,42,improvement: DoRA weight decomposition on top of QLoRA,wdy,2026-06-06
+I1,qlora_nf4_dq_dora,DoRA (Liu et al. 2024),ChnSentiCorp,macro_f1,0.958930,42,improvement: DoRA weight decomposition on top of QLoRA,wdy,2026-06-06

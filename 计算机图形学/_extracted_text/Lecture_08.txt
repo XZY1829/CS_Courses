@@ -1,0 +1,783 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 8:
+Shading 2
+(Shading, Pipeline and Texture Mapping)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 2
+- 45 submissions so far
+- Upside down? No problem
+- Active discussions in the BBS, pretty good
+
+• Next homework is for shading
+• Today’s topics
+- Easy, but a lot
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lecture
+• Shading 1
+- Blinn-Phong reflectance model
+- Diffuse
+- Specular
+- Ambient
+- At a specific shading point
+
+GAMES101
+
+3
+
+^
+n
+
+^
+
+l
+
+Q
+
+v^
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Shading 2
+- Blinn-Phong reflectance model
+- Specular and ambient terms
+- Shading frequencies
+- Graphics pipeline
+- Texture mapping
+- Barycentric coordinates
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Recap: Lambertian (Diffuse) Term
+Shading independent of view direction
+energy arrived
+at the shading point
+
+n
+
+l
+Q
+
+2
+
+Ld = kd (I/r ) max(0, n · l)
+
+v
+
+diffuse
+coefficient
+(color)
+diffusely
+reflected light
+GAMES101
+
+5
+
+energy received
+by the shading point
+
+Lingqi Yan, UC Santa Barbara
+
+Recap: Lambertian (Diffuse) Term
+
+[Foley et al.]
+
+Produces diffuse appearance
+
+kd
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Specular Term (Blinn-Phong)
+Intensity depends on view direction
+
+• Bright near mirror reflection direction
+R
+
+l
+
+n
+v
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Specular Term (Blinn-Phong)
+V close to mirror direction
+
+half vector near normal
+
+• Measure “near” by dot product of unit vectors
+
+l
+
+n
+
+h = bisector(v, l)
+(半程向量)
+v+l
+=
+v+l
+
+h
+A
+
+v
+
+Ls = ks (I/r2 ) max(0, cos ↵)p
+= ks (I/r2 ) max(0, n · h)p
+specularly
+reflected
+specular
+light
+coefficient
+
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Cosine Power Plots
+
+[Foley et al.]
+
+Increasing p narrows the reflection lobe
+
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Specular Term (Blinn-Phong)
+Blinn-Phong
+
+2
+
+p
+
+2
+
+pp
+
+2
+
+p
+
+Ls = ks (I/r ) max(0, cos ↵)
+n · h)
+Ls = ks (I/r ) max(0, cos
+↵)
+
+[Foley et al.]
+
+= ks (I/r ) max(0, n · h)
+
+ks
+
+Note: showing
+Ld + Ls together
+GAMES101
+
+p
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Ambient Term
+Shading that does not depend on anything
+
+• Add constant color to account for disregarded
+illumination and fill in black shadows
+
+• This is approximate / fake!
+La = ka Ia
+ambient
+coefficient
+reflected
+ambient light
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Blinn-Phong Reflection Model
+
+Ambient
+
++
+
+Diffuse
+
++
+
+Specular =
+
+Blinn-Phong
+Reflection
+
+2
+
+p
+
+L = La + Ld + Ls
+2
+
+= ka Ia + kd (I/r ) max(0, n · l) + ks (I/r ) max(0, n · h)
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Questions?
+
+Shading Frequencies
+
+Shading Frequencies
+What caused the shading difference?
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Shade each triangle (flat shading)
+Flat shading
+
+• Triangle face is
+
+flat — one normal
+vector
+
+• Not good for
+
+smooth surfaces
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Shade each vertex (Gouraud shading)
+
+Gouraud shading
+
+• Interpolate colors
+
+from vertices across
+triangle
+
+• Each vertex has a
+
+normal vector (how?)
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Shade each pixel (Phong shading)
+Phong shading
+
+• Interpolate normal
+
+vectors across each
+triangle
+
+• Compute full shading
+model at each pixel
+
+• Not the Blinn-Phong
+Reflectance Model
+
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Shading Frequency: Face, Vertex or Pixel
+
+Num
+Vertices
+
+Shading freq. :
+Shading type :
+
+Face
+Flat
+
+Vertex
+Gouraud
+
+Pixel
+Phong
+
+Image credit: Happyman, http://cg2010studio.com/
+
+Defining Per-Vertex Normal Vectors
+Best to get vertex normals from
+the underlying geometry
+
+• e.g. consider a sphere
+Otherwise have to infer vertex
+normals from triangle faces
+
+• Simple scheme: average
+
+surrounding face normals
+
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Defining Per-Pixel Normal Vectors
+Barycentric interpolation (introducing soon)
+of vertex normals
+
+Don’t forget to normalize the interpolated directions
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Graphics (Real-time Rendering)
+Pipeline
+
+Graphics Pipeline
+Application
+
+3
+1
+
+4
+
+Input: vertices in 3D space
+
+2
+
+Vertex Processing
+
+Vertices positioned in screen space
+
+Vertex Stream
+Triangle Processing
+
+Triangles positioned in screen space
+
+Triangle Stream
+Rasterization
+Fragment Stream
+
+Fragments (one per covered sample)
+
+Fragment Processing
+Shaded Fragments
+
+Shaded fragments
+
+Framebuffer Operations
+Output: image (pixels)
+
+Display
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Graphics Pipeline
+Application
+
+Model, View, Projection transforms
+
+Vertex Processing
+Vertex Stream
+
+y
+
+Triangle Processing
+Triangle Stream
+Rasterization
+
+z
+
+Fragment Stream
+
+x
+
+Fragment Processing
+Shaded Fragments
+Framebuffer Operations
+Display
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Graphics Pipeline
+Application
+
+Sampling triangle coverage
+
+Vertex Processing
+Vertex Stream
+Triangle Processing
+Triangle Stream
+Rasterization
+Fragment Stream
+Fragment Processing
+Shaded Fragments
+Framebuffer Operations
+Display
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Rasterization Pipeline
+Application
+
+Z-Buffer Visibility Tests
+
+Vertex Processing
+Vertex Stream
+Triangle Processing
+Triangle Stream
+Rasterization
+Fragment Stream
+Fragment Processing
+Shaded Fragments
+Framebuffer Operations
+Display
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Graphics Pipeline
+Application
+
+Shading
+
+Vertex Processing
+Vertex Stream
+Triangle Processing
+Triangle Stream
+Rasterization
+Fragment Stream
+
+Ambient
+
++
+
++ Specular
+
+=
+
+Diffuse
+
+Fragment Processing
+Shaded Fragments
+Framebuffer Operations
+Display
+GAMES101
+
+27
+
+Blinn-Phong
+Reflectance Model
+Lingqi Yan, UC Santa Barbara
+
+Graphics Pipeline
+Texture mapping
+(introducing soon)
+
+Application
+Vertex Processing
+Vertex Stream
+Triangle Processing
+Triangle Stream
+Rasterization
+Fragment Stream
+Fragment Processing
+Shaded Fragments
+Framebuffer Operations
+Display
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Shader Programs
+• Program vertex and fragment processing stages
+• Describe operation on a single vertex (or fragment)
+Example GLSL fragment shader program
+uniform sampler2D myTexture;
+uniform vec3 lightDir;
+varying vec2 uv;
+varying vec3 norm;
+void diffuseShader()
+{
+vec3 kd;
+kd = texture2d(myTexture, uv);
+kd *= clamp(dot(–lightDir, norm), 0.0, 1.0);
+gl_FragColor = vec4(kd, 1.0);
+}
+
+• Shader function executes
+once per fragment.
+• Outputs color of surface
+at the current fragment’s
+screen sample position.
+• This shader performs a
+texture lookup to obtain
+the surface’s material
+color at this point, then
+performs a diffuse
+lighting calculation.
+
+Shader Programs
+• Program vertex and fragment processing stages
+• Describe operation on a single vertex (or fragment)
+Example GLSL fragment shader program
+uniform sampler2D myTexture;
+
+// program parameter
+
+uniform vec3 lightDir;
+
+// program parameter
+
+varying vec2 uv;
+
+// per fragment value (interp. by rasterizer)
+
+varying vec3 norm;
+
+// per fragment value (interp. by rasterizer)
+
+void diffuseShader()
+{
+vec3 kd;
+
+}
+
+kd = texture2d(myTexture, uv);
+
+// material color from texture
+
+kd *= clamp(dot(–lightDir, norm), 0.0, 1.0);
+
+// Lambertian shading model
+
+gl_FragColor = vec4(kd, 1.0);
+
+// output fragment color
+
+Snail Shader Program
+
+Inigo Quilez
+Procedurally modeled, 800 line shader.
+http://shadertoy.com/view/ld3Gz2
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Snail Shader Program
+
+Inigo Quilez, https://youtu.be/XuSnLbB1j6E
+
+Goal: Highly Complex 3D Scenes in Realtime
+• 100’s of thousands to millions of triangles in a scene
+• Complex vertex and fragment shader computations
+• High resolution (2-4 megapixel + supersampling)
+• 30-60 frames per second (even higher for VR)
+
+Unreal Engine Kite Demo (Epic Games 2015)
+
+Graphics Pipeline Implementation: GPUs
+Specialized processors for executing graphics pipeline
+computations
+
+Discrete GPU Card
+(NVIDIA GeForce Titan X)
+
+GAMES101
+
+Integrated GPU:
+(Part of Intel CPU die)
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+GPU: Heterogeneous, Multi-Core Procesor
+
+Modern GPUs offer ~2-4 Tera-FLOPs of performance for
+executing vertex and fragment shader programs
+
+Tera-Op’s of fixed-function
+compute capability over here
+
+Texture Mapping
+
+Different Colors at Different Places?
+L_d = k_d * (I / r^2) * (n dot l)
+
+Pattern on ball
+GAMES101
+
+Wood grain on floor
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Surfaces are 2D
+Surface lives in 3D world space
+Every 3D surface point also has a place
+where it goes in the 2D image (texture).
+δ
+‫ڶ‬
+
+y
+
+x
+
+ys
+z
+
+xs
+image space
+
+Screen space
+
+GAMES101
+
+v
+u
+world space
+
+World space
+38
+
+texture space
+
+Texture space
+Lingqi Yan, UC Santa Barbara
+
+Texture Applied to Surface
+Rendering with texture
+
+Texture
+
+Zoom
+
+Rendering without texture
+
+Each triangle “copies” a piece of
+the texture image to the surface.
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Visualization of Texture Coordinates
+Each triangle vertex is assigned a texture coordinate (u,v)
+Visualization of texture coordinates
+
+Triangle vertices in texture space
+
+v
+
+u
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Texture Applied to Surface
+Rendered result
+
+Triangle vertices in texture space
+
+v
+
+u
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Textures applied to surfaces
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Visualization of texture coordinates
+
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Textures can be used multiple times!
+
+example textures
+used / tiled
+
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

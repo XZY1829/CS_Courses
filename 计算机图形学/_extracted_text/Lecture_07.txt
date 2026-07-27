@@ -1,0 +1,387 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 7:
+
+Shading 1 (Illumination, Shading and
+Graphics Pipeline)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 1
+- 300+ submissions
+- Will start TA recruiting (from existing applications) soon
+
+• Homework 2 will be out today
+- About Z-buffering
+- Much easier than HW1
+
+• May need an additional lecture for shading
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lectures
+• Rasterization
+- Rasterizing one triangle
+- Sampling theory
+- Antialiasing
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Visibility / occlusion
+- Z-buffering
+
+• Shading
+- Illumination & Shading
+- Graphics Pipeline
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Painter’s Algorithm
+Inspired by how painters paint
+Paint from back to front, overwrite in the framebuffer
+
+[Wikipedia]
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Painter’s Algorithm
+Requires sorting in depth (O(n log n) for n triangles)
+
+[Foley et al.]
+
+Can have unresolvable depth order
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Z-Buffer
+This is the algorithm that eventually won.
+Idea:
+
+• Store current min. z-value for each sample (pixel)
+• Needs an additional buffer for depth values
+- frame buffer stores color values
+- depth buffer (z-buffer) stores depth
+IMPORTANT: For simplicity we suppose
+z is always positive
+(smaller z -> closer, larger z -> further)
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Z-Buffer Example
+
+Image source: Dominic Alves, flickr.
+
+Rendering
+
+GAMES101
+
+Depth / Z buffer
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Z-Buffer Algorithm
+Initialize depth buffer to ∞
+During rasterization:
+for (each triangle T)
+for (each sample (x,y,z) in T)
+if (z < zbuffer[x,y])
+// closest sample so far
+framebuffer[x,y] = rgb;
+// update color
+zbuffer[x,y] = z;
+// update depth
+else
+;
+// do nothing, this sample is occluded
+
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Z-Buffer Algorithm
+
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Z-Buffer Complexity
+Complexity
+
+• O(n) for n triangles (assuming constant coverage)
+• How is it possible to sort n triangles in linear time?
+Drawing triangles in different orders?
+Most important visibility algorithm
+
+• Implemented in hardware for all GPUs
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Questions?
+
+Today
+• Visibility / occlusion
+- Z-buffering
+
+• Shading
+- Illumination & Shading
+- Graphics Pipeline
+
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+What We’ve Covered So Far
+y
+y
+z
+x
+
+z
+x
+Position objects and the
+camera in the world
+
+Compute position of objects
+relative to the camera
+
+(w, h)
+
+(0, 0)
+
+Project objects onto
+the screen
+
+GAMES101
+
+Sample triangle coverage
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Rotating Cubes (Now You Can Do)
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Rotating Cubes (Expected)
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+What Else Are We Missing?
+
+Credit: Bertrand Benoit. “Sweet Feast,” 2009. [Blender /VRay]
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Shading
+
+Shading: Definition
+In Merriam-Webster Dictionary
+shad·ing, [ˈʃeɪdɪŋ], noun
+The darkening or coloring of an illustration or
+diagram with parallel lines or a block of color.
+In this course
+The process of applying a material to an object.
+
+GAMES101
+
+Lingqi Yan, UC Santa Barbara
+
+A Simple Shading Model
+(Blinn-Phong Reflectance Model)
+
+Perceptual Observations
+Specular highlights
+
+Diffuse reflection
+
+Ambient lighting
+
+Photo credit: Jessica Andrews, flickr
+
+Shading is Local
+Compute light reflected toward camera
+at a specific shading point
+Inputs:
+
+• Viewer direction, v
+• Surface normal, n
+• Light direction, l
+
+l
+
+n
+v
+
+shading
+point
+
+(for each of many lights)
+
+• Surface parameters
+
+(color, shininess, …)
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Shading is Local
+No shadows will be generated! (shading ≠ shadow)
+
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Diffuse Reflection
+• Light is scattered uniformly in all directions
+- Surface color is the same for all viewing directions
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Diffuse Reflection
+• But how much light (energy) is received?
+- Lambert’s cosine law
+l
+
+n
+
+Q
+
+Top face of cube
+receives a certain
+amount of light
+GAMES101
+
+Top face of
+60º rotated cube
+intercepts half the light
+25
+
+In general, light per unit
+area is proportional to
+cos θ = l • n
+Lingqi Yan, UC Santa Barbara
+
+Light Falloff
+r
+
+intensity
+here: I/r2
+
+1
+
+intensity
+here: I
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Lambertian (Diffuse) Shading
+Shading independent of view direction
+energy arrived
+at the shading point
+
+n
+
+l
+Q
+
+2
+
+Ld = kd (I/r ) max(0, n · l)
+
+v
+
+diffuse
+coefficient
+(color)
+diffusely
+reflected light
+GAMES101
+
+27
+
+energy received
+by the shading point
+
+Lingqi Yan, UC Santa Barbara
+
+Lambertian (Diffuse) Shading
+
+[Foley et al.]
+
+Produces diffuse appearance
+
+kd
+
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

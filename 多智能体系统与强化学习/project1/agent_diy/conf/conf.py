@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+###########################################################################
+# Copyright © 1998 - 2025 Tencent. All Rights Reserved.
+###########################################################################
+"""
+Author: Tencent AI Arena Authors
+"""
+
+
+# Configuration of dimensions
+# 关于维度的配置
+class Config:
+
+    STATE_SIZE = 64 * 64 * 1024
+    ACTION_SIZE = 4
+    LEARNING_RATE = 0.15
+    GAMMA = 0.95
+    EPSILON = 1.0
+    EPSILON_MIN = 0.05
+    EPSILON_DECAY = 0.997
+    EPISODES = 30000
+
+    # dimensionality of the sample
+    # 样本维度
+    SAMPLE_DIM = 5
+
+    # Dimension of observation
+    # 观察维度
+    OBSERVATION_SHAPE = 250

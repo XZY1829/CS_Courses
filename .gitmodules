@@ -1,0 +1,12 @@
+[submodule "NLP/NLP_project/LLaMA-Factory"]
+	path = NLP/NLP_project/LLaMA-Factory
+	url = https://github.com/hiyouga/LLaMA-Factory.git
+[submodule "NLP/NLP_project/nlp-qlora-final"]
+	path = NLP/NLP_project/nlp-qlora-final
+	url = https://gitee.com/zhengyang_xu/nlp-qlora-final.git
+[submodule "design_patterns/Cpp-Design-Patterns"]
+	path = design_patterns/Cpp-Design-Patterns
+	url = https://github.com/liu-jianhao/Cpp-Design-Patterns.git
+[submodule "design_patterns/design_patterns_me115"]
+	path = design_patterns/design_patterns_me115
+	url = https://github.com/me115/design_patterns.git

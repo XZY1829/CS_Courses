@@ -1,0 +1,1162 @@
+
+---PAGE 1---
+自然语言处理
+8. Transformer与预训练模型
+2026/5/12 《自然语言处理课件》by 虞剑飞 1
+虞剑飞
+南京大学智能科学与技术学院
+2026.5.13
+
+---PAGE 2---
+2026/5/12 2
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 总结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 3---
+2026/5/12 3
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 总结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 4---
+2026/5/12 4
+引言
+• 循环神经网络缺陷
+– 很难并行化
+x1 x2 x3 x4
+y1 y2 y3 y4
+FC
+ FC
+ FC
+ FC
+《自然语言处理课件》by 虞剑飞 
+---PAGE 5---
+2026/5/12 5
+引言
+• 循环神经网络缺陷
+– 很难并行化
+• 方案1：使用CNN来替换RNN
+x1 x2 x3 x4
+《自然语言处理课件》by 虞剑飞 
+---PAGE 6---
+2026/5/12 6
+引言
+• 循环神经网络缺陷
+– 很难并行化
+• 方案1：使用CNN来替换RNN
+x1 x2 x3 x4
+《自然语言处理课件》by 虞剑飞 
+---PAGE 7---
+2026/5/12 7
+引言
+• 循环神经网络缺陷
+– 很难并行化
+• 方案1：使用CNN来替换RNN
+缺点：只能捕获局部信息
+x1 x2 x3 x4
+y1 y2 y3 y4
+FC
+ FC
+ FC
+ FC
+《自然语言处理课件》by 虞剑飞 
+---PAGE 8---
+2026/5/12 8
+引言
+• 循环神经网络缺陷
+– 很难并行化
+• 方案2：自注意力机制（Self-Attention Mechanism）
+FC
+ FC
+ FC
+ FC
+Self-attention
+with 
+context
+《自然语言处理课件》by 虞剑飞 
+---PAGE 9---
+2026/5/12 9
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 总结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 10---
+2026/5/12 10
+自注意力机制 (Self-Attention)
+• 注意力机制回顾
+s
+ s
+ s
+ s
+Sofmax layer
+x1 x2 x3 x4
+q
+注意力分布
+《自然语言处理课件》by 虞剑飞 
+---PAGE 11---
+2026/5/12 11
+自注意力机制 (Self-Attention)
+• 注意力机制回顾
+– 课堂练习
+1
+0
+1
+0
+0
+2
+0
+2
+1
+1
+1
+1
+dot 
+product
+dot 
+product
+dot 
+product
+1
+1
+1
+1
+Sofmax layer
+注意力分布
+?
+x1 x2 x3
+q
+《自然语言处理课件》by 虞剑飞 
+---PAGE 12---
+2026/5/12 12
+自注意力机制 (Self-Attention)
+• 注意力机制回顾
+– 课堂练习答案
+1
+0
+1
+0
+0
+2
+0
+2
+1
+1
+1
+1
+dot 
+product
+dot 
+product
+dot 
+product
+1
+1
+1
+1
+Sofmax layer
+0.063 0.468 0.468
+x1 x2 x3
+q
+0.531
+1.404
+0.531
+1.404
+《自然语言处理课件》by 虞剑飞 
+---PAGE 13---
+2026/5/12 13
+自注意力机制 (Self-Attention)
+• 自注意力机制
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł. and Polosukhin, I.. Attention is 
+all you need. NIPS 2017.
+FC
+ FC
+ FC
+ FC
+Self-Attention
+with 
+context
+x1 x2 x3 x4
+《自然语言处理课件》by 虞剑飞 
+---PAGE 14---
+2026/5/12 14
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 15---
+2026/5/12 15
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 16---
+2026/5/12 16
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 17---
+2026/5/12 17
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 18---
+2026/5/12 18
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+relevant?𝛼
+𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 19---
+2026/5/12 19
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝑊𝑞
+ 𝑊𝑘
+Dot-product
+𝛼
+𝒒 𝒌
+= 𝒒 ∙ 𝒌
+《自然语言处理课件》by 虞剑飞 
+---PAGE 20---
+2026/5/12 20
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒒𝟏
+ 𝒌𝟐
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒒𝟏 = 𝑊𝑞𝒂𝟏
+𝒌𝟑
+ 𝒌𝟒
+𝒌𝟐 = 𝑊𝑘𝒂𝟐 𝒌𝟑 = 𝑊𝑘𝒂𝟑 𝒌𝟒 = 𝑊𝑘𝒂𝟒
+𝛼1,2 𝛼1,3 𝛼1,4
+𝛼1,2 = 𝒒𝟏 ∙ 𝒌𝟐
+query key
+注意力得分
+𝛼1,3 = 𝒒𝟏 ∙ 𝒌𝟑 𝛼1,4 = 𝒒𝟏 ∙ 𝒌𝟒
+《自然语言处理课件》by 虞剑飞 
+---PAGE 21---
+2026/5/12 21
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒒𝟏
+ 𝒌𝟐
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒒𝟏 = 𝑊𝑞𝒂𝟏
+𝒌𝟑
+ 𝒌𝟒
+𝒌𝟐 = 𝑊𝑘𝒂𝟐 𝒌𝟑 = 𝑊𝑘𝒂𝟑 𝒌𝟒 = 𝑊𝑘𝒂𝟒
+𝛼1,2 𝛼1,3 𝛼1,4
+𝛼1,2 = 𝒒𝟏 ∙ 𝒌𝟐
+query key
+注意力得分
+𝛼1,3 = 𝒒𝟏 ∙ 𝒌𝟑 𝛼1,4 = 𝒒𝟏 ∙ 𝒌𝟒
+𝒌𝟏 = 𝑊𝑘𝒂𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 22---
+2026/5/12 22
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒒𝟏
+ 𝒌𝟐
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒒𝟏 = 𝑊𝑞𝒂𝟏
+𝒌𝟑
+ 𝒌𝟒
+𝒌𝟐 = 𝑊𝑘𝒂𝟐 𝒌𝟑 = 𝑊𝑘𝒂𝟑 𝒌𝟒 = 𝑊𝑘𝒂𝟒
+𝛼1,2 𝛼1,3 𝛼1,4
+𝒌𝟏
+𝛼1,1
+Softmax
+𝛼1,1
+′ 𝛼1,2
+′ 𝛼1,3
+′ 𝛼1,4
+′
+𝒌𝟏 = 𝑊𝑘𝒂𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 23---
+2026/5/12 23
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝛼1,1
+′ 𝛼1,2
+′ 𝛼1,3
+′ 𝛼1,4
+′
+𝒌𝟏
+𝒒𝟏
+ 𝒗𝟏
+ 𝒌𝟐
+ 𝒗𝟐
+ 𝒌𝟑
+ 𝒗𝟑
+ 𝒌𝟒
+ 𝒗𝟒
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟏
+𝒗𝟏 = 𝑊𝑣𝒂𝟏 𝒗𝟐 = 𝑊𝑣𝒂𝟐 𝒗𝟑 = 𝑊𝑣𝒂𝟑 𝒗𝟒 = 𝑊𝑣𝒂𝟒
+《自然语言处理课件》by 虞剑飞 
+---PAGE 24---
+2026/5/12 24
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒗𝟏
+𝒌𝟏
+𝒒𝟏
+ 𝒗𝟐
+𝒌𝟐
+𝒒𝟐
+ 𝒗𝟑
+𝒌𝟑
+ 𝒗𝟒
+𝒌𝟒
+𝛼2,1
+′ 𝛼2,2
+′ 𝛼2,3
+′ 𝛼2,4
+′
+𝒃𝟐
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒒𝟒
+𝒒𝟑
+𝒌𝟐 = 𝑊𝑘𝒂𝟐
+𝒌𝟑 = 𝑊𝑘𝒂𝟑 𝒌𝟒 = 𝑊𝑘𝒂𝟒𝒌𝟏 = 𝑊𝑘𝒂𝟏 𝒒𝟐 = 𝑊𝑞𝒂𝟐
+《自然语言处理课件》by 虞剑飞 
+---PAGE 25---
+2026/5/12 25
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 26---
+2026/5/12 26
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒗𝟏
+𝒌𝟏
+𝒒𝟏
+ 𝒗𝟐
+𝒌𝟐
+𝒒𝟐
+ 𝒗𝟑
+𝒌𝟑
+𝒒𝟑
+ 𝒗𝟒
+𝒌𝟒
+𝒒𝟒
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒒𝒊 = 𝑊𝑞𝒂𝒊
+𝒌𝒊 = 𝑊𝑘𝒂𝒊
+𝒗𝒊 = 𝑊𝑣𝒂𝒊
+𝒒𝟏
+𝒒𝟐
+𝒒𝟑
+𝒒𝟒 =
+ 𝑊𝑞
+ 𝒂𝟏
+𝒂𝟐
+𝒂𝟑
+𝒂𝟒
+=
+ 𝑊𝑘
+=
+ 𝑊𝑣
+𝒂𝟏
+𝒂𝟐
+𝒂𝟑
+𝒂𝟒
+𝒂𝟏
+𝒂𝟐
+𝒂𝟑
+𝒂𝟒𝒗𝟏 𝒗𝟑𝒗𝟒𝒗𝟐
+𝒌𝟏 𝒌𝟑𝒌𝟒𝒌𝟐
+I
+I
+I
+𝑄
+𝐾
+𝑉
+《自然语言处理课件》by 虞剑飞 
+---PAGE 27---
+2026/5/12 27
+自注意力机制 (Self-Attention)
+• 自注意力机制
+𝒗𝟏
+𝒌𝟏
+𝒒𝟏
+ 𝒗𝟐
+𝒌𝟐
+𝒒𝟐
+ 𝒗𝟑
+𝒌𝟑
+𝒒𝟑
+ 𝒗𝟒
+𝒌𝟒
+𝒒𝟒
+𝛼1,1 =
+ 𝒒𝟏
+𝒌𝟏 𝛼1,2 =
+ 𝒒𝟏
+𝒌𝟐
+𝛼1,3 =
+ 𝒒𝟏
+𝒌𝟑 𝛼1,4 =
+ 𝒒𝟏
+𝒌𝟒
+𝒒𝟏
+𝒌𝟏
+𝒌𝟐
+𝒌𝟑
+𝒌𝟒
+=
+𝛼1,1
+𝛼1,2
+𝛼1,3
+𝛼1,4
+𝛼1,1 𝛼1,2 𝛼1,3 𝛼1,4
+《自然语言处理课件》by 虞剑飞 
+---PAGE 28---
+2026/5/12 28
+自注意力机制 (Self-Attention)
+𝒗𝟏
+𝒌𝟏
+𝒒𝟏
+ 𝒗𝟐
+𝒌𝟐
+𝒒𝟐
+ 𝒗𝟑
+𝒌𝟑
+𝒒𝟑
+ 𝒗𝟒
+𝒌𝟒
+𝒒𝟒
+𝒒𝟏
+𝒌𝟏
+𝒌𝟐
+𝒌𝟑
+𝒌𝟒
+=
+𝛼1,1
+𝛼1,2
+𝛼1,3
+𝛼1,4
+𝒒𝟐
+𝛼2,1
+𝛼2,2
+𝛼2,3
+𝛼2,4
+𝛼3,1
+𝛼3,2
+𝛼3,3
+𝛼3,4
+𝛼4,1
+𝛼4,2
+𝛼4,3
+𝛼4,4
+𝐾𝑇𝐴
+𝑄
+𝒒𝟑
+ 𝒒𝟒
+𝛼1,1
+′
+𝛼1,2
+′
+𝛼1,3
+′
+𝛼1,4
+′
+𝛼2,1
+′
+𝛼2,2
+′
+𝛼2,3
+′
+𝛼2,4
+′
+𝛼3,1
+′
+𝛼3,2
+′
+𝛼3,3
+′
+𝛼3,4
+′
+𝛼4,1
+′
+𝛼4,2
+′
+𝛼4,3
+′
+𝛼4,4
+′
+𝐴′
+𝛼2,1 𝛼2,2 𝛼2,3 𝛼2,4
+softmax
+《自然语言处理课件》by 虞剑飞 
+---PAGE 29---
+2026/5/12 29
+自注意力机制 (Self-Attention)
+𝛼1,1
+′
+𝛼1,2
+′
+𝛼1,3
+′
+𝛼1,4
+′
+𝛼2,1
+′
+𝛼2,2
+′
+𝛼2,3
+′
+𝛼2,4
+′
+𝛼3,1
+′
+𝛼3,2
+′
+𝛼3,3
+′
+𝛼3,4
+′
+𝛼4,1
+′
+𝛼4,2
+′
+𝛼4,3
+′
+𝛼4,4
+′
+𝑣1
+𝑘1
+𝑞1
+ 𝑣2
+𝑘2
+𝑞2
+ 𝑣3
+𝑘3
+𝑞3
+ 𝑣4
+𝑘4
+𝑞4
+𝐴′
+𝒗𝟏 𝒗𝟑𝒗𝟒𝒗𝟐
+𝑉
+=
+𝒃𝟏
+𝒃𝟐
+𝒃𝟑
+𝒃𝟒
+O
+𝒃𝟏
+𝛼1,1
+′ 𝛼1,2
+′ 𝛼1,3
+′ 𝛼1,4
+′
+《自然语言处理课件》by 虞剑飞 
+---PAGE 30---
+2026/5/12 30
+自注意力机制 (Self-Attention)
+=
+ 𝑊𝑞
+=
+ 𝑊𝑘
+=
+ 𝑊𝑣
+Q
+K
+V
+𝐾𝑇
+ Q
+A
+A′
+A′
+V=
+I
+O
+=
+I
+I
+Attention Matrix
+待学习参数
+《自然语言处理课件》by 虞剑飞 
+---PAGE 31---
+2026/5/12 31
+自注意力机制 (Self-Attention)
+• 课堂练习
+I
+1
+0
+1
+0
+0
+2
+0
+2
+1
+1
+1
+1
+x1 x2 x3
+=
+1 1 0 0
+0 0 0 1
+1 0 1 1
+𝑊𝑞
+1 0 1
+0 2 1
+1 0 1
+0 2 1
+=
+0 1 0 1
+0 1 1 1
+1 0 0 0
+𝑊𝑘 =
+0 0 1 1
+2 3 0 1
+0 0 3 0
+𝑊𝑣 =
+《自然语言处理课件》by 虞剑飞 
+---PAGE 32---
+2026/5/12 32
+自注意力机制 (Self-Attention)
+• 多头自注意力机制 (Multi-Head Self-Attention)
+𝒌𝒊
+ 𝒗𝒊
+𝒂𝒊
+𝒒𝒊
+(2 heads as example)
+𝒒𝒊,𝟐
+𝒒𝒊,𝟏
+ 𝒌𝒊,𝟐
+𝒌𝒊,𝟏
+ 𝒗𝒊,𝟐
+𝒗𝒊,𝟏
+𝒌𝒋
+ 𝒗𝒋
+𝒂𝒋
+𝒒𝒋
+𝒒𝒋,𝟐
+𝒒𝒋,𝟏
+ 𝒌𝒋,𝟐
+𝒌𝒋,𝟏
+ 𝒗𝒋,𝟐
+𝒗𝒋,𝟏
+𝒃𝒊,𝟏
+𝒒𝒊 = 𝑊𝑞𝒂𝒊
+𝒒𝒊,𝟏 = 𝑊𝑞,1𝒒𝒊
+𝒒𝒊,𝟐 = 𝑊𝑞,2𝒒𝒊
+《自然语言处理课件》by 虞剑飞 
+---PAGE 33---
+2026/5/12 33
+自注意力机制 (Self-Attention)
+• 多头自注意力机制 (Multi-Head Self-Attention)
+𝒌𝒊
+ 𝒗𝒊
+𝒂𝒊
+𝒒𝒊
+(2 heads as example)
+𝒒𝒊,𝟐
+𝒒𝒊,𝟏
+ 𝒌𝒊,𝟐
+𝒌𝒊,𝟏
+ 𝒗𝒊,𝟐
+𝒗𝒊,𝟏
+𝒌𝒋
+ 𝒗𝒋
+𝒂𝒋
+𝒒𝒋
+𝒒𝒋,𝟐
+𝒒𝒋,𝟏
+ 𝒌𝒋,𝟐
+𝒌𝒋,𝟏
+ 𝒗𝒋,𝟐
+𝒗𝒋,𝟏
+𝒃𝒊,𝟐
+𝒒𝒊 = 𝑊𝑞𝒂𝒊
+𝒒𝒊,𝟏 = 𝑊𝑞,1𝒒𝒊
+𝒒𝒊,𝟐 = 𝑊𝑞,2𝒒𝒊
+《自然语言处理课件》by 虞剑飞 
+---PAGE 34---
+2026/5/12 34
+自注意力机制 (Self-Attention)
+• 多头自注意力机制 (Multi-Head Self-Attention)
+𝒌𝒊
+ 𝒗𝒊
+𝒂𝒊
+𝒒𝒊
+(2 heads as example)
+𝒒𝒊,𝟐
+𝒒𝒊,𝟏
+ 𝒌𝒊,𝟐
+𝒌𝒊,𝟏
+ 𝒗𝒊,𝟐
+𝒗𝒊,𝟏
+𝒌𝒋
+ 𝒗𝒋
+𝒂𝒋
+𝒒𝒋
+𝒒𝒋,𝟐
+𝒒𝒋,𝟏
+ 𝒌𝒋,𝟐
+𝒌𝒋,𝟏
+ 𝒗𝒋,𝟐
+𝒗𝒋,𝟏
+𝒒𝒊 = 𝑊𝑞𝒂𝒊
+𝒃𝒊,𝟏
+𝒃𝒊,𝟐
+𝒃𝒊 =
+ 𝑊𝑂
+《自然语言处理课件》by 虞剑飞 
+---PAGE 35---
+2026/5/12 35
+自注意力机制 (Self-Attention)
+• 自注意力机制缺陷
+– 忽略了序列中的位置信息
+FC
+ FC
+ FC
+ FC
+Self-attention
+with 
+context
+x1 x2 x3 x4
+《自然语言处理课件》by 虞剑飞 
+---PAGE 36---
+2026/5/12 36
+自注意力机制 (Self-Attention)
+• 位置编码 (Positional Encoding)
+– 为每个位置引入一个位置编码 𝑒𝑖
+• 人工构造 
+• 参数学习
+𝒗𝒊
+𝒌𝒊
+𝒒𝒊
+𝒂𝒊
+𝒆𝒊 +
+𝒆𝒊
+《自然语言处理课件》by 虞剑飞 
+---PAGE 37---
+2026/5/12 37
+自注意力机制 (Self-Attention)
+• 位置编码 (Positional Encoding)
+– 为每个位置引入一个位置编码 𝑒𝑖
+• 人工构造 
+• 参数学习
+-1 1
+𝒗𝒊
+𝒌𝒊
+𝒒𝒊
+𝒂𝒊
+𝒆𝒊 +
+《自然语言处理课件》by 虞剑飞 
+---PAGE 38---
+2026/5/12 38
+本章内容
+• 8.1 引言
+• 8.2 自注意力机制
+• 8.3 Transformer网络架构
+• 8.4 预训练模型及其应用
+– 8.4.1 基于Transformer编码器的预训练语言模型
+– 8.4.2 基于Transformer的预训练Seq2Seq模型
+– 8.4.3 基于Transformer解码器的预训练语言模型
+– 8.4.4 基于Transformer的文本-视觉预训练模型
+• 8.5 总结
+《自然语言处理课件》by 虞剑飞 
+---PAGE 39---
+2026/5/12 39
+Transformer
+• 整体架构
+– Encoder-Decoder
+《自然语言处理课件》by 虞剑飞 
+---PAGE 40---
+2026/5/12 40
+Transformer
+• 整体架构
+– Encoder-Decoder
+Encoder
+ Decoder
+Input sequence 
+output sequence 
+《自然语言处理课件》by 虞剑飞 
+---PAGE 41---
+2026/5/12 41
+Transformer
+• 整体架构
+– Encoder
+Encoder
+𝒉𝟒𝒉𝟑𝒉𝟐𝒉𝟏
+𝒙𝟒𝒙𝟑𝒙𝟐𝒙𝟏
+Transformer’s Encoder 
+《自然语言处理课件》by 虞剑飞 
+---PAGE 42---
+2026/5/12 42
+Transformer
+• Encoder
+𝒉𝟒𝒉𝟑𝒉𝟐𝒉𝟏
+𝒙𝟒𝒙𝟑𝒙𝟐𝒙𝟏
+Block
+Block
+Block
+…
+…
+…
+…
+ FC
+ FC
+ FC
+ FC
+Self-attention
+add
+norm
+add
+norm
+add
+norm
+add
+norm
+add
+norm
+add
+norm
+add
+norm
+add
+norm
+《自然语言处理课件》by 虞剑飞 
+---PAGE 43---
+2026/5/12 43
+Transformer
+• Encoder
+–  Scaled Dot-Product Attention
+Multi-Head Self-Attention
+《自然语言处理课件》by 虞剑飞 
+---PAGE 44---
+2026/5/12 44
+Transformer
+• Encoder
+–  Scaled Dot-Product Attention                   Multi-Head Attention 
+Multi-Head Self-Attention
+《自然语言处理课件》by 虞剑飞 
+---PAGE 45---
+2026/5/12 45
+Transformer
+• Encoder
+– Add
+– Norm
+norm
+norm
+mean 𝑚
+https://arxiv.org/
+abs/1607.06450
+Layer Norm
+standard 
+deviation 𝜎
+Multi-Head Self-Attention
++
+ …
+𝑥1
+𝑥2
+⋮
+𝑥𝐾
+𝑥1
+′
+𝑥2
+′
+⋮
+𝑥𝐾
+′
+𝑥𝑖
+′ = 𝑥𝑖 − 𝑚
+𝜎
++
+𝒂𝒃
+𝒂 + 𝒃
+FC
+norm
+《自然语言处理课件》by 虞剑飞 
+---PAGE 46---
+2026/5/12 46
+Transformer
+• Decoder
+– Autoregressive
+Encoder
+ Decoder
+Input sequence 
+output sequence 
+《自然语言处理课件》by 虞剑飞 
+---PAGE 47---
+2026/5/12 47
+Transformer
+• Decoder
+– Autoregressive
+Decoder
+Encoder
+START
+Size V
+softmax
+Machine  Learning
+max
+机
+(special token)
+学 0.2
+机 0.6
+器 0.06
+习 0.05
+End 0.001
+… …
+《自然语言处理课件》by 虞剑飞 
+---PAGE 48---
+2026/5/12 48
+Transformer
+• Decoder
+– Autoregressive 器
+max
+学
+max
+习
+机
+Decoder
+max
+Encoder
+Machine  Learning
+START 器 学机
+max
+《自然语言处理课件》by 虞剑飞 
+---PAGE 49---
+2026/5/12 49
+Transformer
+• Decoder
+– Autoregressive 器
+max
+学
+max
+习
+机
+Decoder
+max
+Encoder
+Machine  Learning
+START 器 学机
+max
+习
+END
+max
+《自然语言处理课件》by 虞剑飞 
+---PAGE 50---
+2026/5/12 50
+Transformer
+• Decoder
+– Autoregressive
+Encoder Decoder
+《自然语言处理课件》by 虞剑飞 
+---PAGE 51---
+2026/5/12 51
+Transformer
+• Decoder
+– Self-Attention
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 52---
+2026/5/12 52
+Transformer
+• Decoder
+– Masked Self-Attention
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 53---
+2026/5/12 53
+Transformer
+• Decoder
+– Masked Self-Attention
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 54---
+2026/5/12 54
+Transformer
+• Decoder
+– Masked Self-Attention
+𝒂𝟒𝒂𝟑𝒂𝟐𝒂𝟏
+𝒃𝟒𝒃𝟑𝒃𝟐𝒃𝟏
+《自然语言处理课件》by 虞剑飞 
+---PAGE 55---
+2026/5/12 55
+Transformer
+• Decoder
+– Autoregressive (AT) -> Non-Autoregressive (NAT)
+AT Decoder
+w1 w2START w3
+ENDw1 w2 w3
+NAT Decoder
+START
+w4w1 w2 w3
+START START START
+END
+《自然语言处理课件》by 虞剑飞 
+---PAGE 56---
+2026/5/12 56
+Transformer
+• Decoder
+– Cross-Attention
+Encoder Decoder
+Cross 
+attention
+《自然语言处理课件》by 虞剑飞 
+---PAGE 57---
+2026/5/12 57
+Transformer
+• Cross-Attention
+𝒂𝟏
+ 𝒂𝟐
+ 𝒂𝟑
+𝒒
+𝒗
+FC
+Encoder
+START
+𝛼1
+′ 𝛼2
+′ 𝛼3
+′
+Self-attention (Mask)
+Cross 
+attention
+𝒗𝟏
+𝒌𝟏
+ 𝒗𝟐
+𝒌𝟐
+ 𝒗𝟑
+𝒌𝟑
+《自然语言处理课件》by 虞剑飞 
+---PAGE 58---
+2026/5/12 58
+Transformer
+• Cross-Attention
+𝒒′
+𝒗′
+FC
+START
+𝛼1
+′ 𝛼2
+′ 𝛼3
+′
+机
+Self-attention (Mask)
+𝒂𝟏
+ 𝒂𝟐
+ 𝒂𝟑
+𝒗𝟏
+𝒌𝟏
+ 𝒗𝟐
+𝒌𝟐
+ 𝒗𝟑
+𝒌𝟑
+Encoder
+《自然语言处理课件》by 虞剑飞 
+---PAGE 59---
+2026/5/12 59
+Transformer
+• Cross-Attention
+– 图片来源: https://arxiv.org/abs/2005.08081
+《自然语言处理课件》by 虞剑飞 
+---PAGE 60---
+2026/5/12 60
+课程作业
+• 基于Transformer的机器翻译系统
+– 问题描述
+• 利用Transformer，将输入的英文句翻译成中文
+– 数据集
+• 输入： 一句英文 （e.g. tom is a student .）
+• 输出： 中文翻译 （e.g. 汤姆 是 个 学生 。）
+• 训练集：18000句
+• 验证集： 500句
+• 测试集： 2636句
+– 数据集下载地址
+• 链接：https://pan.baidu.com/s/1Vb3PvFkfCvJ_JdapgEU_Hg
+• 提取码：h43i
+– 要求
+• Tensorflow或者Pytorch实现
+《自然语言处理课件》by 虞剑飞 
+---PAGE 61---
+2026/5/12 61
+课程作业
+• 基于Transformer的机器翻译系统
+– 评价指标
+• BLEU score
+– BiLingual Evaluation Understudy, IBM
+– 将机器翻译产生的候选译文与人翻译的多个参考译文相比较，越接近，候选译文
+的正确率越高。
+– 统计同时出现在系统译文和参考译文中的n元词的个数，最后把匹配到的n元词的
+数目除以系统译文的n元词数目，得到评测结果。
+《自然语言处理课件》by 虞剑飞 
+---PAGE 62---
+2026/5/12 62
+课程作业
+• 基于Transformer的机器翻译系统
+– 评价指标
+n=1
+N
+BLEU = BP  exp( wn log pn )
+长度过短句子的
+惩罚因子
+c为候选译文中单词的个数，r 为答案
+译文中与c 最接近的译文单词个数。
+最大语法的阶
+数，实际取4。
+出现在答案译文中的
+n元词语接续组占候
+选译文中n元词语接
+续组总数的比例。wn=1/N
+BLEU 分值范围：0 ~ 1，分值越高表示译文质量越好 ，分值
+越小，译文质量越差 。
+《自然语言处理课件》by 虞剑飞 
+---PAGE 63---
+2026/5/12 63
+课程作业
+• 基于Transformer的机器翻译系统
+– 参考资料
+• 《神经网络与深度学习》 第15.4.2小节
+• http://nlp.seas.harvard.edu/2018/04/03/attention.html
+• Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł. 
+and Polosukhin, I.. Attention is all you need. In NIPS 2017.
+• Wang, Q., Li, B., Xiao, T., Zhu, J., Li, C., Wong, D. F., & Chao, L. S. (2019, July). 
+Learning Deep Transformer Models for Machine Translation. In ACL 2019.
+《自然语言处理课件》by 虞剑飞 
+---PAGE 64---
+2026/5/12 《自然语言处理课件》by 虞剑飞 64
+欢迎提问！

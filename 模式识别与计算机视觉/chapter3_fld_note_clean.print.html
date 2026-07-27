@@ -1,0 +1,309 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>第三章_特征归一化与FLD_笔记</title><style>body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;margin:30px auto;max-width:920px;line-height:1.7;color:#1f2937}h1,h2,h3,h4{color:#111827;line-height:1.3;margin-top:1.25em}h1{border-bottom:2px solid #e5e7eb;padding-bottom:.3em}p,li{font-size:14px}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px}th,td{border:1px solid #d1d5db;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f9fafb}code{font-family:Consolas,monospace;background:#f3f4f6;padding:1px 4px;border-radius:4px}pre{background:#f8fafc;border:1px solid #e5e7eb;border-radius:6px;padding:10px;overflow:auto}img{max-width:100%;height:auto}hr{border:none;border-top:1px solid #e5e7eb;margin:24px 0}@page{size:A4;margin:16mm 12mm}</style></head><body><h1 id="fisher-fld">第三章：特征归一化与 Fisher 线性判别分析（FLD）笔记</h1>
+<blockquote>
+<p>课程：模式识别与计算机视觉（PRCV）<br />
+对应课件：<code>3_Normalization_FLD.pdf</code><br />
+复习重点：<strong>FLD 的目标函数、矩阵化、优化推导、多分类扩展、数值稳定性</strong></p>
+</blockquote>
+<hr />
+<h2 id="0">0. 本章主线</h2>
+<p>本章可以理解为两步：</p>
+<ol>
+<li><strong>先把输入特征处理好（归一化）</strong>，避免量纲和尺度干扰模型。  </li>
+<li><strong>再做监督判别特征提取（FLD）</strong>，直接围绕“分类可分性”优化投影方向。</li>
+</ol>
+<p>一句话对比：</p>
+<ul>
+<li>PCA：强调“表示/重构方差”，不直接面向分类。</li>
+<li>FLD：强调“类间远、类内紧”，直接面向分类。</li>
+</ul>
+<hr />
+<h2 id="1-1421">1. 特征归一化（页 14–21）</h2>
+<h2 id="11-min-max">1.1 每维 Min-Max 归一化</h2>
+<p>对第 j 维特征：</p>
+<p>公式：<code>x_{ij}'=\frac{x_{ij}-x_{\min,j}}{x_{\max,j}-x_{\min,j}}</code></p>
+<p>映射到 [0,1]，也可映射到 [-1,1]。</p>
+<p>作用：消除量纲影响，让不同维度数值范围可比。<br />
+注意：</p>
+<ul>
+<li>若 x_{\max,j}=x_{\min,j}，该维常数，需特殊处理（置零/删除该维）。</li>
+<li>稀疏数据要谨慎，可能破坏“0 的稀疏结构”。</li>
+</ul>
+<h2 id="12-ell_2ell_1">1.2 \ell_2/\ell_1 归一化（按样本向量）</h2>
+<p>给定样本向量 \mathbf{x}_i\in\mathbb{R}^d：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+\mathbf{x}_i'=\frac{\mathbf{x}_i}{\|\mathbf{x}_i\|_2},\quad
+\|\mathbf{x}_i\|_2=\sqrt{\mathbf{x}_i^\top\mathbf{x}_i}
+
+</code></pre>
+<p>或</p>
+<p>公式：</p>
+<pre><code class="language-text">
+\mathbf{x}_i'=\frac{\mathbf{x}_i}{\|\mathbf{x}_i\|_1},\quad
+\|\mathbf{x}_i\|_1=\sum_{j=1}^d |x_{ij}|
+
+</code></pre>
+<p>\ell_1 常用于直方图、非负特征。</p>
+<h2 id="13-z-score">1.3 Z-score 标准化</h2>
+<p>按维度估计训练集统计量：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+\hat\mu_j=\frac{1}{n}\sum_{i=1}^n x_{ij},\quad
+\hat\sigma_j^2=\frac{1}{n}\sum_{i=1}^n (x_{ij}-\hat\mu_j)^2
+
+</code></pre>
+<p>变换为：</p>
+<p>公式：<code>x_{ij}'=\frac{x_{ij}-\hat\mu_j}{\hat\sigma_j}</code></p>
+<p>目标是各维近似 N(0,1)。</p>
+<h2 id="14-robust-scaling">1.4 Robust Scaling（抗离群值）</h2>
+<p>公式：</p>
+<pre><code class="language-text">
+x_{ij}'=\frac{x_{ij}-\mathrm{median}_j}{\mathrm{IQR}_j},
+\quad \mathrm{IQR}_j=Q3_j-Q1_j
+
+</code></pre>
+<p>比均值/方差更抗异常值。</p>
+<h2 id="15">1.5 测试集归一化铁律（高频考点）</h2>
+<p><strong>只能用训练集参数归一化测试集</strong>，不能在测试集重新估计 min/max、\mu,\sigma、median、IQR。<br />
+交叉验证同理：每一折都只用该折训练子集估参数。</p>
+<hr />
+<h2 id="2-fld-2224">2. 为什么需要 FLD（页 22–24）</h2>
+<p>设监督分类任务，类别为 y\in{1,\dots,C}。</p>
+<ul>
+<li>PCA 最大化总体方差，不关心标签，可能投影后类别仍混在一起。</li>
+<li>FLD 使用标签信息，专门优化“可分性”。</li>
+</ul>
+<p>FLD 核心思想：</p>
+<blockquote>
+<p>找投影方向 \mathbf{w}，使<strong>投影后类别中心尽量远</strong>，同时<strong>各类内部尽量紧凑</strong>。</p>
+</blockquote>
+<hr />
+<h2 id="3-fld-2530">3. 二分类 FLD 的完整推导（重点，页 25–30）</h2>
+<p>以下先讲二分类 y\in{1,2}。</p>
+<h2 id="31">3.1 问题设定</h2>
+<p>数据点 \mathbf{x}_i\in\mathbb{R}^d，线性投影到一维：</p>
+<p>公式：<code>u_i=\mathbf{w}^\top \mathbf{x}_i</code></p>
+<p>两类均值：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+\boldsymbol{\mu}_1=\frac{1}{N_1}\sum_{y_i=1}\mathbf{x}_i,\quad
+\boldsymbol{\mu}_2=\frac{1}{N_2}\sum_{y_i=2}\mathbf{x}_i
+
+</code></pre>
+<p>投影后均值：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+m_1=\mathbf{w}^\top\boldsymbol{\mu}_1,\quad
+m_2=\mathbf{w}^\top\boldsymbol{\mu}_2
+
+</code></pre>
+<h2 id="32-m_2-m_12">3.2 为什么不能只最大化 (m_2-m_1)^2</h2>
+<p>若只优化</p>
+<p>公式：<code>\max_{\mathbf{w}} (m_2-m_1)^2</code></p>
+<p>则 \mathbf{w}\to \alpha\mathbf{w} 时目标会随 \alpha^2 无界放大，且不考虑类内分散。<br />
+因此需要同时惩罚类内散布。</p>
+<h2 id="33-fisher">3.3 Fisher 准则</h2>
+<p>定义每类投影后散度（类内散度）：</p>
+<p>公式：<code>s_k^2=\sum_{y_i=k}(u_i-m_k)^2,\quad k=1,2</code></p>
+<p>总类内散度：s_1^2+s_2^2。</p>
+<p>Fisher 准则：</p>
+<p>公式：<code>J(\mathbf{w})=\frac{(m_2-m_1)^2}{s_1^2+s_2^2}</code></p>
+<p>目标：</p>
+<p>公式：<code>\max_{\mathbf{w}} J(\mathbf{w})</code></p>
+<h2 id="34">3.4 矩阵化推导</h2>
+<p>先化分子：</p>
+<p>公式：<code>m_2-m_1=\mathbf{w}^\top(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)</code></p>
+<p>公式：</p>
+<pre><code class="language-text">
+(m_2-m_1)^2
+=
+\mathbf{w}^\top
+(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)^\top
+\mathbf{w}
+
+</code></pre>
+<p>定义类间散度矩阵：</p>
+<p>公式：<code>S_B=(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)^\top</code></p>
+<p>则分子为 \mathbf{w}^\top S_B\mathbf{w}。</p>
+<p>再化分母：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+s_k^2=\sum_{y_i=k}\left(\mathbf{w}^\top(\mathbf{x}_i-\boldsymbol{\mu}_k)\right)^2
+=
+\mathbf{w}^\top
+\left(\sum_{y_i=k}(\mathbf{x}_i-\boldsymbol{\mu}_k)(\mathbf{x}_i-\boldsymbol{\mu}_k)^\top\right)
+\mathbf{w}
+
+</code></pre>
+<p>定义第 k 类散度矩阵：</p>
+<p>公式：<code>S_k=\sum_{y_i=k}(\mathbf{x}_i-\boldsymbol{\mu}_k)(\mathbf{x}_i-\boldsymbol{\mu}_k)^\top</code></p>
+<p>类内散度矩阵：</p>
+<p>公式：<code>S_W=S_1+S_2</code></p>
+<p>所以：</p>
+<p>公式：<code>s_1^2+s_2^2=\mathbf{w}^\top S_W\mathbf{w}</code></p>
+<p>最终得到广义 Rayleigh 商：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+J(\mathbf{w})=
+\frac{\mathbf{w}^\top S_B\mathbf{w}}{\mathbf{w}^\top S_W\mathbf{w}}
+
+</code></pre>
+<h2 id="35">3.5 拉格朗日法求解</h2>
+<p>把分母约束为 1：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+\max_{\mathbf{w}} \mathbf{w}^\top S_B\mathbf{w},
+\quad \text{s.t. } \mathbf{w}^\top S_W\mathbf{w}=1
+
+</code></pre>
+<p>拉格朗日函数：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+\mathcal{L}(\mathbf{w},\lambda)=
+\mathbf{w}^\top S_B\mathbf{w}
+-\lambda(\mathbf{w}^\top S_W\mathbf{w}-1)
+
+</code></pre>
+<p>对 \mathbf{w} 求导并令零：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+\frac{\partial\mathcal{L}}{\partial\mathbf{w}}
+=2S_B\mathbf{w}-2\lambda S_W\mathbf{w}=0
+
+</code></pre>
+<p>得到广义特征值问题：</p>
+<p>公式：<code>S_B\mathbf{w}=\lambda S_W\mathbf{w}</code></p>
+<h2 id="36">3.6 二分类闭式解</h2>
+<p>由于</p>
+<p>公式：<code>S_B=(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)^\top</code></p>
+<p>是秩 1 矩阵，可得最优方向与下式同向：</p>
+<p>公式：<code>\mathbf{w}^\star \propto S_W^{-1}(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)</code></p>
+<p>通常再做归一化：</p>
+<p>公式：<code>\mathbf{w}^\star \leftarrow \frac{\mathbf{w}^\star}{\|\mathbf{w}^\star\|_2}</code></p>
+<h2 id="37">3.7 分类阈值（实战常用）</h2>
+<p>投影后 u=\mathbf{w}^{\star\top}\mathbf{x}。<br />
+简单阈值可取两类投影均值中点：</p>
+<p>公式：<code>t=\frac{m_1+m_2}{2}</code></p>
+<p>若先验或代价不平衡，可改成偏置阈值（贝叶斯决策）。</p>
+<hr />
+<h2 id="4-fld">4. 二分类 FLD 算法步骤（可背）</h2>
+<ol>
+<li>计算 \boldsymbol{\mu}_1,\boldsymbol{\mu}_2  </li>
+<li>计算 S_W=S_1+S_2  </li>
+<li>计算 \mathbf{w}^\star=S_W^{-1}(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)  </li>
+<li>归一化 \mathbf{w}^\star  </li>
+<li>对样本做投影 u=\mathbf{w}^{\star\top}\mathbf{x} 并设阈值分类</li>
+</ol>
+<hr />
+<h2 id="5-s_w-31">5. S_W 不可逆时怎么办（页 31）</h2>
+<p>常见于 n&lt;d（小样本高维）：</p>
+<ul>
+<li>用伪逆：
+公式：<code>\mathbf{w}^\star=S_W^+(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)</code></li>
+<li>或正则化：
+公式：</li>
+</ul>
+<pre><code class="language-text">
+  S_W' = S_W+\epsilon I,\quad
+  \mathbf{w}^\star=(S_W+\epsilon I)^{-1}(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)
+
+</code></pre>
+<p>Moore-Penrose 伪逆思路：<br />
+若 S_W=E\Lambda E^\top，则</p>
+<p>公式：</p>
+<pre><code class="language-text">
+S_W^+=E\Lambda^+E^\top,\quad
+\Lambda^+_{ii}=
+\begin{cases}
+1/\Lambda_{ii}, &amp; \Lambda_{ii}&gt;0\\
+0, &amp; \Lambda_{ii}=0
+\end{cases}
+
+</code></pre>
+<hr />
+<h2 id="6-fld-3233">6. 多分类 FLD（页 32–33，重点）</h2>
+<h2 id="61">6.1 多类散度矩阵</h2>
+<p>设类别 i=1,\dots,C，样本数 N_i，总样本数 N=\sum_i N_i。</p>
+<p>各类均值 \boldsymbol{\mu}_i，全局均值：</p>
+<p>公式：<code>\boldsymbol{\mu}=\frac{1}{N}\sum_{i=1}^{C}N_i\boldsymbol{\mu}_i</code></p>
+<p>类内散度：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+S_W=\sum_{i=1}^{C}\sum_{y_n=i}
+(\mathbf{x}_n-\boldsymbol{\mu}_i)(\mathbf{x}_n-\boldsymbol{\mu}_i)^\top
+
+</code></pre>
+<p>类间散度：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+S_B=\sum_{i=1}^{C}N_i
+(\boldsymbol{\mu}_i-\boldsymbol{\mu})
+(\boldsymbol{\mu}_i-\boldsymbol{\mu})^\top
+
+</code></pre>
+<p>总散度：</p>
+<p>公式：</p>
+<pre><code class="language-text">
+S_T=
+\sum_{n=1}^{N}(\mathbf{x}_n-\boldsymbol{\mu})(\mathbf{x}_n-\boldsymbol{\mu})^\top
+=S_W+S_B
+
+</code></pre>
+<h2 id="62">6.2 优化问题</h2>
+<p>求投影矩阵 W=[\mathbf{w}_1,\dots,\mathbf{w}_r] 使</p>
+<p>公式：<code>\max_W \frac{|W^\top S_B W|}{|W^\top S_W W|}</code></p>
+<p>等价于解广义特征值问题：</p>
+<p>公式：<code>S_B\mathbf{w}_i=\lambda_i S_W\mathbf{w}_i</code></p>
+<p>取最大特征值对应的前 r 个方向。</p>
+<h2 id="63-c-1">6.3 为什么最多只有 C-1 个有效方向</h2>
+<p>因为</p>
+<p>公式：<code>\mathrm{rank}(S_B)\le C-1</code></p>
+<p>直观上：C 个类均值相对全局均值的偏移向量线性相关（和为0），独立维数最多 C-1。<br />
+所以 FLD 的判别子空间维度上限是 C-1。</p>
+<hr />
+<h2 id="7-pca-fldfisherfaces-40">7. PCA + FLD（Fisherfaces，页 40）</h2>
+<p>经典流程（人脸识别高频）：</p>
+<ol>
+<li>先 PCA 降到 k 维（常取 k\le n-C）  </li>
+<li>再在 PCA 子空间内做 FLD</li>
+</ol>
+<p>好处：</p>
+<ul>
+<li>缓解 S_W 奇异问题</li>
+<li>降噪、降计算量</li>
+<li>在人脸识别中通常优于纯 PCA（Eigenfaces）</li>
+</ul>
+<hr />
+<h2 id="8-fld-3439">8. FLD 主要变体（页 34–39）</h2>
+<ul>
+<li>正则化 FLD：S_W+\epsilon I，提升稳定性</li>
+<li>Kernel FLD：核映射处理非线性可分</li>
+<li>2D-FLD：直接在图像矩阵上双向投影</li>
+<li>稀疏 FLD：加 \ell_1 约束做特征筛选</li>
+<li>鲁棒 FLD：用 median/鲁棒协方差抗异常点</li>
+<li>增量 FLD：在线更新均值与散度，适合流式数据</li>
+</ul>
+<hr />
+<h2 id="9">9. 易错点与考试速记</h2>
+<h2 id="91">9.1 易错点</h2>
+<ol>
+<li>把 PCA 当分类器：错，PCA 不用标签。  </li>
+<li>忘记分母类内散度：只拉开均值不够。  </li>
+<li>测试集单独归一化：数据泄漏。  </li>
+<li>S_W 奇异时硬求逆：应使用伪逆/正则/PCA 预降维。  </li>
+<li>多类 FLD 维度上限写错：应是 C-1，不是 C。</li>
+</ol>
+<h2 id="92">9.2 公式速查</h2>
+<p>公式：<code>J(\mathbf{w})=\frac{\mathbf{w}^\top S_B\mathbf{w}}{\mathbf{w}^\top S_W\mathbf{w}}</code></p>
+<p>公式：<code>S_B\mathbf{w}=\lambda S_W\mathbf{w}</code></p>
+<p>公式：<code>\mathbf{w}^\star \propto S_W^{-1}(\boldsymbol{\mu}_2-\boldsymbol{\mu}_1)</code></p>
+<p>公式：</p>
+<pre><code class="language-text">
+S_B=\sum_{i=1}^{C}N_i(\boldsymbol{\mu}_i-\boldsymbol{\mu})(\boldsymbol{\mu}_i-\boldsymbol{\mu})^\top,\quad
+\mathrm{rank}(S_B)\le C-1
+
+</code></pre>
+<hr />
+<h2 id="10">10. 一句话总结</h2>
+<p>归一化决定“输入是否可学”，FLD决定“投影是否可分”。<br />
+本章的核心能力是：<strong>会写出 Fisher 准则、会从散度定义推到矩阵形式、会从拉格朗日推到广义特征值问题、知道多类上限为何是 C-1</strong>。</p></body></html>

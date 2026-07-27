@@ -1,0 +1,1050 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 21:
+Animation
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 7: 95 submissions so far
+• Final project ideas: 18 submissions so far (expected more)
+• My personal bad habit
+- Misuse of conjunctions
+- “OK”, “so”, etc. in English
+- “ᬯӻ”, “ᆐ‫”ݸ‬, etc. in Chinese
+- Can’t really control when I’m thinking,
+but will try my best to avoid them
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Course Roadmap
+
+GAMES101
+
+Rasterization
+
+Geometry
+
+Light Transport
+
+Animation / simulation
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+Introduction to Computer Animation
+
+• History
+• Keyframe animation
+• Physical simulation
+• Kinematics
+• Rigging
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Animation
+“Bring things to life”
+
+• Communication tool
+• Aesthetic issues often dominate technical issues
+An extension of modeling
+
+• Represent scene models as a function of time
+Output: sequence of images that when viewed sequentially
+provide a sense of motion
+
+• Film: 24 frames per second
+• Video (in general): 30 fps
+• Virtual reality: 90 fps
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Historical Points in Animation
+(slides courtesy of Prof. Keenan Crane @ CMU)
+
+First Animation
+
+(Shahr-e Sukhteh, Iran 3200 BCE)
+
+History of Animation
+
+(Phenakistoscope, 1831)
+
+First Film
+Originally used as
+scientific tool
+rather than for
+entertainment
+Critical
+technology that
+accelerated
+development of
+animation
+Edward Muybridge, “Sallie Gardner” (1878)
+
+First Hand-Drawn Feature-Length (>40 mins) Animation
+
+Disney, “Snow White and the Seven Dwarfs” (1937)
+
+First Digital-Computer-Generated Animation
+
+Ivan Sutherland, “Sketchpad” (1963) – Light pen, vector display
+
+Early Computer Animation
+
+Ed Catmull & Frederick Parke, “Computer Animated Faces” (1972)
+
+Digital Dinosaurs!
+
+Jurassic Park (1993)
+
+First CG Feature-Length Film
+
+Pixar, “Toy Story” (1995)
+
+Computer Animation - 10 years ago
+
+Sony Pictures Animation, “Cloudy With a Chance of Meatballs” (2009)
+
+Computer Animation - last year
+
+Walt Disney Animation Studios, “Frozen 2” (2019)
+
+Keyframe Animation
+
+Keyframe Animation
+
+Keyframes
+
+“Tweens”
+
+Animator (e.g. lead animator) creates keyframes
+Assistant (person or computer) creates in-between frames
+(“tweening”)
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Keyframe Interpolation
+Think of each frame as a vector of parameter values
+
+Hearn, Baker and Carithers, Figure 16.11
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Keyframe Interpolation of Each Parameter
+Linear interpolation usually not good enough
+
+Recall splines for smooth / controllable interpolation
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Physical Simulation
+
+Newton’s Law
+
+Force
+
+GAMES101
+
+Mass
+
+24
+
+Acceleration
+
+Lingqi Yan, UC Santa Barbara
+
+Physically Based Animation
+Generate motion of objects using numerical simulation
+
+<latexit sha1_base64="6ZF14iSqpiKBEdJjPeY+VbF7oz4=">AAAB9HicbVDNSgMxGPzW31r/qh69BIvgqeyKoN4KXvRWwbWFdi3ZbLYNzSZLklXK0vfw4kHFqw/jzbcx2+5BWwdChpnvI5MJU860cd1vZ2l5ZXVtvbJR3dza3tmt7e3fa5kpQn0iuVSdEGvKmaC+YYbTTqooTkJO2+HoqvDbj1RpJsWdGac0SPBAsJgRbKz00Aslj/Q4sVc+mPRrdbfhToEWiVeSOpRo9WtfvUiSLKHCEI617npuaoIcK8MIp5NqL9M0xWSEB7RrqcAJ1UE+TT1Bx1aJUCyVPcKgqfp7I8eJLqLZyQSboZ73CvE/r5uZ+CLImUgzQwWZPRRnHBmJigpQxBQlho8twUQxmxWRIVaYGFtU1ZbgzX95kfinjcuGe3tWb96UbVTgEI7gBDw4hyZcQwt8IKDgGV7hzXlyXpx352M2uuSUOwfwB87nD6QQktI=</latexit>
+
+gv
+<latexit sha1_base64="WgjsKJTcI7AsrgdyuucAtaiYKdg=">AAAB9HicbVDNSgMxGPy2/tX6V/XoJVgET2UrgnoreNFbBdcW2rVks9k2NJssSbZSlr6HFw8qXn0Yb76N2XYP2joQMsx8H5lMkHCmjet+O6WV1bX1jfJmZWt7Z3evun/woGWqCPWI5FJ1AqwpZ4J6hhlOO4miOA44bQej69xvj6nSTIp7M0moH+OBYBEj2FjpsRdIHupJbK9sPO1Xa27dnQEtk0ZBalCg1a9+9UJJ0pgKQzjWuttwE+NnWBlGOJ1WeqmmCSYjPKBdSwWOqfazWeopOrFKiCKp7BEGzdTfGxmOdR7NTsbYDPWil4v/ed3URJd+xkSSGirI/KEo5chIlFeAQqYoMXxiCSaK2ayIDLHCxNiiKraExuKXl4l3Vr+qu3fnteZt0UYZjuAYTqEBF9CEG2iBBwQUPMMrvDlPzovz7nzMR0tOsXMIf+B8/gC6zJLh</latexit>
+<latexit
+
+t+ t
+
+x
+<latexit sha1_base64="Lh2J5VH4goJ7Enm6mOtyLXSn5KY=">AAACXnicbVHLSgMxFM2M7z606kZwEyxCRSgzRVAXgqAL3SlYW2inJZPJaGjmQXKnWML8pDvBjX9iprZQrRdCDuecy7058VPBFTjOh2WvrK6tb2xulcqV6vZObXfvWSWZpKxNE5HIrk8UEzxmbeAgWDeVjES+YB1/dFPonTGTiifxE0xS5kXkJeYhpwQMNayN+34iAjWJzKXf8oGG0/4tE0Aw5PgKL6k5PsVzwy91nA+g0EJJqHZz3cobc9/JoLXoJMY5rNWdpjMtvAzcGaijWT0Ma+/9IKFZxGKggijVc50UPE0kcCpYXupniqWEjsgL6xkYk4gpT0/zyfGxYQIcJtKcGPCUXezQJFLFcsYZEXhVf7WC/E/rZRBeeJrHaQYspj+DwkxgSHARNg64ZBTExABCJTe7YvpKTEJgvqRkQnD/PnkZtFvNy6bzeFa/vp+lsYkO0RFqIBedo2t0hx5QG1H0adlW2apYX/aGXbV3fqy2NevZR7/KPvgG2R+2qw==</latexit>
+
+GAMES101
+
+t
+
+=x +
+
+1
+2 t
+tv + ( t) a
+2
+t
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Example: Cloth Simulation
+
+Example: Fluids
+
+Macklin and Müller, Position Based Fluids
+
+Mass Spring System:
+
+Example of Modeling a Dynamic System
+
+Example: Mass Spring Rope
+
+https://youtu.be/Co8enp8CH34
+
+Example: Hair
+
+Example: Mass Spring Mesh
+
+Huamin Wang, Ravi Ramamoorthi, and James F. O'Brien. "Data-Driven Elastic Models for Cloth: Modeling and
+Measurement". ACM Transactions on Graphics, 30(4):71:1–11, July 2011. Proceedings of ACM SIGGRAPH 2011,
+Vancouver, BC Canada.
+
+A Simple Spring
+Idealized spring
+a
+
+b
+
+f a!b = ks(b
+f b!a =
+
+Force pulls points together
+
+a)
+
+f a!b
+
+Strength proportional to displacement (Hooke’s Law)
+ks is a spring coefficient: stiffness
+
+Problem: this spring wants to have zero length
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Non-Zero Length Spring
+Spring with non-zero rest length
+a
+
+b
+
+b
+f a!b = ks
+||b
+
+a
+(||b
+a||
+
+a||
+
+l)
+
+Rest length
+
+Problem: oscillates forever
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Dot Notation for Derivatives
+If x is a vector for the position of a point of interest, we will use
+dot notation for velocity and acceleration:
+<latexit sha1_base64="kX7QVHb5jWHUY7Hg2W+PWAzDV5I=">AAAB93icbVBPS8MwHP11/pvzz6oevQSH4Gm0Iqi3gRe9TbBusJWRpukWlqYlScVZ9km8eFDx6lfx5rcx3XrQzQchj/d+P/LygpQzpR3n26qsrK6tb1Q3a1vbO7t1e2//XiWZJNQjCU9kN8CKciaop5nmtJtKiuOA004wvir8zgOViiXiTk9S6sd4KFjECNZGGtj1fpDwUE1ic+WPUzSwG07TmQEtE7ckDSjRHthf/TAhWUyFJhwr1XOdVPs5lpoRTqe1fqZoiskYD2nPUIFjqvx8FnyKjo0SoiiR5giNZurvjRzHqshmJmOsR2rRK8T/vF6mows/ZyLNNBVk/lCUcaQTVLSAQiYp0XxiCCaSmayIjLDERJuuaqYEd/HLy8Q7bV42nduzRuumbKMKh3AEJ+DCObTgGtrgAYEMnuEV3qwn68V6tz7moxWr3DmAP7A+fwCQ2ZM+</latexit>
+<latexit
+
+x
+ẋ = v
+ẍ = a
+<latexit sha1_base64="POTEVNBNtv3LhJN1agVsfSx/XGQ=">AAACS3icdVDPS8MwGE2n01l/VT16CQ7F0+hEUA/CwIveJlg3WMtI03QLpk1J0uEo/QO9ePDmX+HFg4oH062HuekHIY/33sf3fc9PGJXKtl+NytJydWW1tmaub2xubVs7u/eSpwITB3PGRddHkjAaE0dRxUg3EQRFPiMd/+Gq0DsjIiTl8Z0aJ8SL0CCmIcVIaapvYdfnLJDjSH/ZYw6PXNecpdyAK81r4RLO8qN8wfiPE+V9q2437EnBRdAsQR2U1e5bL3osTiMSK8yQlL2mnSgvQ0JRzEhuuqkkCcIPaEB6GsYoItLLJmHk8FAzAQy50C9WcMLOdmQoksVq2hkhNZTzWkH+pfVSFZ57GY2TVJEYTweFKYOKwyJZGFBBsGJjDRAWVO8K8RAJhJXO39QhNOdPXgTOSeOiYd+e1ls3ZRo1sA8OwDFogjPQAtegDRyAwRN4Ax/g03g23o0v43tqrRhlzx74VZXqDylGtgQ=</latexit>
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Introducing Energy Loss
+Simple motion damping
+f
+
+ḃ
+<latexit sha1_base64="xQJkoYXtjVlJUaTZNm8D/1AjJp0=">AAAB/XicbVBPS8MwHP3Vv3P+q4onL8EheBqtCOpt4EVvE6wbbGWkabqFpWlJUmGUgl/FiwcVr34Pb34b060H3fxByOO93yMvL0g5U9pxvq2l5ZXVtfXaRn1za3tn197bf1BJJgn1SMIT2Q2wopwJ6mmmOe2mkuI44LQTjK9LvfNIpWKJuNeTlPoxHgoWMYK1oQb2YT9IeKgmsbnyfpjoPCgKNLAbTtOZDloEbgUaUE17YH8ZL8liKjThWKme66Taz7HUjHBa1PuZoikmYzykPQMFjqny82n8Ap0YJkRRIs0RGk3Z344cx6pMaDZjrEdqXivJ/7RepqNLP2cizTQVZPZQlHGkE1R2gUImKdF8YgAmkpmsiIywxESbxuqmBHf+y4vAO2teNZ2780brtmqjBkdwDKfgwgW04Aba4AGBHJ7hFd6sJ+vFerc+ZqtLVuU5gD9jff4Aau+V/w==</latexit>
+
+f=
+<latexit sha1_base64="MC85jpn1z5biugPZmhb05NrU0w0=">AAACE3icbVDLSsNAFJ34rPUVdelmsAiCWFIR1IVQcKO7CsYW2hAmk0k7dDITZiZCCfkIN/6KGxcqbt2482+ctFnU1gvDHM65h3vvCRJGlXacH2thcWl5ZbWyVl3f2Nzatnd2H5RIJSYuFkzIToAUYZQTV1PNSCeRBMUBI+1geF3o7UciFRX8Xo8S4sWoz2lEMdKG8u3jXiBYqEax+bIoh1fwZOiHcJrthUJnQZ5D3645dWdccB40SlADZbV8+9t4cRoTrjFDSnUbTqK9DElNMSN5tZcqkiA8RH3SNZCjmCgvGx+Vw0PDhDAS0jyu4ZiddmQoVsWGpjNGeqBmtYL8T+umOrrwMsqTVBOOJ4OilEEtYJEQDKkkWLORAQhLanaFeIAkwtrkWDUhNGZPngfuaf2y7tyd1Zq3ZRoVsA8OwBFogHPQBDegBVyAwRN4AW/g3Xq2Xq0P63PSumCVnj3wp6yvX5WunsQ=</latexit>
+
+kd ḃ
+
+• Behaves like viscous drag on motion
+• Slows down motion in the direction of velocity
+• kd is a damping coefficient
+Problem: slows down all motion
+
+• Want a rusty spring’s oscillations to slow down, but
+should it also fall to the ground more slowly?
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Internal Damping for Spring
+Damp only the internal, spring-driven motion
+Relative velocity of b,
+assuming a is static (vector)
+
+a
+
+b
+
+f ba =
+<latexit sha1_base64="nKDvyXXX5H94jKtYSGnPpMoM1Zs=">AAACv3icrVFNS8MwGE7r15xfVY9egkOYh41WBPUwGPPicYJzg7WUNE23sDQtSSqMrn/Si/hvTLce5hRPvhDy5Hmf9yPvG6SMSmXbn4a5tb2zu1fbrx8cHh2fWKdnrzLJBCYDnLBEjAIkCaOcDBRVjIxSQVAcMDIMZo+lf/hGhKQJf1HzlHgxmnAaUYyUpnzrww0SFsp5rK88KnwEO7A180PoRgLhfN0bFK31JyqKfLH4U7BYFE03TNRGGi3bJHWyaxdr9r/q+lbDbttLgz+BU4EGqKzvW++6KZzFhCvMkJRjx06VlyOhKGakqLuZJCnCMzQhYw05ion08uUCCnilmRBGidCHK7hk1yNyFMuyO62MkZrKTV9J/uYbZyq693LK00wRjleFooxBlcBymzCkgmDF5hogLKjuFeIp0hNUeud1PQRn88s/weCm/dC2n28b3V41jRq4AJegCRxwB7rgCfTBAGCjY2CDGbHZM6cmN9OV1DSqmHPwzcz5FwuZ5BE=</latexit>
+
+Damping force
+applied on b
+
+b
+kd
+||b
+
+a
+(ḃ
+a||
+
+b
+ȧ) ·
+||b
+
+Relative velocity projected to
+the direction from a to b (scalar)
+
+a
+a||
+
+Direction from
+a to b
+
+• Viscous drag only on change in spring length
+• Won’t slow group motion for the spring system (e.g.
+global translation or rotation of the group)
+
+• Note: This is only one specific type of damping
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Structures from Springs
+Sheets
+
+Blocks
+
+Others
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Structures from Springs
+Behavior is determined by structure linkages
+
+This structure will not resist shearing
+
+This structure will not resist out-of-plane
+bending...
+
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Structures from Springs
+Behavior is determined by structure linkages
+
+This structure will resist shearing
+but has anisotropic bias
+
+This structure will not resist out-of-plane
+bending either...
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Structures from Springs
+Behavior is determined by structure linkages
+
+This structure will resist shearing.
+Less directional bias.
+
+This structure will not resist out-of-plane
+bending either...
+
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Structures from Springs
+They behave like what they are (obviously!)
+
+This structure will resist shearing.
+Less directional bias.
+
+This structure will resist out-of-plane bending
+Red springs should be much weaker
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Example: Mass Spring Dress + Character
+
+Aside: FEM (Finite Element Method) Instead of Springs
+
+Particle Systems
+
+Particle Systems
+Model dynamical systems as collections of large
+numbers of particles
+Each particle’s motion is defined by a set of
+physical (or non-physical) forces
+Popular technique in graphics and games
+
+• Easy to understand, implement
+• Scalable: fewer particles for speed, more
+for higher complexity
+
+Challenges
+
+• May need many particles (e.g. fluids)
+• May need acceleration structures (e.g. to
+find nearest particles for interactions)
+
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Particle System Animations
+For each frame in animation
+
+• [If needed] Create new particles
+• Calculate forces on each particle
+• Update each particle’s position and
+velocity
+
+• [If needed] Remove dead particles
+• Render particles
+
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Particle System Forces
+Attraction and repulsion forces
+
+• Gravity, electromagnetism, …
+• Springs, propulsion, …
+Damping forces
+
+• Friction, air drag, viscosity, …
+Collisions
+
+• Walls, containers, fixed objects, …
+• Dynamic objects, character body parts, …
+
+GAMES101
+
+48
+
+Lingqi Yan, UC Santa Barbara
+
+Gravitational Attraction
+Newton’s universal law of gravitation
+
+• Gravitational pull between particles
+m1 m2
+Fg = G 2
+d
+11
+2
+2
+G = 6.67428 ⇥ 10
+Nm kg
+m1
+
+m2
+
+d
+
+GAMES101
+
+49
+
+Lingqi Yan, UC Santa Barbara
+
+Example: Galaxy Simulation
+
+Disk galaxy simulation, NASA Goddard
+
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+Example: Particle-Based Fluids
+
+Macklin and Müller, Position Based Fluids
+GAMES101
+
+51
+
+Lingqi Yan, UC Santa Barbara
+
+Simulated Flocking as an ODE
+Model each bird as a particle
+Subject to very simple forces:
+
+• attraction to center of neighbors
+• repulsion from individual neighbors
+• alignment toward average trajectory of neighbors
+Simulate evolution of large particle system numerically
+Emergent complex behavior (also seen in fish, bees, ...)
+
+attraction
+
+repulsion
+
+Credit: Craig Reynolds (see http://www.red3d.com/cwr/boids/)
+GAMES101
+
+52
+
+alignment
+Slide credit: Keenan Crane
+Lingqi Yan, UC Santa Barbara
+
+Example: Molecular Dynamics
+
+(model of melting ice crystal)
+GAMES101
+
+53
+
+Lingqi Yan, UC Santa Barbara
+
+Example: Crowds + “Rock” Dynamics
+
+GAMES101
+
+54
+
+Lingqi Yan, UC Santa Barbara
+
+Forward Kinematics
+(Slides by Prof. James O’Brien)
+
+Forward Kinematics
+Articulated skeleton
+
+• Topology (what’s connected to what)
+• Geometric relations from joints
+• Tree structure (in absence of loops)
+Joint types
+
+• Pin (1D rotation)
+• Ball (2D rotation)
+• Prismatic joint (translation)
+
+GAMES101
+
+56
+
+Lingqi Yan, UC Santa Barbara
+
+Forward Kinematics
+Example: simple two segment arm in 2D
+
+Simple System: A Two Segment Arm
+z
+
+x
+
+GAMES101
+
+57
+
+Warning: Z−up Coordinate System
+
+Lingqi Yan, UC Santa Barbara
+
+Forward Kinematics
+Animator provides angles, and computer determines position p of endeffector
+Simple System: A Two Segment Arm
+
+z
+
+End effector
+
+x
+
+GAMES101
+
+58
+
+Warning: Z−up Coordinate System
+
+Lingqi Yan, UC Santa Barbara
+
+Forward Kinematics
+Animation is described as angle parameter values as a function of time
+
+Simple System: A Two Segment Arm
+z
+✓1
+t
+
+✓2
+t
+
+x
+
+GAMES101
+
+59
+
+Warning: Z−up Coordinate System
+
+Lingqi Yan, UC Santa Barbara
+
+Example Walk Cycle
+
+GAMES101
+
+60
+
+Lingqi Yan, UC Santa Barbara
+
+Kinematics Pros and Cons
+Strengths
+
+• Direct control is convenient
+• Implementation is straightforward
+Weaknesses
+
+• Animation may be inconsistent with physics
+• Time consuming for artists
+
+GAMES101
+
+61
+
+Lingqi Yan, UC Santa Barbara
+
+Inverse Kinematics
+
+Inverse Kinematics
+
+Egon Pasztor
+
+GAMES101
+
+63
+
+Lingqi Yan, UC Santa Barbara
+
+Inverse Kinematics
+Animator provides position of end-effector, and computer must
+determine joint angles that satisfy constraints
+
+Direct IK: Solve for
+
+and
+
+px
+
+z
+
+t
+
+pz
+t
+
+x
+
+GAMES101
+
+64
+
+Lingqi Yan, UC Santa Barbara
+
+Inverse Kinematics
+Direct inverse kinematics: for two-segment arm, can solve for parameters
+analytically
+
+Direct IK: Solve for
+
+and
+
+px
+
+z
+
+t
+
+pz
+t
+
+x
+
+GAMES101
+
+65
+
+Lingqi Yan, UC Santa Barbara
+
+Inverse Kinematics
+Why hard?
+is this a hard problem?
+Why is the problem
+
+• Multiple solutions in configuration space
+
+Multiple solutions separated in
+configuration space
+
+GAMES101
+
+66
+
+Lingqi Yan, UC Santa Barbara
+
+Inverse Kinematics
+Why hard?
+is this a hard problem?
+Why is the problem
+
+• Multiple solutions in configuration space
+
+Multiple solutions connected in
+configuration space
+
+GAMES101
+
+67
+
+Lingqi Yan, UC Santa Barbara
+
+Inverse Kinematics
+Why is the problem hard?
+
+• Solutions may not always exist
+
+GAMES101
+
+68
+
+Lingqi Yan, UC Santa Barbara
+
+Inverse Kinematics
+Numerical solution to general N-link IK problem
+
+• Choose an initial configuration
+• Define an error metric (e.g. square of distance between
+goal and current position)
+
+• Compute gradient of error as function of configuration
+• Apply gradient descent (or Newton’s method, or other
+optimization procedure)
+
+GAMES101
+
+69
+
+Lingqi Yan, UC Santa Barbara
+
+Style-Based IK
+
+Grochow et al., Style Based Inverse Kinematics
+GAMES101
+
+70
+
+Lingqi Yan, UC Santa Barbara
+
+Rigging
+
+Rigging
+Rigging is a set of higher level controls on a character that allow more
+rapid & intuitive modification of pose, deformations, expression, etc.
+Important
+
+• Like strings on a puppet
+• Captures all meaningful
+character changes
+
+• Varies from character to
+character
+
+Expensive to create
+
+• Manual effort
+• Requires both artistic and technical training
+GAMES101
+
+72
+
+Lingqi Yan, UC Santa Barbara
+
+Rigging Example
+
+Courtesy Matthew Lailler via Keenan Crane
+
+GAMES101
+
+73
+
+Lingqi Yan, UC Santa Barbara
+
+Blend Shapes
+Instead of skeleton, interpolate directly
+between surfaces
+E.g., model a collection of facial
+expressions:
+Simplest scheme: take linear
+combination of vertex positions
+
+GAMES101
+
+74
+
+Courtesy Félix Ferrand
+
+Spline used to control choice of
+weights over time
+
+Lingqi Yan, UC Santa Barbara
+
+Blend Shapes
+
+Courtesy Félix Ferrand
+GAMES101
+
+75
+
+Lingqi Yan, UC Santa Barbara
+
+Motion Capture
+
+Motion Capture
+Data-driven approach to
+creating animation
+sequences
+
+• Record real-world
+
+performances (e.g.
+person executing an
+activity)
+
+• Extract pose as a
+
+function of time from
+the data collected
+Motion capture room for ShaqFu
+
+GAMES101
+
+77
+
+Lingqi Yan, UC Santa Barbara
+
+Motion Capture Pros and Cons
+Strengths
+
+• Can capture large amounts of real data quickly
+• Realism can be high
+Weaknesses
+
+• Complex and costly set-ups
+• Captured animation may not meet artistic needs, requiring
+alterations
+
+GAMES101
+
+78
+
+Lingqi Yan, UC Santa Barbara
+
+Motion Capture Equipment
+
+Optical
+(More on following slides)
+
+GAMES101
+
+Magnetic
+Sense magnetic fields to
+infer position / orientation.
+Tethered.
+
+79
+
+Mechanical
+Measure joint angles directly.
+Restricts motion.
+
+Lingqi Yan, UC Santa Barbara
+
+Optical Motion Capture
+
+Retroflective markers attached to subject
+
+IR illumination and cameras
+
+• Markers on subject
+• Positions by triangulation from multiple cameras
+• 8+ cameras, 240 Hz, occlusions are difficult
+Slide credit: Prof. Steve Marschner @ Cornell
+
+GAMES101
+
+80
+
+Lingqi Yan, UC Santa Barbara
+
+Optical Motion Capture
+
+Source: http://fightland.vice.com/blog/ronda-rousey-20-the-queen-of-all-media
+
+Ronda Roussey in Electronic Arts’ motion capture studio
+
+GAMES101
+
+81
+
+Lingqi Yan, UC Santa Barbara
+
+Why isData
+this task not trivial?
+Motion
+
+Subset of motion curves from captured walking motion.
+From Witkin and Popovic, 1995
+
+From Witkin and Popovic, SIGGRAPH 9
+GAMES101
+
+82
+
+Lingqi Yan, UC Santa Barbara
+
+Challenges of Facial Animation
+Uncanny valley (௣ோᨕපଫ)
+
+• In robotics and graphics
+• As artificial character
+
+Cartoon.
+Brave, Pixar
+
+appearance approaches
+human realism, our
+emotional response goes
+negative, until it achieves
+a sufficiently convincing
+level of realism in
+expression
+
+Semi-realistic. Polar Express, Warner Bros.
+GAMES101
+
+83
+
+Lingqi Yan, UC Santa Barbara
+
+Facial Motion Capture
+
+Discovery, “Avatar: Motion Capture Mirrors Emotions”, https://youtu.be/1wK1Ixr-UmM
+
+GAMES101
+
+84
+
+Lingqi Yan, UC Santa Barbara
+
+The Production Pipeline
+
+GAMES101
+
+85
+
+Lingqi Yan, UC Santa Barbara
+
+Next (Final) Lecture
+Given the forces / physics / theory, how to simulate actual movements
+
+Hint: what would he say in a fight?
+Credit: JoJo’s Bizarre Adventure
+GAMES101
+
+86
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ren Ng for many of the slides!)
+
+

@@ -1,0 +1,259 @@
+邰颖
+南京大学
+智能科学与技术学院
+多处理器调度
+多处理器调度
+•多核处理器（multicore processor）的兴起推动了多处理器调度的普及。
+•
+多核（Multicore）：多个CPU核心封装在同一个芯片上
+•增加更多的核心并不会让单个应用程序自动运行得更快。
+•
+如果希望充分利用多核架构，需要重写应用程序，使其能够并行运行，即
+使用线程（threads）
+如何在多个核心上调度任务？
+单核CPU与缓存（Single CPU with Cache）
+缓存（Cache）
+•小型且高速的存储器。
+•存储主存（内存）中常用数据的副本。
+•利用**时间局部性（Temporal Locality）和空间局部性
+（Spatial Locality）**提高访问效率。
+主存（Main Memory）
+•存储所有数据。
+•访问主存的速度比缓存慢。
+通过缓存数据，系统可以让对主存的慢速访问看起来更快
+lscpu
+•
+lscpu指令
+问题#1：缓存一致性（cache coherence）
+•
+多个缓存中存储的共享资源数据需要保持一致性
+0. 两颗CPU共享同一片内存
+•CPU0 和CPU1 都有各自的缓存，并通
+过总线访问主存。
+1. CPU0 读取地址1 处的数据
+•CPU0 从主存地址1 读取数据D，并将
+其存入自己的缓存。
+问题#1：缓存一致性（cache coherence）
+•
+数据更新与缓存不一致
+•CPU0 更新了内存地址1的值D → D'（但仅存
+于CPU0的缓存）。
+•CPU1 被调度执行。
+•
+CPU1 重新读取地址1的数据
+•CPU1 读取的仍然是旧数据D，而不是
+正确的D'。
+由于缓存一致性问题，CPU1 获取的是错误的旧值D，而不是更新后的正确值D'
+问题#1：缓存一致性（cache coherence）
+解决方案：总线嗅探（Bus Snooping）
+•每个缓存通过监视总线（observing the bus）来关注内存的更新情况。
+•当某个CPU发现缓存中存储的数据项被更新，它会检测到这一变化，并使缓存副本失效
+（invalidate）或进行更新（update）。
+问题#2：不要忘记同步（Synchronization）
+•
+在多核系统中，多个CPU 可能会同时访问和修改共享数据
+•
+使用互斥（mutual exclusion）机制来保证正确性（guarantee correctness）
+代码示例：简单的链表删除操作（Simple List Delete Code with Lock）
+问题#2：不要忘记同步（Synchronization）
+•
+解决方案：采用互斥锁（mutex）来确保线程安全。
+•
+锁的概念：加锁保持数据共享的一致性
+代码示例：带锁的链表删除操作（Simple List Delete Code with Lock）
+问题#3：缓存亲和性（Cache Affinity）
+•尽可能保持进程在相同的CPU 上运行
+•进程在某个CPU 上运行时，会在该CPU 的缓存（cache）中存储部分状态信
+息。
+•当进程再次运行时，如果其部分状态仍存储在该CPU 的缓存中，执行速度
+会更快。
+多处理器调度器在做出调度决策时，应考虑缓存亲和性
+（cache affinity）。
+方法#1：单队列多处理器调度（SQMS）
+•
+所有作业都放入单一队列每个CPU 
+•
+从全局共享队列中取出下一个作业执行
+•
+优势：简单
+•
+短板
+•
+缺乏可扩展性：通过加锁保证准确性。系统开销大
+•
+缓存亲和性低：任务可能频繁在不同CPU 之间切换，导致缓存数据失效
+缓存亲和性调度示例
+•
+解决方案：尽量让同一个任务在同一个CPU 上执行，减少缓存失效（Cache Miss）
+•
+尽量保持进程的缓存亲和性，可能需要牺牲其他工作的亲和度来实现负载均衡
+•
+任务A 到D 不会跨
+CPU 迁移。
+•
+只有任务E 在多个CPU 
+之间迁移。
+•
+实现这种调度方案可能
+较为复杂。
+方法#2：多队列多处理器调度（MQMS）
+•
+MQMS 由多个调度队列组成，提高系统可扩展性，并减少同步开销。
+•
+每个队列遵循特定的调度策略。
+•
+进程进入系统时，只会被放入一个调度队列。
+•
+主要优势：
+•
+减少信息共享和同步开销，降低多核系统中的锁竞争问题，提高系统扩展性。
+•
+提高缓存亲和性，进程倾向于在固定CPU 上执行，减少缓存失效（Cache 
+Miss）。
+•
+更灵活的调度策略：可以根据任务类型或优先级，设计不同的调度策略，提
+高调度效率。
+方法#2：多队列多处理器调度（MQMS）
+•
+采用轮转调度（Round Robin），每个CPU 在自己的队列中公平地执行任务
+•
+提高可扩展性（Scalability）：避免了单队列调度（SQMS）中的锁竞争问题，提高
+CPU 资源利用率。
+•
+增强缓存亲和性（Cache Affinity）：任务A 和C 始终由CPU0 处理，任务B 和D 始
+终由CPU1 处理，减少任务迁移，提高缓存命中率，降低内存访问开销。
+多队列调度的问题：负载不均
+•
+负载不均：假设某个任务执行完成（如Q0中的C）
+•
+负载不均：假设2个任务执行完成（如Q0中的A, C）
+A 占用了比B 和D 
+更多的CPU 资源
+CPU0 将处于空闲
+状态（Idle）
+如何解决负载不均衡？
+•
+解决方案：迁移任务（Migration）。通过任务的跨CPU 迁移，可以实现动态负载均衡
+初始状态：Q0 为空，Q1 包含任务B 和D
+操作系统（OS）将B 或D 迁移到CPU0
+迁移后的两种可能方案：
+方案1：D 迁移到Q0，Q1 只剩B
+方案2：B 迁移到Q0，Q1 只剩D
+如何解决负载不均衡？
+•
+更复杂的情况：单个任务迁移无法解决问题（Q0 只有A，Q1 仍然包含B 和D）
+•
+可能的迁移模式：
+•持续交换任务（不断调整任务分配）
+初始状态：CPU0 运行A，CPU1 运行B 和D。
+迁移B 到CPU0，使CPU0 执行A 和B。
+迁移A 到CPU1，使CPU1 执行A 和D。
+形成动态迁移策略，持续平衡CPU 负载。
+工作窃取（Work Stealing）
+•
+跨队列迁移进程（Move processes between queues）
+•
+实现方式（Implementation）
+•选择进程较少的源队列（Source Queue）
+•源队列偶尔查看另一个目标队列（Target Queue）
+•如果目标队列的负载高于源队列，源队列将“窃取”目标队列中的一个或多个进程
+•
+缺点：高开销（High overhead）；扩展性问题（Scaling trouble）
+Linux 多处理器调度器
+•
+O(1) 调度器
+•基于优先级的调度算法。
+•采用多队列调度机制。
+•动态调整进程优先级。
+•优先调度高优先级进程。
+•专注于交互性（Interactivity），优化用户体验。
+•
+完全公平调度器（CFS）
+•
+采用确定性的比例公平分配（Proportional-Share Approach）
+•
+通过红黑树（Red-Black Tree）数据结构进行管理
+•
+使用多队列进行调度。
+Linux 多处理器调度器
+•
+BF 调度器（BF Scheduler）
+•
+采用单队列调度（Single Queue Approach）
+•
+按比例共享（Proportional-Share）CPU 资源
+•
+基于最早可执行虚拟截止时间优先（EEVDF, Earliest Eligible Virtual 
+Deadline First）算法
+•
+优势：低延迟、高响应
+•
+缺点：扩展性问题，不适用于高并发场景
+相关linux指令
+•
+cat /proc/`pidof cpu`/sched
+%显示特定进程的调度统计信息
+•
+ps –o thcount,nlwp `pidof cpu`
+%显示线程数量
+•
+ps –L –p `pidof cpu`
+%显示线程/轻量级进程（LWP）ID
+•
+ps –mo pid,tid,%cpu,psr `pidof cpu`
+%显示线程在哪个CPU 核心上运行
+•
+taskset –c 1 ./threads 10000000
+cat /proc/`pidof cpu`/sched
+./cpu hello
+cat /proc/`pidof cpu`/sched
+ps -o thcount,nlwp `pidof cpu `
+•
+thcount（Thread Count）：该进程拥有的线程数。
+•
+nlwp（Number of Light Weight Processes）：该进程的LWP（轻量级进程）数量，也表示线程数
+ps –L –p `pidof cpu`
+•
+-p <PID>：指定进程ID，查询该进程的信息。
+•
+-L：显示该进程的所有LWP（轻量级进程，即线程）。
+ps –mo pid,tid,%cpu,psr `pidof cpu`
+•
+-m：显示所有线程（LWP）信息
+•
+-o <字段>：指定要显示的列
+•
+pid：进程ID（所有线程共享同一个PID）。
+•
+tid：线程ID（LWP ID），用于区分同一进程的不同线程。
+•
+%cpu：该线程的CPU 使用率。
+•
+psr（Processor）：该线程当前运行在哪个CPU 核心上。
+多个线程程序示例：threads
+•
+./threads-s 100000
+•
+cat /proc/`pidof threads-s`/sched %显示特定进程的调度统计信息
+•
+ps –o thcount,nlwp `pidof threads-s`
+%显示线程数量
+•
+ps –L –p `pidof threads-s`
+%显示线程/轻量级进程（LWP）ID
+•
+ps –mo pid,tid,%cpu,psr `pidof threads-s` %显示线程在哪个CPU 核心上运行
+•
+watch –n.5 “ps –mo pid,tid,%cpu,psr `pidof threads-s`
+•
+htop –p `pidof threads-s`
+•
+taskset –c 1 ./threads-s 10000000
+小结
+•
+介绍了缓存以及相关的3个问题（缓存一致性、同步、亲和性）
+•
+介绍了多处理器调度的方法（SQMS、MQMS）
+•
+介绍了如何处理负载不均衡
+谢谢

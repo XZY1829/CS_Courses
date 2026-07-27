@@ -1,0 +1,974 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 14:
+Ray Tracing 2
+(Acceleration & Radiometry)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Grading of resubmissions — we’re working on that
+• GTC news: DLSS 2.0
+- https://zhuanlan.zhihu.com/p/116211994
+
+• GTC news: RTXGI
+- https://developer.nvidia.com/rtxgi
+
+• Personal feeling
+- Offline rendering techniques will soon become real-time
+- Current real-time rendering techniques will still be useful
+
+• Next lectures won’t be easy
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lecture
+• Why ray tracing?
+• Whitted-style ray tracing
+• Ray-object intersections
+- Implicit surfaces
+- Triangles
+• Axis-Aligned Bounding Boxes (AABBs)
+- Understanding — pairs of slabs
+- Ray-AABB intersection
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Using AABBs to accelerate ray tracing
+- Uniform grids
+- Spatial partitions
+• Basic radiometry (辐射度量学)
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Uniform Spatial Partitions (Grids)
+
+Preprocess – Build Acceleration Grid
+1. Find bounding box
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Preprocess – Build Acceleration Grid
+1. Find bounding box
+2. Create grid
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Preprocess – Build Acceleration Grid
+1. Find bounding box
+2. Create grid
+3. Store each object
+in overlapping cells
+
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Ray-Scene Intersection
+
+Step through grid in ray
+traversal order
+For each grid cell
+Test intersection
+with all objects
+stored at that cell
+
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Grid Resolution?
+One cell
+
+• No speedup
+
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Grid Resolution?
+Too many cells
+
+• Inefficiency due
+to extraneous
+grid traversal
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Grid Resolution?
+Heuristic:
+
+• #cells = C * #objs
+• C ≈ 27 in 3D
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Uniform Grids – When They Work Well
+
+Deussen et al; Pharr & Humphreys, PBRT
+
+Grids work well on large collections of objects
+that are distributed evenly in size and space
+
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Uniform Grids – When They Fail
+
+Jun Yan, Tracy Renderer
+
+“Teapot in a stadium” problem
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Spatial Partitions
+
+Spatial Partitioning Examples
+
+Oct-Tree
+
+KD-Tree
+
+BSP-Tree
+
+Note: you could have these in both 2D and 3D. In lecture we will illustrate principles in 2D.
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+KD-Tree Pre-Processing
+A
+
+A
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+KD-Tree Pre-Processing
+A
+B
+B
+
+A
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+KD-Tree Pre-Processing
+A
+
+2
+
+1
+
+C
+
+1
+
+B
+
+B
+2
+D
+
+4
+D
+
+3
+
+4
+
+5
+
+3
+5
+
+Note: also subdivide
+nodes 1 and 2, etc.
+
+A
+GAMES101
+
+C
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Data Structure for KD-Trees
+Internal nodes store
+
+• split axis: x-, y-, or z-axis
+• split position: coordinate of split plane along axis
+• children: pointers to child nodes
+• No objects are stored in internal nodes
+Leaf nodes store
+
+• list of objects
+
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Traversing a KD-Tree
+A
+1
+C
+
+B
+
+B
+2
+
+C
+D
+
+D
+
+4
+
+3
+5
+
+A
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Traversing a KD-Tree
+tmin
+A
+1
+C
+
+B
+2
+
+B
+
+C
+D
+
+D
+
+tmax
+
+5
+
+Internal node: split
+
+A
+GAMES101
+
+4
+
+3
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Traversing a KD-Tree
+tmin
+tmax
+A
+1
+C
+
+B
+
+B
+2
+
+C
+D
+
+D
+
+4
+
+5
+
+Assume it’s leaf node:
+intersect all objects
+
+A
+GAMES101
+
+3
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Traversing a KD-Tree
+tmin
+
+A
+1
+C
+
+B
+2
+
+B
+
+C
+D
+
+D
+
+tmax
+
+5
+
+Internal node: split
+
+A
+GAMES101
+
+4
+
+3
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Traversing a KD-Tree
+tmin
+
+A
+1
+C tmax
+
+B
+
+B
+2
+
+C
+D
+
+D
+
+4
+
+5
+
+Leaf node: intersect
+all objects
+
+A
+GAMES101
+
+3
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Traversing a KD-Tree
+A
+1
+C tmin
+
+B
+2
+
+B
+
+C
+D
+
+D
+
+tmax
+
+5
+
+Internal node: split
+
+A
+GAMES101
+
+4
+
+3
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Traversing a KD-Tree
+A
+1
+C
+
+C
+D
+
+D
+
+tmax
+
+4
+
+3
+5
+
+Leaf node: intersect
+all objects
+
+A
+GAMES101
+
+2
+
+B
+
+tmin
+
+B
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Traversing a KD-Tree
+A
+1
+C
+
+thit
+D
+
+2
+
+C
+D
+
+4
+
+3
+5
+
+Intersection found
+
+A
+GAMES101
+
+B
+
+B
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Object Partitions &
+Bounding Volume Hierarchy (BVH)
+
+Bounding Volume Hierarchy (BVH)
+
+Root
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Bounding Volume Hierarchy (BVH)
+
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Bounding Volume Hierarchy (BVH)
+
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Bounding Volume Hierarchy (BVH)
+
+A
+
+C
+B
+C
+D
+
+GAMES101
+
+B
+
+D
+
+A
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Summary: Building BVHs
+• Find bounding box
+• Recursively split set of
+
+objects in two subsets
+
+• Recompute the bounding
+box of the subsets
+
+• Stop when necessary
+• Store objects in each leaf
+node
+
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Building BVHs
+How to subdivide a node?
+
+• Choose a dimension to split
+• Heuristic #1: Always choose the longest axis in node
+• Heuristic #2: Split node at location of median object
+Termination criteria?
+
+• Heuristic: stop when node contains few elements
+(e.g. 5)
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Data Structure for BVHs
+Internal nodes store
+
+• Bounding box
+• Children: pointers to child nodes
+Leaf nodes store
+
+• Bounding box
+• List of objects
+Nodes represent subset of primitives in scene
+
+• All objects in subtree
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+BVH Traversal
+Intersect(Ray ray, BVH node) {
+if (ray misses node.bbox) return;
+
+node
+
+if (node is a leaf node)
+test intersection with all objs;
+return closest intersection;
+hit1 = Intersect(ray, node.child1);
+hit2 = Intersect(ray, node.child2);
+
+child1
+
+child2
+
+return the closer of hit1, hit2;
+}
+
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Spatial vs Object Partitions
+Spatial partition (e.g.KD-tree)
+• Partition space into
+non-overlapping regions
+• An object can be contained
+in multiple regions
+Object partition (e.g. BVH)
+• Partition set of objects into
+disjoint subsets
+• Bounding boxes for each set
+may overlap in space
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Using AABBs to accelerate ray tracing
+- Uniform grids
+- Spatial partitions
+• Basic radiometry (辐射度量学)
+- Advertisement: new topics from now on,
+scarcely covered in other graphics courses
+
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Radiometry — Motivation
+Observation
+
+• In assignment 3, we implement the Blinn-Phong model
+• Light intensity I is 10, for example
+• But 10 what?
+Do you think Whitted style ray tracing gives you CORRECT results?
+All the answers can be found in radiometry
+
+• Also the basics of “Path Tracing”
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Radiometry
+Measurement system and units for illumination
+Accurately measure the spatial properties of light
+
+- New terms: Radiant flux, intensity, irradiance, radiance
+Perform lighting calculations in a physically correct manner
+—————————————————————————
+My personal way of learning things:
+
+- WHY, WHAT, then HOW
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Radiant Energy and Flux (Power)
+
+Radiant Energy and Flux (Power)
+Definition: Radiant energy is the energy of electromagnetic
+radiation. It is measured in units of joules, and denoted by
+the symbol:
+
+Q [J = Joule]
+Definition: Radiant flux (power) is the energy emitted,
+reflected, transmitted or received, per unit time.
+
+dQ
+⌘
+[W = Watt] [lm = lumen]*
+dt
+
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Flux – #photons flowing through a sensor in unit time
+
+From London and Upton
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Important Light Measurements of Interest
+
+GAMES101
+
+Light Emitted
+From A Source
+
+Light Falling
+On A Surface
+
+Light Traveling
+Along A Ray
+
+“Radiant Intensity”
+
+“Irradiance”
+
+“Radiance”
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Radiant Intensity
+
+Radiant Intensity
+Definition: The radiant (luminous) intensity is the power per unit
+solid angle (?) emitted by a point light source.
+(⽴体⻆)
+
+
+
+d
+I(!) ⌘
+d!
+d
+I(!) ⌘
+d!
+
+
+
+W
+sr
+
+
+
+W
+sr
+
+
+
+lm
+=c
+sr
+
+lm
+= cd = candela
+sr
+
+The candela is one of the seven SI base units.
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Angles and Solid Angles
+Angle: ratio of subtended arc length
+on circle to radius
+l
+•✓= r
+• Circle has 2⇡ radians
+
+Solid angle: ratio of subtended area on
+sphere to radius squared
+
+A
+• ⌦ = r2
+
+l l
+✓ =✓✓ =
+r r
+
+A
+l
+✓ ⌦== r2
+r
+
+• Sphere has 4⇡ steradians
+GAMES101
+
+48
+
+Lingqi Yan, UC Santa Barbara
+
+Differential Solid Angles
+
+dA =(r d✓)(r sin ✓ d )
+=r2 sin ✓ d✓ d
+dA
+d! = 2 = sin ✓ d✓ d
+r
+
+GAMES101
+
+49
+
+Lingqi Yan, UC Santa Barbara
+
+Differential Solid Angles
+Z
+2
+Sphere:
+S
+⌦=
+d!
+2
+S
+Z
+Z Z
+Z
+⇡
+2⇡
+⌦=
+=
+d! sin ✓ d✓ d
+S 22
+S
+0 Z0
+Z
+Z
+⇡ ZZ 2⇡
+Z 12⇡
+⇡
+2⇡
+=
+sin
+✓
+d✓
+d
+=
+sin
+✓
+d✓
+=
+d cos ✓ dd
+0
+00
+0
+Z 111 Z
+Z0 2⇡
+Z
+⇡
+
+=4⇡
+=
+=
+
+1
+1
+
+0
+0
+
+cos✓✓dd
+ddcos
+
+=4⇡
+=4⇡
+
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+! as a direction vector
+
+Will use ! to denote a
+direction vector (unit length)
+
+!
+
+GAMES101
+
+51
+
+Lingqi Yan, UC Santa Barbara
+
+Isotropic Point Source
+
+=
+
+Z
+
+I d!
+S2
+
+=4⇡I
+
+I=
+
+GAMES101
+
+52
+
+4⇡
+
+Lingqi Yan, UC Santa Barbara
+
+Modern LED Light
+Output: 815 lumens
+(11W LED replacement
+for 60W incandescent)
+Radiant intensity?
+Assume isotropic:
+Intensity = 815 lumens / 4pi sr
+= 65 candelas
+
+GAMES101
+
+53
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

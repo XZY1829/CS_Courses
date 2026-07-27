@@ -1,0 +1,1099 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 3:
+Transformation
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Assignment 0 will be released soon
+• Do not register the homework submission system
+with QQ email
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lecture
+• Vectors
+- Basic operations: addition, multiplication
+
+• Dot Product
+- Forward / backward (dot product positive / negative)
+
+• Cross Product
+- Left / right (cross product outward / inward)
+
+• Matrices
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+This Week
+• Transformation!
+• Today
+- Why study transformation
+- 2D transformations: rotation, scale, shear
+- Homogeneous coordinates
+- Composing transforms
+- 3D transformations
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Why study transformation
+- Modeling
+- Viewing
+• 2D transformations
+• Homogeneous coordinates
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Why Transformation?
+
+GAMES101
+
+Modeling: 6translation
+
+Lingqi Yan, UC Santa Barbara
+
+Why Transformation?
+
+Modeling: rotation
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Why Transformation?
+
+Modeling: scaling
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Why Transformation?
+
+Viewing: (3D to 2D) projection
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Why study transformation
+• 2D transformations
+- Representing transformations using matrices
+- Rotation, scale, shear
+• Homogeneous coordinates
+
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Scale
+
+S0.5
+
+CS184/284A
+
+GAMES101
+
+11
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Scale Transform
+
+S0.5
+
+0
+
+x = sx
+0
+
+y = sy
+CS184/284A
+
+GAMES101
+
+12
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Scale Matrix
+
+S0.5
+
+
+CS184/284A
+
+GAMES101
+
+0
+
+x
+0
+y
+
+=
+
+
+
+s
+0
+13
+
+0
+s
+
+
+
+x
+y
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Scale (Non-Uniform)
+
+S0.5,1.0
+
+ 0
+
+x
+sx
+0 =
+y
+0
+<latexit sha1_base64="1HluD7eaew2ZbEeE5TqBR+iyFhc=">AAACW3icbVFdS8MwFE07dXNOnYpPvgSHzqfRiqAvwtAXHye4D1hHSbO7LZimJUllpexP+qQP/hUx24q4zQshh3PP/chJEHOmtON8WnZha3unWNot71X2Dw6rR8cdFSWSQptGPJK9gCjgTEBbM82hF0sgYcChG7w+zvPdN5CKReJFpzEMQjIWbMQo0Ybyq9ILYMxEFoRESzadTeueh9O6B2L4y92vaZQ/xZfYMULH3MpPV9TrDef9VgR+teY0nEXgTeDmoIbyaPnVd28Y0SQEoSknSvVdJ9aDjEjNKIdZ2UsUxIS+kjH0DRQkBDXIFt7M8IVhhngUSXOExgv2b0VGQqXSMDBKs99Erefm5H+5fqJHd4OMiTjRIOhy0CjhWEd4bjQeMglU89QAQiUzu2I6IZJQbb6jbExw15+8CTrXDdfg55ta8yG3o4TO0Dm6Qi66RU30hFqojSj6QN9W0SpZX3bBLtuVpdS28poTtBL26Q8Oh7dR</latexit>
+
+CS184/284A
+
+GAMES101
+
+14
+
+0
+sy
+
+
+
+x
+y
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Reflection Matrix
+
+Horizontal reflection:
+
+0
+
+x = x
+0
+y =y
+<latexit sha1_base64="Aph81PCX6TVEP4rZzaxM2EuX/K0=">AAAB7HicbZDNSgMxFIVv6l+tf1WXboJFdGOZEUE3QtGNywpOW2iHkkkzbWgmMyQZaRn6DG5cKOLWB3Ln25i2s9DWA4GPc+8l954gEVwbx/lGhZXVtfWN4mZpa3tnd6+8f9DQcaoo82gsYtUKiGaCS+YZbgRrJYqRKBCsGQzvpvXmE1Oax/LRjBPmR6QvecgpMdbyRqc356NuueJUnZnwMrg5VCBXvVv+6vRimkZMGiqI1m3XSYyfEWU4FWxS6qSaJYQOSZ+1LUoSMe1ns2Un+MQ6PRzGyj5p8Mz9PZGRSOtxFNjOiJiBXqxNzf9q7dSE137GZZIaJun8ozAV2MR4ejnuccWoEWMLhCpud8V0QBShxuZTsiG4iycvQ+Oi6lp+uKzUbvM4inAEx3AGLlxBDe6hDh5Q4PAMr/CGJHpB7+hj3lpA+cwh/BH6/AEOpI4t</latexit>
+
+<latexit sha1_base64="xpWqfMGp4qSykFNTx9VbZxi6dgo=">AAAB63icbZDLSgMxFIbP1Futt6pLN8EiuiozUtCNUHTjsoK9QDuUTJppQ5PMkGSEYegruHGhiFtfyJ1vY6adhbb+EPj4zznknD+IOdPGdb+d0tr6xuZWebuys7u3f1A9POroKFGEtknEI9ULsKacSdo2zHDaixXFIuC0G0zv8nr3iSrNIvlo0pj6Ao8lCxnBJrfS85t0WK25dXcutApeATUo1BpWvwajiCSCSkM41rrvubHxM6wMI5zOKoNE0xiTKR7TvkWJBdV+Nt91hs6sM0JhpOyTBs3d3xMZFlqnIrCdApuJXq7l5n+1fmLCaz9jMk4MlWTxUZhwZCKUH45GTFFieGoBE8XsrohMsMLE2HgqNgRv+eRV6FzWPcsPjVrztoijDCdwChfgwRU04R5a0AYCE3iGV3hzhPPivDsfi9aSU8wcwx85nz+neY34</latexit>
+
+CS184/284A
+
+GAMES101
+
+
+
+
+x =??
+0
+x
+1 0 x
+0 =
+0
+y
+0 1 y
+y =??
+0
+
+<latexit sha1_base64="oFzHmF6CJilJ4bjZITeKNEAOwmU=">AAACWHicbVHLSgMxFM2MrX34qnXpJli0biwzIuhGKLpxWcE+oFNKJnOnDc1khiQjLUN/UnChv+LG9IHY6oWQw7nnPnLiJ5wp7Tgflr2Ty+8WiqXy3v7B4VHluNpRcSoptGnMY9nziQLOBLQ10xx6iQQS+Ry6/uRxke++glQsFi96lsAgIiPBQkaJNtSwEns+jJjI/Ihoyabzad3z8KzugQh+uPstzZWLL7BjdI653Q3pdrdFsw3BsFJzGs4y8F/grkENraM1rLx5QUzTCISmnCjVd51EDzIiNaMc5mUvVZAQOiEj6BsoSARqkC2NmeNzwwQ4jKU5QuMl+7siI5FSs8g3SrPfWG3nFuR/uX6qw7tBxkSSahB0NShMOdYxXriMAyaBaj4zgFDJzK6YjokkVJu/KBsT3O0n/wWd64Zr8PNNrfmwtqOITtEZukQuukVN9IRaqI0oekdfVs7KW582sgt2aSW1rXXNCdoIu/oN3QK1LQ==</latexit>
+
+15
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Shear Matrix
+
+1
+
+a
+Hints:
+Horizontal shift is 0 at y=0
+Horizontal shift is a at y=1
+
+ 0
+
+x =?? x
+1
+=
+0
+0
+0
+y =?? y
+0
+
+<latexit sha1_base64="X7xTdjIFiturU9Y0o8RuD4rXvdI=">AAACV3icbVHLTgIxFO0MiIgv0KWbRqK4IjPGRDcmRDcuMZFHwkxIp1ygodOZtB3DZMJPGjf8ihstjxgBb9L05NxzHz0NYs6Udpy5Zefye4X94kHp8Oj45LRcOWurKJEUWjTikewGRAFnAlqaaQ7dWAIJAw6dYPK8yHfeQSoWiTedxuCHZCTYkFGiDdUvCy+AERNZEBIt2XQ2rXkeTmseiMEv97ilcfE1JkbmmNvdUG43W/TaEPTLVafuLAPvAncNqmgdzX75wxtENAlBaMqJUj3XibWfEakZ5TAreYmCmNAJGUHPQEFCUH629GWGrwwzwMNImiM0XrJ/KzISKpWGgVGa/cZqO7cg/8v1Ej188DMm4kSDoKtBw4RjHeGFyXjAJFDNUwMIlczsiumYSEK1+YqSMcHdfvIuaN/WXYNf76qNp7UdRXSBLtENctE9aqAX1EQtRNEn+rJyVt6aW992wS6upLa1rjlHG2FXfgDNkLYm</latexit>
+
+Vertical shift is always 0
+CS184/284A
+
+GAMES101
+
+16
+
+a
+1
+
+
+
+x
+y
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Rotate (about the origin (0, 0), CCW by default)
+
+R45
+
+CS184/284A
+
+GAMES101
+
+17
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+x0 x1 x2 x3 y
+Rotation Matrix
+x Lecture
++ y ✓ 3xxMath
+xy Lecture 3 Math
+
+Lecture
+3
+Math
+cos ✓ sin ✓ Lecture 3 Math
+
+x0
+
+x1 f (x)
+x2
+
+x3 x0 y x1
+
+x2
+
+x3
+
++ yx x✓ yx
+x
+x + yx0 ✓ xx1x x0x
+xx2y x
+x
+y
+x
+y
+1 3 2
+3
+f (x + y)
+cos=✓f (x)
+sin+✓ fx(y)
++ y cos✓ ✓ xxsin ✓xy
+
+x+y
+
+x0 )
+
+R✓ (x1 )
+
+CS184/284A
+
+GAMES101
+
+✓
+
+f (x)
+f (x)
+cos
+✓
+sin
+✓
+R✓ (x2 ) R✓ (x3 ) R✓ (ax) aR✓ (x) R✓ (y)
+f
+(ax)
+=
+af
+(x)
+f (x)
+
+cos ✓
+sin ✓f (x)
+R✓ f=
+ff(x
++ y) = f (x) + f (y
+(x +
+y)
+=
+f
+(x)
++
+(y)
+sin ✓ cos ✓
+f (x) = af (x)f (x + y) = f (x) + f (y)
+Ren Ng
+
+f (x + y) = f (x) + f (y)
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Linear Transforms = Matrices
+(of the same dimension)
+
+0
+
+x = ax + by
+0
+
+y = cx + dy
+
+
+0
+
+x
+0
+y
+
+=
+
+
+
+a
+c
+
+b
+d
+
+
+
+x
+y
+
+0
+
+x =Mx
+CS184/284A
+
+GAMES101
+
+19
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Questions?
+
+Today
+• Why study transformation
+• 2D transformations
+• Homogeneous coordinates
+- Why homogeneous coordinates
+- Affine transformation
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Translate
+
+Ttx,ty
+T
+1,1
+
+CS184/284A
+
+GAMES101
+
+22
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Translation??
+
+Ttx,ty
+1,1
+T
+
+0
+
+x = x + tx
+0
+
+y = y + ty
+CS184/284A
+
+GAMES101
+
+23
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Why Homogeneous Coordinates
+• Translation cannot be represented in matrix form
+ 0
+
+x
+a
+0 =
+y
+c
+
+b
+d
+
+<latexit sha1_base64="N69qeTDb59xHCbfPH0Qfs7gRUbs=">AAACfXicbZFdS8MwFIbT+j2/pl56Exx+y2hF0BtB9MZLBafCOkqans2wNC3JqTjK/oW/zDv/ijeaziGueiDk5T1PkpNzokwKg5737rhT0zOzc/MLtcWl5ZXV+tr6vUlzzaHFU5nqx4gZkEJBCwVKeMw0sCSS8BD1r8r8wzNoI1J1h4MMOgnrKdEVnKG1wvprEEFPqCJKGGrxMnzZDQI62A1AxT/eeYVhdIdGFuN2jyfI6mXlXRPAYYXAsGQwnKTCesNreqOgf4U/Fg0yjpuw/hbEKc8TUMglM6btexl2CqZRcAnDWpAbyBjvsx60rVQsAdMpRt0b0m3rxLSbarsU0pH7+0TBEmMGSWRJW9+TqeZK879cO8fuWacQKssRFP9+qJtLiiktR0FjoYGjHFjBuBa2VsqfmGYc7cBqtgl+9ct/xf1x07f69qRxcTluxzzZJFtkj/jklFyQa3JDWoSTD4c6+86B8+luu0du8xt1nfGZDTIR7ukX89XFpw==</latexit>
+
+
+
+
+
+x
+tx
++
+y
+ty
+
+(So, translation is NOT linear transform!)
+
+• But we don’t want translation to be a special case
+• Is there a unified way to represent all transformations?
+(and what’s the cost?)
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Solution: Homogenous Coordinates
+Add a third coordinate (w-coordinate)
+
+• 2D point = (x, y, 1)T
+• 2D vector = (x, y, 0)T
+Matrix representation of translations
+⇥
+
+x
+1
+⇤ y ⌅ = ⇤0
+w
+0
+
+0
+1
+0
+
+⇥
+
+⇥
+⇥
+tx
+x
+x + tx
+ty ⌅ · ⇤ y ⌅ = ⇤ y + t y ⌅
+1
+1
+1
+
+What if you translate a vector?
+CS184/284A
+
+GAMES101
+
+25
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Homogenous Coordinates
+Valid operation if w-coordinate of result is 1 or 0
+
+• vector + vector
+• point – point
+• point + vector
+• point + point
+
+= vector
+= vector
+= point
+= ??
+
+In homogeneous coordinates,
+
+0 1
+0
+1
+x
+x/w
+@ y A is the 2D point @y/w A , w 6= 0
+w
+1
+
+CS184/284A
+
+GAMES101
+
+26
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Affine Transformations
+Affine map = linear map + translation
+x
+y
+
+⇥
+
+=
+
+a
+c
+
+⇥
+
+⇥
+⇥
+b
+x
+tx
+·
++
+d
+y
+ty
+
+Using homogenous coordinates:
+⇥
+
+⇥
+x
+a b tx
+x
+⇤y ⌅ = ⇤ c d ty ⌅ · ⇤y ⌅
+1
+0 0 1
+1
+CS184/284A
+
+GAMES101
+
+⇥
+
+27
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+2D Transformations
+Scale
+
+Rotation
+
+Translation
+
+sx
+S(sx , sy ) = ⇤ 0
+0
+cos
+R( ) = ⇤ sin
+0
+
+⇥
+0
+0⌅
+1
+
+0
+sy
+0
+sin
+cos
+0
+
+⇥
+0
+0⌅
+1
+
+⇥
+
+CS184/284A
+
+GAMES101
+
+1 0 tx
+T(tx , ty ) = ⇤0 1 ty ⌅
+0 0 1
+28
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Inverse Transform
+M
+
+1
+
+1
+
+1
+
+is the inverse of transform M in both a matrix
+and geometric sense
+
+M
+
+M
+
+1
+
+M
+CS184/284A
+
+GAMES101
+
+29
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Composing Transforms
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Composite Transform
+
+?
+
+CS184/284A
+
+GAMES101
+
+31
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Translate Then Rotate?
+
+M = R45 · T(1,0) M = R45 · T(1,0)
+
+CS184/284A
+
+GAMES101
+
+32
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Rotate Then Translate
+
+M = T(1,0) · R45
+
+CS184/284A
+
+GAMES101
+
+33
+
+M = T(1,0) · R45
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Transform Ordering Matters!
+
+M = R45 · T(1,0) M = R45 · T(1,0)
+
+CS184/284A
+
+GAMES101
+
+M = T(1,0) · R45
+34
+
+M = T(1,0) · R45
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Matrix multiplication is not commutative
+
+Transform
+M = ROrdering
+M≠=Matters!
+T(1,0) · R45
+45 · T(1,0)
+Recall the matrix math represented by these symbols:
+Matrix multiplication is not commutative
+
+2
+
+cos 45
+4 sin 45
+0
+
+32
+3 2
+32
+sin 45 0 1 0 1
+1 0 1 cos 45
+40T(1,0)
+M
+cos =
+45 R45
+05 ·40T(1,0)
+1 M
+05 6==
+1 05·4R
+sin45
+45
+0
+1 0 0 1
+0 0 1
+0
+
+≠
+
+sin 45
+cos 45
+0
+
+3
+0
+05
+1
+
+Recall the matrix math represented by these symbols:
+Note
+that
+matrices
+are
+applied
+right
+to
+left:
+2
+32
+3 2
+32
+3
+345
+cos 45
+sin 45 2x03 121 0 0 1 13 2cos
+1 45
+0 1 sin
+cos4545 03 2
+sin
+x
+4 sin 45
+5 404 1 05 5
+40 1 05 4 sin 45 5cos
+cos
+45
+0
+=
+6
+4
+5
+4
+5
+sin 45
+cos 45
+0 4y45
+T(1,0) · R45 y = 0 1 0
+0
+0
+0 00 1
+11 0 0 0 0 1 1
+0 0
+1
+10
+CS184/284A
+
+Note that matrices are applied right to left:
+2 3 2
+32
+x
+1 0 1 cos 45
+T(1,0) · R45 4y 5 = 40 1 05 4 sin 45
+1
+0 0 1
+0
+
+GAMES101
+CS184/284A
+
+35
+
+sin 45
+cos 45
+0
+
+0
+05
+1
+
+Ren Ng
+
+32 3
+0 x
+05 4y 5
+1
+1
+
+Lingqi Yan, UCRen
+SantaNg
+Barbara
+
+Composing Transforms
+Sequence of affine transforms A1, A2, A3, ...
+
+• Compose by matrix multiplication
+• Very important for performance!
+⇥
+x
+An (. . . A2 (A1 (x))) = An · · · A2 · A1 · ⇤y ⌅
+1
+Pre-multiply n matrices to obtain a
+single matrix representing combined transform
+
+CS184/284A
+
+GAMES101
+
+36
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Decomposing Complex Transforms
+How to rotate around a given point c?
+1. Translate center to origin
+2. Rotate
+3. Translate back
+
+R( )
+
+T( c)
+
+T(c)
+
+Matrix representation?
+
+T(c) · R( ) · T( c)
+CS184/284A
+
+GAMES101
+
+37
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+3D Transforms
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+3D Transformations
+Use homogeneous coordinates again:
+
+• 3D point = (x, y, z, 1)T
+• 3D vector = (x, y, z, 0)T
+Use
+4×4 matrices
+affine
+In general,
+(x, y, z, for
+w) (w
+!= 0)transformations
+is the 3D point:
+⇥
+
+⇥
+a y/w,
+b cz/w)
+tx
+x
+x
+(x/w,
+⇧d e f ty ⌃ ⇧y ⌃
+⇧y ⌃
+⇧ ⌃ = ⇧
+⌃·⇧ ⌃
+⇤ g h i tz ⌅ ⇤ z ⌅
+⇤z ⌅
+1
+0 0 0 1
+1
+GAMES101
+CS184/284A
+
+⇥
+
+39
+
+Lingqi Yan, UC Santa
+RenBarbara
+Ng
+
+Use homogeneous coordinates again:
+3D point = (x, y, z, 1)T
+•
+3D Transformations
+• 3D vector = (x, y, z, 0)T
+Use homogeneous coordinates again:
+Use 4×4 matrices for affine transformations
+• 3D point = (x, y, z, 1)T
+⇥
+
+⇥
+
+⇥
+a
+b
+c
+t
+x
+x
+x
+T
+= (x,
+y,
+z,
+0)
+• 3D vector ⇧
+⌃
+⇧d e f ty ⌃ ⇧y ⌃
+y
+⇧ ⌃ = ⇧
+⌃·⇧ ⌃
+⇤ g h i tz ⌅ ⇤ z ⌅
+⇤z ⌅
+1 for affine
+0 0transformations
+0 1
+1
+Use 4×4 matrices
+⇥
+⇥
+⇥
+a b c tx
+x
+x
+What’s the order?
+⌃
+⇧
+⌃
+⇧
+⌃
+⇧
+y
+d
+e
+f
+t
+y
+y
+CS184/284A
+⇧ ⌃
+⇧Translation first?
+⌃·⇧ ⌃
+Linear Transform
+first
+or
+=
+⇤ g h i tz ⌅ ⇤ z ⌅
+⇤z ⌅
+1
+0 0 0 1
+1
+
+GAMES101
+
+40
+
+Ren Ng
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

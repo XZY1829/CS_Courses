@@ -1,0 +1,727 @@
+{
+  "course": "多智能体系统与强化学习",
+  "version": "2026-06-26-local-refresh",
+  "notes": "基于本地新版 01-12 课件修订；图片型 PDF 已渲染页图核查。",
+  "questions": [
+    {
+      "id": "ch01-01",
+      "chapter": 1,
+      "topic": "MDP",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "MDP 五元组是什么？",
+      "answer": "$\\langle S,A,P,R,\\gamma\\rangle$，分别表示状态、动作、转移、奖励和折扣因子。",
+      "source_refs": [
+        "01-02 强化学习基础 时差学习.pdf"
+      ],
+      "tags": [
+        "MDP"
+      ]
+    },
+    {
+      "id": "ch01-02",
+      "chapter": 1,
+      "topic": "回报",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "折扣回报 $G_t$ 如何定义？",
+      "answer": "$G_t=\\sum_{k=0}^{\\infty}\\gamma^kR_{t+k+1}$。",
+      "source_refs": [
+        "01-02 强化学习基础 时差学习.pdf"
+      ],
+      "tags": [
+        "回报"
+      ]
+    },
+    {
+      "id": "ch01-03",
+      "chapter": 1,
+      "topic": "Bellman",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "写出策略评估 Bellman 方程。",
+      "answer": "$V^{\\pi}(s)=\\mathbb{E}_{\\pi}[R_{t+1}+\\gamma V^{\\pi}(S_{t+1})\\mid S_t=s]$。",
+      "source_refs": [
+        "01-02 强化学习基础 时差学习.pdf"
+      ],
+      "tags": [
+        "Bellman"
+      ]
+    },
+    {
+      "id": "ch01-04",
+      "chapter": 1,
+      "topic": "动态规划",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "动态规划为什么不适合未知真实环境？",
+      "answer": "动态规划需要已知 $P,R$，真实环境通常只能通过交互采样。",
+      "source_refs": [
+        "01-02 强化学习基础 时差学习.pdf"
+      ],
+      "tags": [
+        "动态规划"
+      ]
+    },
+    {
+      "id": "ch02-01",
+      "chapter": 2,
+      "topic": "TD",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "写出 TD(0) 更新式。",
+      "answer": "$V(S_t)\\leftarrow V(S_t)+\\alpha[R_{t+1}+\\gamma V(S_{t+1})-V(S_t)]$。",
+      "source_refs": [
+        "01-02 强化学习基础 时差学习.pdf"
+      ],
+      "tags": [
+        "TD"
+      ]
+    },
+    {
+      "id": "ch02-02",
+      "chapter": 2,
+      "topic": "SARSA",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "SARSA 为什么是 on-policy？",
+      "answer": "它使用实际由当前行为策略采样得到的 $A_{t+1}$。",
+      "source_refs": [
+        "01-02 强化学习基础 时差学习.pdf"
+      ],
+      "tags": [
+        "SARSA"
+      ]
+    },
+    {
+      "id": "ch02-03",
+      "chapter": 2,
+      "topic": "Q-learning",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "写出 Q-learning 更新式。",
+      "answer": "$Q(s,a)\\leftarrow Q(s,a)+\\alpha[r+\\gamma\\max_{a'}Q(s',a')-Q(s,a)]$。",
+      "source_refs": [
+        "01-02 强化学习基础 时差学习.pdf"
+      ],
+      "tags": [
+        "Q-learning"
+      ]
+    },
+    {
+      "id": "ch02-04",
+      "chapter": 2,
+      "topic": "资格迹",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "资格迹的作用是什么？",
+      "answer": "把当前 TD 误差按衰减分配给近期访问过的状态或动作。",
+      "source_refs": [
+        "01-02 强化学习基础 时差学习.pdf"
+      ],
+      "tags": [
+        "资格迹"
+      ]
+    },
+    {
+      "id": "ch03-01",
+      "chapter": 3,
+      "topic": "函数估计",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "为什么需要函数估计？",
+      "answer": "表格法无法处理大规模或连续状态动作空间，函数估计可泛化到未见状态。",
+      "source_refs": [
+        "03 函数估计.pdf"
+      ],
+      "tags": [
+        "函数估计"
+      ]
+    },
+    {
+      "id": "ch03-02",
+      "chapter": 3,
+      "topic": "梯度更新",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "写出值函数逼近的一般梯度更新。",
+      "answer": "$w\\leftarrow w+\\alpha(U_t-\\hat v(S_t,w))\\nabla_w\\hat v(S_t,w)$。",
+      "source_refs": [
+        "03 函数估计.pdf"
+      ],
+      "tags": [
+        "梯度更新"
+      ]
+    },
+    {
+      "id": "ch03-03",
+      "chapter": 3,
+      "topic": "经验回放",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "经验回放为什么有助于训练？",
+      "answer": "打破样本相关性，并重复利用历史经验提高样本效率。",
+      "source_refs": [
+        "03 函数估计.pdf"
+      ],
+      "tags": [
+        "经验回放"
+      ]
+    },
+    {
+      "id": "ch03-04",
+      "chapter": 3,
+      "topic": "风险",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "函数逼近新增的主要风险是什么？",
+      "answer": "近似误差、分布漂移和训练不稳定。",
+      "source_refs": [
+        "03 函数估计.pdf"
+      ],
+      "tags": [
+        "风险"
+      ]
+    },
+    {
+      "id": "ch04-01",
+      "chapter": 4,
+      "topic": "策略梯度",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "写出策略梯度定理常用形式。",
+      "answer": "$\\nabla J(\\theta)=\\mathbb{E}[\\nabla_\\theta\\log\\pi_\\theta(a|s)Q^\\pi(s,a)]$。",
+      "source_refs": [
+        "04 策略梯度.pdf"
+      ],
+      "tags": [
+        "策略梯度"
+      ]
+    },
+    {
+      "id": "ch04-02",
+      "chapter": 4,
+      "topic": "REINFORCE",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "REINFORCE 用什么估计策略梯度中的价值？",
+      "answer": "用采样得到的回报或回报估计。",
+      "source_refs": [
+        "04 策略梯度.pdf"
+      ],
+      "tags": [
+        "REINFORCE"
+      ]
+    },
+    {
+      "id": "ch04-03",
+      "chapter": 4,
+      "topic": "baseline",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "baseline 的作用是什么？",
+      "answer": "降低梯度估计方差，且不改变期望梯度方向。",
+      "source_refs": [
+        "04 策略梯度.pdf"
+      ],
+      "tags": [
+        "baseline"
+      ]
+    },
+    {
+      "id": "ch04-04",
+      "chapter": 4,
+      "topic": "Actor-Critic",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "Actor 和 Critic 分别做什么？",
+      "answer": "Actor 学策略，Critic 估计价值或优势。",
+      "source_refs": [
+        "04 策略梯度.pdf"
+      ],
+      "tags": [
+        "Actor-Critic"
+      ]
+    },
+    {
+      "id": "ch05-01",
+      "chapter": 5,
+      "topic": "DQN",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "DQN 的两个稳定训练技巧是什么？",
+      "answer": "经验回放和目标网络。",
+      "source_refs": [
+        "05 深度强化学习.pdf"
+      ],
+      "tags": [
+        "DQN"
+      ]
+    },
+    {
+      "id": "ch05-02",
+      "chapter": 5,
+      "topic": "DQN目标",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "写出 DQN 的目标值。",
+      "answer": "$y=r+\\gamma\\max_{a'}Q_{\\theta^-}(s',a')$。",
+      "source_refs": [
+        "05 深度强化学习.pdf"
+      ],
+      "tags": [
+        "DQN目标"
+      ]
+    },
+    {
+      "id": "ch05-03",
+      "chapter": 5,
+      "topic": "PPO",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "PPO clip 的作用是什么？",
+      "answer": "限制新旧策略概率比变化，防止更新过大。",
+      "source_refs": [
+        "05 深度强化学习.pdf"
+      ],
+      "tags": [
+        "PPO"
+      ]
+    },
+    {
+      "id": "ch05-04",
+      "chapter": 5,
+      "topic": "A3C",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "A3C/A2C 的基本思想是什么？",
+      "answer": "使用优势 Actor-Critic，并结合并行或同步采样。",
+      "source_refs": [
+        "05 深度强化学习.pdf"
+      ],
+      "tags": [
+        "A3C"
+      ]
+    },
+    {
+      "id": "ch06-01",
+      "chapter": 6,
+      "topic": "MBRL",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "Model-based RL 学习什么？",
+      "answer": "学习状态动态和奖励函数等环境模型。",
+      "source_refs": [
+        "06 基于模型的强化学习-3.pptx"
+      ],
+      "tags": [
+        "MBRL"
+      ]
+    },
+    {
+      "id": "ch06-02",
+      "chapter": 6,
+      "topic": "Dyna",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "Dyna 框架整合哪三件事？",
+      "answer": "直接 RL、模型学习、基于模型的规划。",
+      "source_refs": [
+        "06 基于模型的强化学习-3.pptx"
+      ],
+      "tags": [
+        "Dyna"
+      ]
+    },
+    {
+      "id": "ch06-03",
+      "chapter": 6,
+      "topic": "模型误差",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "基于模型方法的主要风险是什么？",
+      "answer": "模型误差会通过模拟和规划被反复放大。",
+      "source_refs": [
+        "06 基于模型的强化学习-3.pptx"
+      ],
+      "tags": [
+        "模型误差"
+      ]
+    },
+    {
+      "id": "ch06-04",
+      "chapter": 6,
+      "topic": "样本效率",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "为什么 MBRL 样本效率更高？",
+      "answer": "模型可以生成虚拟经验，减少真实环境交互次数。",
+      "source_refs": [
+        "06 基于模型的强化学习-3.pptx"
+      ],
+      "tags": [
+        "样本效率"
+      ]
+    },
+    {
+      "id": "ch07-01",
+      "chapter": 7,
+      "topic": "离线RL",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "离线强化学习与在线 off-policy 的关键区别是什么？",
+      "answer": "离线 RL 训练期间不再与环境交互，只用静态数据集。",
+      "source_refs": [
+        "07 离线强化学习(1).pptx"
+      ],
+      "tags": [
+        "离线RL"
+      ]
+    },
+    {
+      "id": "ch07-02",
+      "chapter": 7,
+      "topic": "外推误差",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "什么是外推误差？",
+      "answer": "策略选择数据集外动作时，Q 函数对未知区域错误高估。",
+      "source_refs": [
+        "07 离线强化学习(1).pptx"
+      ],
+      "tags": [
+        "外推误差"
+      ]
+    },
+    {
+      "id": "ch07-03",
+      "chapter": 7,
+      "topic": "BCQ",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "BCQ 的核心思想是什么？",
+      "answer": "只在数据支撑附近生成或选择动作。",
+      "source_refs": [
+        "07 离线强化学习(1).pptx"
+      ],
+      "tags": [
+        "BCQ"
+      ]
+    },
+    {
+      "id": "ch07-04",
+      "chapter": 7,
+      "topic": "CQL",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "CQL 如何缓解 Q 高估？",
+      "answer": "保守地下压分布外动作 Q 值，并补偿数据内动作。",
+      "source_refs": [
+        "07 离线强化学习(1).pptx"
+      ],
+      "tags": [
+        "CQL"
+      ]
+    },
+    {
+      "id": "ch08-01",
+      "chapter": 8,
+      "topic": "博弈",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "博弈中收益函数的输入是什么？",
+      "answer": "所有参与者的联合动作。",
+      "source_refs": [
+        "08 博弈论与纳什均衡.pdf"
+      ],
+      "tags": [
+        "博弈"
+      ]
+    },
+    {
+      "id": "ch08-02",
+      "chapter": 8,
+      "topic": "纳什均衡",
+      "type": "definition",
+      "difficulty": "medium",
+      "question": "什么是纳什均衡？",
+      "answer": "其他人策略不变时，任一玩家单边改变策略都不能提高自身收益。",
+      "source_refs": [
+        "08 博弈论与纳什均衡.pdf"
+      ],
+      "tags": [
+        "纳什均衡"
+      ]
+    },
+    {
+      "id": "ch08-03",
+      "chapter": 8,
+      "topic": "帕累托",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "帕累托优与社会福利最大有什么区别？",
+      "answer": "帕累托优强调无法无损改善，社会福利最大强调收益总和最大。",
+      "source_refs": [
+        "08 博弈论与纳什均衡.pdf"
+      ],
+      "tags": [
+        "帕累托"
+      ]
+    },
+    {
+      "id": "ch08-04",
+      "chapter": 8,
+      "topic": "分类",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "多智能体系统按目标关系分为哪三类？",
+      "answer": "合作型、竞争型、混合型。",
+      "source_refs": [
+        "08 博弈论与纳什均衡.pdf"
+      ],
+      "tags": [
+        "分类"
+      ]
+    },
+    {
+      "id": "ch09-01",
+      "chapter": 9,
+      "topic": "Markov Game",
+      "type": "definition",
+      "difficulty": "medium",
+      "question": "Markov Game 的组成是什么？",
+      "answer": "$\\langle N,S,A,T,R,\\gamma\\rangle$。",
+      "source_refs": [
+        "09 对手建模与虚拟自博弈.pdf"
+      ],
+      "tags": [
+        "Markov Game"
+      ]
+    },
+    {
+      "id": "ch09-02",
+      "chapter": 9,
+      "topic": "Minimax-Q",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "Minimax-Q 适合什么场景？",
+      "answer": "零和博弈。",
+      "source_refs": [
+        "09 对手建模与虚拟自博弈.pdf"
+      ],
+      "tags": [
+        "Minimax-Q"
+      ]
+    },
+    {
+      "id": "ch09-03",
+      "chapter": 9,
+      "topic": "虚拟博弈",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "虚拟博弈的核心更新逻辑是什么？",
+      "answer": "针对过去对手平均策略做最优反应。",
+      "source_refs": [
+        "09 对手建模与虚拟自博弈.pdf"
+      ],
+      "tags": [
+        "虚拟博弈"
+      ]
+    },
+    {
+      "id": "ch09-04",
+      "chapter": 9,
+      "topic": "无憾",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "平均后悔趋于 0 表示什么？",
+      "answer": "长期来看没有明显后悔，平均策略可趋近均衡。",
+      "source_refs": [
+        "09 对手建模与虚拟自博弈.pdf"
+      ],
+      "tags": [
+        "无憾"
+      ]
+    },
+    {
+      "id": "ch10-01",
+      "chapter": 10,
+      "topic": "IL",
+      "type": "explain",
+      "difficulty": "medium",
+      "question": "IL 为什么会遇到非平稳性？",
+      "answer": "其他智能体策略变化使环境转移和奖励分布变化。",
+      "source_refs": [
+        "10 经典多智能体算法.pdf"
+      ],
+      "tags": [
+        "IL"
+      ]
+    },
+    {
+      "id": "ch10-02",
+      "chapter": 10,
+      "topic": "JAL",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "JAL 的主要优缺点是什么？",
+      "answer": "显式考虑联合动作，缓解非平稳；但联合动作空间指数增长。",
+      "source_refs": [
+        "10 经典多智能体算法.pdf"
+      ],
+      "tags": [
+        "JAL"
+      ]
+    },
+    {
+      "id": "ch10-03",
+      "chapter": 10,
+      "topic": "RO",
+      "type": "definition",
+      "difficulty": "medium",
+      "question": "什么是相对过度泛化？",
+      "answer": "智能体停在局部较好但非全局最优的协同策略。",
+      "source_refs": [
+        "10 经典多智能体算法.pdf"
+      ],
+      "tags": [
+        "RO"
+      ]
+    },
+    {
+      "id": "ch10-04",
+      "chapter": 10,
+      "topic": "差分奖励",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "写出差分奖励公式并解释。",
+      "answer": "$D_i=G(z)-G(z_{-i})$，表示智能体 $i$ 的边际贡献。",
+      "source_refs": [
+        "10 经典多智能体算法.pdf"
+      ],
+      "tags": [
+        "差分奖励"
+      ]
+    },
+    {
+      "id": "ch11-01",
+      "chapter": 11,
+      "topic": "CTDE",
+      "type": "definition",
+      "difficulty": "medium",
+      "question": "CTDE 是什么？",
+      "answer": "集中式训练、分散式执行。",
+      "source_refs": [
+        "11 深度多智能体强化学习.pdf"
+      ],
+      "tags": [
+        "CTDE"
+      ]
+    },
+    {
+      "id": "ch11-02",
+      "chapter": 11,
+      "topic": "COMA",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "COMA 的反事实基线解决什么问题？",
+      "answer": "估计单个智能体动作对团队回报的贡献。",
+      "source_refs": [
+        "11 深度多智能体强化学习.pdf"
+      ],
+      "tags": [
+        "COMA"
+      ]
+    },
+    {
+      "id": "ch11-03",
+      "chapter": 11,
+      "topic": "VDN",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "VDN 的价值分解形式是什么？",
+      "answer": "$Q_{tot}=\\sum_i Q_i$。",
+      "source_refs": [
+        "11 深度多智能体强化学习.pdf"
+      ],
+      "tags": [
+        "VDN"
+      ]
+    },
+    {
+      "id": "ch11-04",
+      "chapter": 11,
+      "topic": "QMIX",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "QMIX 的单调性约束是什么？",
+      "answer": "$\\partial Q_{tot}/\\partial Q_i>0$。",
+      "source_refs": [
+        "11 深度多智能体强化学习.pdf"
+      ],
+      "tags": [
+        "QMIX"
+      ]
+    },
+    {
+      "id": "ch12-01",
+      "chapter": 12,
+      "topic": "RLHF",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "RLHF 的经典三阶段是什么？",
+      "answer": "SFT、Reward Model、PPO。",
+      "source_refs": [
+        "12 LLM-RL.pdf"
+      ],
+      "tags": [
+        "RLHF"
+      ]
+    },
+    {
+      "id": "ch12-02",
+      "chapter": 12,
+      "topic": "DPO",
+      "type": "short",
+      "difficulty": "medium",
+      "question": "DPO 为什么省掉 Reward Model 和 Critic？",
+      "answer": "它直接用 chosen/rejected 偏好对优化策略概率差异。",
+      "source_refs": [
+        "12 LLM-RL.pdf"
+      ],
+      "tags": [
+        "DPO"
+      ]
+    },
+    {
+      "id": "ch12-03",
+      "chapter": 12,
+      "topic": "RLVR",
+      "type": "definition",
+      "difficulty": "medium",
+      "question": "RLVR 的奖励来自哪里？",
+      "answer": "环境、规则或测试用例等可验证反馈。",
+      "source_refs": [
+        "12 LLM-RL.pdf"
+      ],
+      "tags": [
+        "RLVR"
+      ]
+    },
+    {
+      "id": "ch12-04",
+      "chapter": 12,
+      "topic": "GRPO",
+      "type": "formula",
+      "difficulty": "medium",
+      "question": "写出 GRPO 的组内归一化优势。",
+      "answer": "$A_i=(r_i-\\operatorname{mean}(r_{group}))/(\\operatorname{std}(r_{group})+\\epsilon)$。",
+      "source_refs": [
+        "12 LLM-RL.pdf"
+      ],
+      "tags": [
+        "GRPO"
+      ]
+    }
+  ]
+}

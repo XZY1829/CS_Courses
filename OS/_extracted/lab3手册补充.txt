@@ -1,0 +1,66 @@
+ 
+1. Fork实现注意：
+ 
+内存布局：本实验课程采用段式存储
+以下方式是简单的模拟了内存分段, 实际os中的实现会更加复杂, 有兴趣可以自己了解. 
+BootLoader加载kernal到内存的0x100000 处, 寻址方式为段基址0x0 , 段偏移0x100000 起
+kernal将用户程序加载到内存的0x200000 处, 寻址方式为段基址0x200000 , 段偏移0x0 起 
+为了方便管理, 用户进程1占内存0x200000 ~ 0x300000 , 用户进程2占内存0x300000 ~ 
+0x400000 , 依此类推  GDT共有10项. 第0项为空; 第9项指向TSS段, 内核代码段和数据段占了第1、2
+两项; 剩下的6项可以作为3个用户进程的代码段和数据段
+2. 时钟中断软硬件处理过程 
+ 
+1. 8259可编程计时器产生时钟中断发送给8259A可编程中断控制器, 中断向量为0x20 . 
+初始化initIntr() 将中断函数注册到8259芯片设置中, 保证时钟计时的时候可以触发这个中断：
+2. IA-32硬件利用IDT和GDT寻找到对应的中断处理程序(参见[Lab2 系统调用]TSS 中断到来/中断返回
+的硬件行为); 此时切换到进程的内核堆栈(PCB中)
+3. 将伪Error Code、中断号、通用寄存器、ds、es、fs、gs段寄存器、esp(参数)压栈, 调用irqHandle
+4. 将ds寄存器指向内核数据段(保证对pcb等内核数据的正确寻址), 保存当前进程控制块的stackTop, 
+设置新stackTop为irqHandle的参数
+5. 时钟中断处理: 
+1. 检查被阻塞进程的sleepTime;
+若sleepTime != 0, sleepTime --;
+若sleepTime == 0, 设置经常是可执行状态"RUNNABLE";
+2. 检查进程分配的时间块
+没用完, 继续当前进程;
+否则, 切换下一RUNNABLE进程, 并将程序设置为RUNNABLE, 时间快为0;
+6. 根据第3步压栈顺序出栈、iret 返回
+针对第4步, 如何继续当前进程? 如何切换下一个进程? 切换进程时TSS段需要改变吗? 
+3. 用户态跳转指令简介
+ 
+jmp: 一般情况下jmp 指令会直接去更改eip 的值, 而不会影响esp 等寄存器
+call: call 指令会执行pushl %eip ; jmp * ;两条指令, 会影响esp 寄存器
+/* 初始化8259中断控制器：
+ * 硬件中断IRQ从32号开始, 自动发送EOI */
+void initIntr(void) {
+   ...
+   // 32 = 0x20
+    outByte(PORT_PIC_MASTER + 1, 32); // ICW2, Interrupt Vector Offset 0x20
+   ...
+}
+1
+2
+3
+4
+5
+6
+7
+8
+ret: ret 指令对应的是call 指令, 执行的是popl %eip ; jmp * ; 两条指令, 会影响esp 寄存器
+return : 对于c语言中的return 语句, 一般会编译为两条指令, leave ; ret; , leave 对应的是
+movl %ebp,  %esp ; popl %ebp ; 对应的是函数开头的pushl %ebp ; movl %esp,%ebp ;
+有意思的是gcc的编译优化选项会改变return 语句最终生成的汇编指令, 不推荐开启编译优化, 有兴
+趣的同学可以详细了解
+4. 注意点
+ 
+1. ProcessTable 结构体的定义（memory.h 中）说明了一个进程的状态, 这个结构体贯穿了整个
+Lab3; 
+2. 进程状态定义可以在文件memory.h 中查看:
+#define STATE_RUNNABLE 0
+#define STATE_RUNNING 1
+#define STATE_BLOCKED 2
+#define STATE_DEAD 3
+1
+2
+3
+4

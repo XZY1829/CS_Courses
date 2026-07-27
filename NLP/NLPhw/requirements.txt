@@ -1,0 +1,16 @@
+# PyTorch: pip often installs CPU wheels on Windows. For GPU, install CUDA torch first (TRAINING_GUIDE.md section 1.6).
+# The three pins below avoid Windows access-violation crashes seen with newer numpy/pandas/pyarrow combinations.
+torch>=2.2.0
+datasets==2.21.0
+seqeval>=1.2.2
+tqdm>=4.66.0
+PyYAML>=6.0
+numpy<2
+pandas<3
+pyarrow==17.0.0
+# PyTorch: pip often installs CPU wheels on Windows. For GPU, install CUDA torch first (TRAINING_GUIDE.md section 1.6).
+torch>=2.2.0
+datasets>=2.18.0,<3.0.0
+seqeval>=1.2.2
+tqdm>=4.66.0
+PyYAML>=6.0

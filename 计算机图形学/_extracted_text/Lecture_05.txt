@@ -1,0 +1,694 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 5:
+Rasterization 1 (Triangles)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 0 — 188 submissions
+- No worries if you did not submit
+
+• Homework 1 will be released today
+- Containing basic and advanced requirements (graded separately)
+- Pass or not pass depends on basic requirements only
+
+• Asking on BBS
+- Please try to describe your question more clearly
+
+• Today’s lecture is pretty easy
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lecture
+• Viewing (观测) transformation
+- View (视图) / Camera transformation
+- Projection (投影) transformation
+- Orthographic (正交) projection
+- Perspective (透视) projection
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Finishing up Viewing
+- Viewport transformation
+
+• Rasterization
+- Different raster displays
+- Rasterizing a triangle
+
+• Occlusions and Visibility
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• What’s near plane’s l, r, b, t then?
+- If explicitly specified, good
+- Sometimes people prefer:
+
+vertical field-of-view (fovY) and
+aspect ratio
+(assume symmetry i.e. l = -r, b = -t)
+width
+Vertical
+Field of View
+(fovY)
+height
+
+Aspect ratio = width / height
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Perspective Projection
+• How to convert from fovY and aspect to l, r, b, t?
+- Trivial
+Y
+
+f ovY
+t
+tan
+=
+2
+|n|
+r
+aspect =
+t
+
+(0, t, n)
+
+<latexit sha1_base64="pYrVVAhWBvcz6MjQr1ThVjvZyhc=">AAACDHicbVDLSsNAFJ34rPVVdelmsAiuSlIE3QhFNy4r2Ic0oUymk3boZBJmbgolzQe48VfcuFDErR/gzr9x2mahrQcGDuecy517/FhwDbb9ba2srq1vbBa2its7u3v7pYPDpo4SRVmDRiJSbZ9oJrhkDeAgWDtWjIS+YC1/eDP1WyOmNI/kPYxj5oWkL3nAKQEjdUtlF4jEbqAITYNo9JCl1Qxf5QJk6UROMpOyK/YMeJk4OSmjHPVu6cvtRTQJmQQqiNYdx47BS4kCTgXLim6iWUzokPRZx1BJQqa9dHZMhk+N0sNBpMyTgGfq74mUhFqPQ98kQwIDvehNxf+8TgLBpZdyGSfAJJ0vChKBIcLTZnCPK0ZBjA0hVHHzV0wHxPQApr+iKcFZPHmZNKsVx644d+fl2nVeRwEdoxN0hhx0gWroFtVRA1H0iJ7RK3qznqwX6936mEdXrHzmCP2B9fkDSM6bxQ==</latexit>
+
+Z
+
+fovY / 2
+|n|
+
+GAMES101
+
+<latexit sha1_base64="gFAHj+ZQwLh1QhaHzG8fea//KQo=">AAAB/XicbVDLSgNBEOyNrxhf6+PmZTAInsKuCHoRgl48RjAxkCxhdjKbDJl9MNMrxGXxV7x4UMSr/+HNv3GS7EETCxqKqm66u/xECo2O822VlpZXVtfK65WNza3tHXt3r6XjVDHeZLGMVdunmksR8SYKlLydKE5DX/J7f3Q98e8fuNIiju5wnHAvpINIBIJRNFLPPqA64QzJJekGirJM5RnmPbvq1JwpyCJxC1KFAo2e/dXtxywNeYRMUq07rpOgl1GFgkmeV7qp5gllIzrgHUMjGnLtZdPrc3JslD4JYmUqQjJVf09kNNR6HPqmM6Q41PPeRPzP66QYXHiZiJIUecRmi4JUEozJJArSF8q8LseGUKaEuZWwITUpoAmsYkJw519eJK3TmuvU3Nuzav2qiKMMh3AEJ+DCOdThBhrQBAaP8Ayv8GY9WS/Wu/Uxay1Zxcw+/IH1+QN9SZU+</latexit>
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+What’s after MVP?
+• Model transformation (placing objects)
+• View transformation (placing camera)
+• Projection transformation
+- Orthographic projection (cuboid to “canonical” cube [-1, 1]3)
+- Perspective projection (frustum to “canonical” cube)
+
+• Canonical cube to ?
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Canonical Cube to Screen
+• What is a screen?
+- An array of pixels
+- Size of the array: resolution
+- A typical kind of raster display
+
+• Raster == screen in German
+- Rasterize == drawing onto the screen
+
+• Pixel (FYI, short for “picture element”)
+- For now: A pixel is a little square with uniform color
+- Color is a mixture of (red, green, blue)
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Canonical Cube to Screen
+• Defining the screen space
+
+Pixels’ indices are
+in the form of (x, y), where
+both x and y are integers
+
+- Slightly different from the “tiger book”
+Y
+
+array of pixels
+
+Pixels’ indices are from
+(0, 0) to (width - 1, height - 1)
+Pixel (x, y) is centered at
+(x + 0.5, y + 0.5)
+The screen covers range
+(0, 0) to (width, height)
+
+(0, 0)
+GAMES101
+
+X
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Canonical Cube to Screen
+• Irrelevant to z
+2 to [0, width] x [0, height]
+Transform
+in
+xy
+plane:
+[-1,
+1]
+•
+Y
+
+array of pixels
+y
+
+x
+z
+
+(0, 0)
+GAMES101
+
+X
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Canonical Cube to Screen
+• Irrelevant to z
+• Transform in xy plane: [-1, 1]2 to [0, width] x [0, height]
+• Viewport transform matrix:
+0 width
+2
+
+B 0
+Mviewport = B
+@ 0
+0
+
+0
+height
+2
+
+0
+0
+
+<latexit sha1_base64="tdp9C2WJdTQt5m0qzzOxt80jqdQ=">AAACjHicbZFRS+NAEMc30bvTnufV89GXxXLiUy8R4TxEEA/EF6EHthWaUjabSbO42YTdiV4J+TR+I9/u27hNw1FbB4b98/vPsLOzYS6FQc/757gbmx8+ftrabn3e+bL7tb33bWCyQnPo80xm+j5kBqRQ0EeBEu5zDSwNJQzDh99zf/gI2ohM3eEsh3HKpkrEgjO0aNJ+vp2UjwKe8kxjdRGEMBWqzFOGWvytglgzXj6JCJOqPKnoEfWaXHWCYAknIKYJLnWs4aZ8nn59LoEaBqCi/2NM2h2v69VB14XfiA5pojdpvwRRxosUFHLJjBn5Xo7jkmkUXELVCgoDOeMPbAojKxVLwYzLepkV/W5JRONM21RIa7rcUbLUmFka2ko7X2JWvTl8zxsVGJ+NS6HyAkHxxUVxISlmdP4zNBIaOMqZFYxrYWelPGF2c2j/r2WX4K8+eV0MTrq+1/X/nHYur5p1bJEDckiOiU9+kktyQ3qkT7iz7fxwzpxf7q576p67F4tS12l69smbcK9fAWhOvu0=</latexit>
+
+GAMES101
+
+11
+
+0
+0
+1
+0
+
+1
+
+width
+2
+height C
+C
+2
+
+0
+1
+
+A
+Lingqi Yan, UC Santa Barbara
+
+Next: Rasterizing Triangles into Pixels
+
+Life of Pi (2012)
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Drawing Machines
+
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+CNC Sharpie Drawing Machine
+
+Aaron Panone with Matt W. Moore
+http://44rn.com/projects/numerically-controlled-poster-series-with-matt-w-moore/
+
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Laser Cutters
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Different Raster Displays
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Oscilloscope
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Oscilloscope Art
+
+Jerobeam Fenderson
+GAMES101
+
+18
+
+https://www.youtube.com/watch?v=rtR63-ecUNo
+
+Lingqi Yan, UC Santa Barbara
+
+Cathode Ray Tube
+
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Television - Raster Display CRT
+
+Raster Scan
+(modulate intensity)
+
+Cathode Ray Tube
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Frame Buffer: Memory for a Raster Display
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Flat Panel Displays
+Low-Res LCD Display
+
+B.Woods, Android Pit
+
+Color LCD, OLED, …
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+LCD (Liquid Crystal Display) Pixel
+
+[H&B fig. 2-16]
+
+Principle: block or transmit
+light by twisting polarization
+Illumination from backlight
+(e.g. fluorescent or LED)
+Intermediate intensity
+levels by partial twist
+
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+LED Array Display
+
+Light emitting diode array
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+[Wikimedia Commons
+—Senarclens]
+
+Electrophoretic (Electronic Ink) Display
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Rasterization:
+Drawing to Raster Displays
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Polygon Meshes
+
+Life of Pi (2012)
+
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Triangle Meshes
+
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Triangle Meshes
+
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Triangles - Fundamental Shape Primitives
+Why triangles?
+
+• Most basic polygon
+• Break up other polygons
+• Unique properties
+• Guaranteed to be planar
+• Well-defined interior
+• Well-defined method for interpolating values at
+vertices over triangle (barycentric interpolation)
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+What Pixel Values Approximate a Triangle?
+(2.2, 1.3)
+
+(4.4, 11.0)
+
+?
+
+(15.3, 8.6)
+
+Input: position of triangle
+vertices projected on screen
+GAMES101
+
+Output: set of pixel values
+approximating triangle
+31
+
+Lingqi Yan, UC Santa Barbara
+
+A Simple Approach: Sampling
+
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling a Function
+Evaluating a function at a point is sampling.
+We can discretize a function by sampling.
+for (int x = 0; x < xmax; ++x)
+output[x] = f(x);
+Sampling is a core idea in graphics.
+We sample time (1D), area (2D), direction (2D), volume (3D) …
+
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Rasterization As 2D Sampling
+
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Sample If Each Pixel Center Is Inside Triangle
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Sample If Each Pixel Center Is Inside Triangle
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Define Binary Function: inside(tri, x, y)
+x, y: not necessarily integers
+
+1
+
+Point (x, y)
+in triangle t
+
+0
+
+otherwise
+
+inside(t, x, y) =
+
+Rasterization = Sampling A 2D Indicator Function
+for (int x = 0; x < xmax; ++x)
+for (int y = 0; y < ymax; ++y)
+image[x][y] = inside(tri,
+x + 0.5,
+y + 0.5);
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Recall: Sample Locations
+(0,h)
+
+(w,h)
+
+(x+0.5, y+0.5)
+
+(0,0)
+
+(w,0)
+Sample location for pixel (x, y)
+
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Evaluating inside(tri, x, y)
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Inside? Recall: Three Cross Products!
+P2
+
+Q
+
+P1
+P0
+
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Edge Cases (Literally)
+Is this sample point covered by triangle 1, triangle 2, or
+both?
+
+2
+1
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Checking All Pixels on the Screen?
+P2
+
+P1
+P0
+Use a Bounding Box!
+
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Incremental Triangle Traversal (Faster?)
+P2
+
+P1
+P0
+suitable for thin and rotated triangles
+
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Rasterization on
+Real Displays
+
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Real LCD Screen Pixels (Closeup)
+
+iphonearena.com
+
+iphonearena.com
+
+iPhone 6S
+
+Galaxy S5
+
+Notice R,G,B pixel geometry! But in this class, we will assume a colored square full-color pixel.
+
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Aside: What About Other Display Methods?
+
+Color print: observe half-tone pattern
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Assume Display Pixels Emit Square of Light
+
+LCD pixel
+on laptop
+* LCD pixels do not actually
+emit light in a square of
+uniform color, but this
+approximation suffices for
+our current discussion
+
+So, If We Send the Display the Sampled Signal
+
+GAMES101
+
+49
+
+Lingqi Yan, UC Santa Barbara
+
+The Display Physically Emits This Signal
+
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+Compare: The Continuous Triangle Function
+
+GAMES101
+
+51
+
+Lingqi Yan, UC Santa Barbara
+
+What’s Wrong With This Picture?
+
+Jaggies!
+GAMES101
+
+52
+
+Lingqi Yan, UC Santa Barbara
+
+Aliasing (Jaggies)
+
+Is this the best we can do?
+GAMES101
+
+53
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

@@ -1,0 +1,1504 @@
+It’s hard to make the image planes exactly parallel
+
+How can you make the epipolar lines horizontal?
+
+Use stereo rectification?
+
+What is stereo rectification?
+
+What is stereo rectification?
+Reproject image
+planes onto a
+common plane
+parallel to the line
+between camera
+centers
+
+How can you do this?
+
+What is stereo rectification?
+Reproject image
+planes onto a
+common plane
+parallel to the line
+between camera
+centers
+Need two
+homographies (3x3
+transform), one for
+each input image
+reprojection
+C. Loop and Z. Zhang. Computing Rectifying Homographies for Stereo Vision.Computer Vision and Pattern Recognition, 1999.
+
+Stereo Rectification
+1. Rotate the right camera by R
+(aligns camera coordinate system orientation only)
+
+2. Rotate (rectify) the left camera so that the epipole
+is at infinity
+3. Rotate (rectify) the right camera so that the epipole
+is at infinity
+4. Adjust the scale
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+rotate by R
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+rotate by Rrect
+
+rotate by Rrect
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+scale by H
+
+scale by H
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+Let’s visualize the four configurations…
+
+Camera Icon
+
+optical axis
+
+image plane
+
+camera center
+
+Find the configuration where the point is in front of both cameras
+
+Find the configuration where the points is in front of both cameras
+
+Find the configuration where the points is in front of both cameras
+
+Stereo Rectification:
+
+1. Compute E to get R
+
+2. Rotate right image by R
+
+3. Rotate both images by Rrect
+4. Scale both images by H
+
+When do epipolar
+lines become
+horizontal?
+
+Parallel cameras
+
+Where is the epipole?
+
+Parallel cameras
+
+epipole at infinity
+
+Setting the epipole to infinity
+(Building Rrect from e)
+
+Let
+
+Given:
+
+epipole e
+(using SVD on E)
+(translation from E)
+
+epipole coincides with translation vector
+
+cross product of e and
+the direction vector of
+the optical axis
+
+orthogonal vector
+
+If
+
+and
+
+then
+
+orthogonal
+
+If
+
+and
+
+orthogonal
+
+then
+
+Where is this point located on the image plane?
+
+If
+
+and
+
+orthogonal
+
+then
+
+Where is this point located on the image plane?
+At x-infinity
+
+Stereo Rectification Algorithm
+1.
+
+Estimate E using the 8 point algorithm (SVD)
+
+2.
+
+Estimate the epipole e (SVD of E)
+
+3. Build Rrect from e
+4.
+
+Decompose E into R and T
+
+5. Set R1=Rrect
+6.
+
+7.
+
+and R2
+
+= RRrect
+
+Rotate each left camera point (warp image)
+✓[x’ y’ z’] = R1 [x y z]
+Rectified points as p = f/z’[x’ y’ z’]
+
+8. Repeat 6 and 7 for right camera points using R2
+
+What can we do after
+rectification?
+
+Stereo matching
+
+Depth Estimation via Stereo Matching
+
+1. Rectify images
+(make epipolar lines horizontal)
+2. For each pixel
+a. Find epipolar line
+b. Scan line for best match
+c. Compute depth from disparity
+
+How would
+you do this?
+
+Reminder from filtering
+How do we detect an edge?
+
+Reminder from filtering
+How do we detect an edge?
+• We filter with something that looks like an edge.
+
+* 1 0 -1
+horizontal edge filter
+
+*
+original
+
+1
+0
+-1
+
+We can think of linear filtering as a way to evaluate
+how similar an image is locally to some template.
+
+vertical edge filter
+
+Find this template
+How do we detect the template
+
+in the following image?
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+output
+
+image
+
+Solution 1: Filter the image using the template as filter kernel.
+
+What will
+the output
+look like?
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+
+output
+
+image
+
+Solution 1: Filter the image using the template as filter kernel.
+
+What went wrong?
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+
+output
+
+image
+
+Solution 1: Filter the image using the template as filter kernel.
+
+Increases for higher
+local intensities.
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+
+template mean
+
+output
+
+image
+
+Solution 2: Filter the image using a zero-mean template.
+
+What will
+the output
+look like?
+
+Find this template
+How do we detect the template
+
+in he following image?
+output
+filter
+
+template mean
+
+output
+
+True detection
+
+thresholding
+image
+
+False
+detections
+
+Solution 2: Filter the image using a zero-mean template.
+
+What went wrong?
+
+Find this template
+How do we detect the template
+
+in he following image?
+output
+filter
+
+template mean
+
+output
+
+Not robust to highcontrast areas
+image
+
+Solution 2: Filter the image using a zero-mean template.
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+output
+
+image
+
+Solution 3: Use sum of squared differences (SSD).
+
+What will
+the output
+look like?
+
+Find this template
+How do we detect the template
+
+in he following image?
+1-output
+filter
+
+output
+
+True detection
+
+thresholding
+image
+
+Solution 3: Use sum of squared differences (SSD).
+
+What could go wrong?
+
+Find this template
+How do we detect the template
+
+in he following image?
+1-output
+filter
+
+output
+
+Not robust to local
+intensity changes
+image
+
+Solution 3: Use sum of squared differences (SSD).
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+Observations so far:
+
+• subtracting mean deals with brightness bias
+• dividing by standard deviation removes contrast bias
+
+Can we combine the two effects?
+
+Find this template
+How do we detect the template
+
+in he following image?
+
+filter
+
+template mean
+
+output
+
+local patch mean
+image
+
+Solution 4: Normalized cross-correlation (NCC).
+
+What will
+the output
+look like?
+
+Find this template
+How do we detect the template
+
+in he following image?
+1-output
+
+True detections
+
+thresholding
+
+Solution 4: Normalized cross-correlation (NCC).
+
+Find this template
+How do we detect the template
+
+in he following image?
+1-output
+
+True detections
+
+thresholding
+
+Solution 4: Normalized cross-correlation (NCC).
+
+What is the best method?
+It depends on whether you care about speed or invariance.
+
+• Zero-mean: Fastest, very sensitive to local intensity.
+• Sum of squared differences: Medium speed, sensitive to intensity offsets.
+
+• Normalized cross-correlation: Slowest, invariant to contrast and brightness.
+
+Stereo Block Matching
+Left
+
+Right
+
+scanline
+
+Matching cost
+disparity
+
+Slide a window along the epipolar line and compare contents of
+that window with the reference window in the left image
+• Matching cost: SSD or normalized correlation
+•
+
+SSD
+
+Normalized cross-correlation
+
+Similarity Measure
+
+Formula
+
+Sum of Absolute Differences (SAD)
+
+Sum of Squared Differences (SSD)
+
+Zero-mean SAD
+
+Locally scaled SAD
+
+Normalized Cross Correlation (NCC)
+
+SAD
+
+SSD
+
+NCC
+
+Ground truth
+
+Effect of window size
+
+W= 3
+
+W = 20
+
+Effect of window size
+
+W= 3
+
+W = 20
+
+Smaller window
++ More detail
+- More noise
+
+Larger window
++ Smoother disparity maps
+- Less detail
+- Fails near boundaries
+
+When will stereo block matching fail?
+
+When will stereo block matching fail?
+
+textureless regions
+
+repeated patterns
+
+specularities
+
+Improving stereo matching
+
+Block matching
+
+Ground truth
+
+What are some problems with the result?
+
+How can we improve depth estimation?
+
+How can we improve depth estimation?
+Too many discontinuities.
+We expect disparity values to change slowly.
+Let’s make an assumption:
+depth should change smoothly
+
+Stereo matching as …
+
+Energy Minimization
+
+What defines a good stereo correspondence?
+1. Match quality
+– Want each pixel to find a good match in the other image
+2. Smoothness
+– If two pixels are adjacent, they should (usually) move about the same
+amount
+
+data term
+
+{
+
+{
+
+energy function
+(for one pixel)
+
+smoothness term
+
+Want each pixel to find a good match
+in the other image
+
+Adjacent pixels should (usually)
+move about the same amount
+
+(block matching result)
+
+(smoothness function)
+
+data term
+SSD distance between windows
+centered at I(x, y) and J(x+ d(x,y),y)
+
+SSD distance between windows
+centered at I(x, y) and J(x+ d(x,y),y)
+
+smoothness term
+
+: set of neighboring pixels
+4-connected
+neighborhood
+
+8-connected
+neighborhood
+
+smoothness term
+
+L1 distance
+
+“Potts model”
+
+One possible solution…
+
+Dynamic Programming
+
+Can minimize this independently per scanline
+using dynamic programming (DP)
+: minimum cost of solution such that d(x,y) = d
+
+Match only
+
+Match & smoothness (via graph cut)
+
+Ground Truth
+
+Y. Boykov, O. Veksler, and R. Zabih, Fast Approximate Energy Minimization via Graph Cuts, PAMI 2001
+
+Structured light
+
+Use controlled (“structured”) light to make correspondences
+easier
+
+Disparity between laser points on
+the same scanline in the images
+determines the 3-D coordinates of
+the laser point on object
+
+Use controlled (“structured”) light to make correspondences easier
+
+Structured light and two
+cameras
+laser
+
+I
+
+J
+
+Structured light and one camera
+
+Projector acts like
+“reverse” camera
+I
+
+J
+
+Example: Laser scanner
+
+Digital Michelangelo Project
+http://graphics.stanford.edu/projects/mich/
+
+模式识别与计算机视觉
+Wrap Up
+张振宇
+南京大学智能科学与技术学院
+2026
+81
+
+本学期所学习的主要内容
+✓评估方法
+ 类别不平衡条件下的评估：TP，TN，FP，FN，ROC和PR曲线，F1 score
+
+✓Fisher线性判别分析
+ 类内散度，类间散度，Fisher准则函数，多分类问题
+
+✓概率方法
+ 参数化估计，非参数化估计
+
+✓度量方法
+ 度量的定义，Lp度量，度量学习
+
+本学期所学习的主要内容
+✓图像滤波
+ 空域与频域方法，振铃效应（aliasing），奈奎斯特-香农采样定理
+
+✓Harris角点检测
+ 方法流程，结构张量，响应函数，性质
+
+✓图像变换，相机模型
+ 各类变换形式与自由度，单应变换求解
+
+✓双目几何与立体视觉
+ 三角测量，对极约束，本质矩阵，基础矩阵，八点法，双目匹配
+
+评价不平衡时的准则(1)
+预测为positive
+
+预测为negative
+
+真实值为positive
+
+True positive (真阳性)
+
+False negative(伪阴性)
+
+真实值为negative
+
+False positive(伪阳性)
+
+True negative(真阴性)
+
+✓ TP、TN、FP、FN：标记四种情况的样例数目
+✓ TOTAL：总数 TP+TN+FP+FN
+ 正样本数目：P = TP+FN，负样本数目：N = FP+TN
+
+✓ False positive rate: FPR = FP / N
+✓ False negative rate: FNR = FN / P
+✓ True positive rate: TPR = TP / P
+✓ Accuracy：ACC = (TP+TN) / TOTAL
+84
+
+评价不平衡时的准则(2)
+✓ AUC-ROC (Area Under the ROC Curve)
+ ROC – Receiver operating characteristic
+
+• Y轴：TPR
+• X轴：FPR
+• 其值为面积
+• 为什么？
+• 对角线是？
+• 非减
+85
+
+评价不平衡时的准则(3)
+✓ Precision（查准率）: PRE = TP / (TP + FP)
+✓ Recall（查全率）：REC = TP / P (和TPR一样）
+✓ F1 score：Precision和Recall的调和平均(harmonic mean)
+𝑥 −1 +𝑦 −1
+ 调和平均：
+2
+
+−1
+
+ F1 = 2TP / (2TP+FP+FN)
+ 为什么？
+
+86
+
+=
+
+2𝑥𝑦
+𝑥+𝑦
+
+评价不平衡时的准则(4)
+✓ AUC-PR (Area Under the Precision-Recall Curve)
+
+• Y轴：Precision
+• X轴：Recall
+• 其值为面积
+• 为什么？
+• 单调吗？
+进一步阅读: The Relationship
+Between Precision-Recall and ROC
+Curves
+
+87
+
+Idea: FLD的动机（motivation）
+
+Bad linear feature (PCA)
+
+88
+
+Good linear feature (FLD)
+
+Objective: Fisher’s Criterion
+✓ 怎样描述“分开”的程度(separation)?
+✓ Maximize 𝑚2 − 𝑚1 2 ? 问题？
+ 这个值可以无限大。怎么解决？
+
+ 加限制条件𝒘𝑇 𝒘 = 1
+ 看前面的图，这个值不是越大越好。怎么解决？
+
+✓ Fisher准则
+ 在要求 𝑚2 − 𝑚1 尽量大的同时，要求两类在投影以后尽量集中，或者不
+
+分散。怎么度量分散程度？
+
+𝑚2 − 𝑚1 2
+𝐽 𝒘 =
+𝑠12 + 𝑠22
+89
+
+散度矩阵
+✓ 𝑆𝑘 = σ𝑦𝑖 =𝑘 𝒙𝑖 − 𝝁𝑘
+
+𝒙𝑖 − 𝝁𝑘 𝑇 是什么？
+
+✓ 类内散度矩阵within-class scatter matrix
+
+𝑆𝑊 = 𝑆1 + 𝑆2
+✓ 类间散度矩阵between-class scatter matrix
+𝑆𝐵 = 𝝁2 − 𝝁1 𝝁2 − 𝝁1 𝑇
+✓ Fisher准则的矩阵形式
+ max 𝐽 𝒘
+
+𝒘𝑇 𝑆𝐵 𝒘
+= 𝑇
+, 𝑠. 𝑡. 𝒘𝑇 𝒘 = 1
+𝒘 𝑆𝑊 𝒘
+
+ 这种形式称为广义瑞利商generalized Rayleigh quotient
+
+90
+
+Optimization: 如何求解？
+✓ (Simplification/transformation) ：用拉格朗日乘子法，证明（记得查表）
+
+最优时必须满足
+𝑆𝐵 𝒘 = 𝜆𝑆𝑊 𝒘
+✓ 该问题称为广义特征值generalized eigenvalue问题
+ 得到“𝑆𝐵 和𝑆𝑊 ”的广义特征值和广义特征向量
+ Generalized eigenvalue (eigenvector) of 𝑆𝐵 and 𝑆𝑊
+
+✓ 但是我们不用去解这个问题
+
+𝝁2 − 𝝁1 𝑇 𝒘 ∝ 𝝁2 − 𝝁1
+= 𝜆𝑆𝑊 𝒘！
+
+ 𝑆𝐵 𝒘 = 𝝁2 − 𝝁1
+ 𝝁2 − 𝝁1
+
+91
+
+如果大于2类怎么办？
+✓ 𝐶类问题
+ 𝝁𝑖 , 𝑁𝑖 , 𝑚𝑖 , 𝑆𝑖 和2类问题中一样定义
+ 𝑆𝑊 = σ𝐶
+𝑖=1 𝑆𝑖 , 很容易从2类问题推广
+
+ 定义𝑁 = σ𝐶
+𝑖=1 𝑁𝑖
+ 定义总均值𝝁 =
+
+1 𝐶
+1
+σ𝑖=1 𝑁𝑖 𝝁𝑖 = σ𝒙 𝒙
+𝑁
+𝑁
+
+✓ 𝑆𝐵 没有定义，无法直接从2类问题推广
+ 总散度矩阵total scatter matrix, 𝑆𝑇 = σ𝒙 𝒙 − 𝝁 𝒙 − 𝝁 𝑇
+𝑇 =𝑆 +𝑆
+ 𝑆𝑇 = 𝑆𝑊 + σ𝐶
+𝑊
+𝐵
+𝑖=1 𝑁𝑖 (𝝁𝑖 − 𝝁) 𝝁𝑖 − 𝝁
+𝑇
+ 定义多类的 𝑆𝐵 = σ𝐶
+𝑁
+(𝝁
+−
+𝝁)
+𝝁
+−
+𝝁
+𝑖
+𝑖
+𝑖=1 𝑖
+
+ 证明，当𝐶 = 2时， 有𝑆𝑇 = 𝑆𝑊 + 𝑆𝐵
+92
+
+更多的投影方向
+𝒘𝑇 𝑆𝐵 𝒘
+max 𝐽 𝒘 = 𝑇
+𝒘 𝑆𝑊 𝒘
+✓ 求解广义特征值问题
+
+𝑆𝐵 𝒘𝑖 = 𝜆𝑖 𝑆𝑊 𝒘𝑖
+✓ 最多能得到𝐶 − 1个有效的投影方向
+ 为什么？
+
+93
+
+距离度量
+✓ 距离是一种度量不相似度的指标
+✓ 度量（metric）是一个函数
+✓ 欧氏距离是最常用的距离度量：
+✓ 𝑑 𝒙, 𝒚 =
+
+𝒙−𝒚 =
+
+σ𝑑𝑖=1(𝑥𝑖 − 𝑦𝑖 )2
+
+✓ 满足以下性质：
+✓ i.
+
+𝑑(𝒙, 𝒚) ≥ 0
+✓ ii. 𝑑 𝒙, 𝒚 = 𝑑(𝒚, 𝒙)
+✓ iii. 𝑑 𝒙, 𝒚 = 0
+𝒙=𝒚
+✓ iv. 𝑑 𝒙, 𝒛 ≤ 𝑑 𝒙, 𝒚 + 𝑑(𝒚, 𝒛)
+95
+
+非负性
+对称性
+同一性
+三角不等式
+
+向量范数和度量
+✓ 欧氏距离和向量范数的关系： 𝑑 𝒙, 𝒚 =
+
+𝒙−𝒚
+✓ 只考虑实向量，向量范数𝑓满足三个性质：
+✓ i. 𝑓 𝑐𝒙 = 𝑐 𝑓(𝒙)
+齐次性
+✓ ii. 𝑓 𝒙 = 0
+𝒙=0
+非负性
+✓ iii. 𝑓 𝒙 + 𝒚 ≤ 𝑓 𝒙 + 𝑓(𝒚)
+三角不等式
+✓ 容易证明 𝑓 𝟎 = 0, 𝑓 −𝒙 = 𝑓(𝒙), 𝑓(𝒙) ≥ 0
+✓ 容易证明𝑓(𝒙 − 𝒚)满足度量的所有条件
+✓ 向量范数可以诱导出度量
+
+96
+
+𝑙𝑝 范数和𝑙𝑝 度量
+✓ 𝑙𝑝 范数在𝑝 ≥ 1时有定义：
+1
+𝑝
+
+𝒙 𝑝 = (σ𝑑𝑖=1 𝑥𝑖 𝑝 )
+
+✓
+
+✓ 容易证明𝑙𝑝 范数满足齐次性和非负性
+✓ 闵可夫斯基不等式
+✓
+
+1
+𝑝
+
+1
+𝑝
+
+1
+𝑝
+
+𝑝
+𝑝
+(σ𝑑𝑖=1(𝑥𝑖 + 𝑦𝑖 )𝑝 ) ≤ (σ𝑑𝑖=1 𝑥𝑖 ) + (σ𝑑𝑖=1 𝑦𝑖 )
+
+✓ L1度量相比于L2度量对噪声更鲁棒：L1损失线性增长，L2损失二次增
+
+长。
+97
+
+距离度量学习
+✓ 马氏距离
+ 令𝐺为任意𝑑 × 𝑑的正定矩阵，那么
+ 𝑓 𝒙 = 𝐺𝒙 定义了一个有效的向量范数
+ 对应的距离度量为 𝐺(𝒙 − 𝒚)
+ 常用平方距离：
+ 𝑑𝐴2 𝒙, 𝒚 = (𝒙 − 𝒚)𝑇 𝐴(𝒙 − 𝒚)，𝐴 = 𝐺 𝑇 𝐺
+
+✓ 为什么要引入马氏距离？
+ 假设数据服从高斯分布
+ 白化变换Σ
+
+98
+
+1
+
+−2
+
+ഥ)
+(𝒙 − 𝒙
+
+The convolution theorem
+The Fourier transform of the convolution of two functions is the product of their Fourier
+transforms:
+
+The inverse Fourier transform of the product of two Fourier transforms is the convolution
+of the two inverse Fourier transforms:
+
+Convolution in spatial domain is equivalent to multiplication in frequency domain!
+
+Spatial domain filtering
+
+filter kernel
+
+=
+
+Fourier transform
+
+inverse Fourier transform
+
+=
+
+Frequency domain filtering
+
+Fourier transform pairs
+spatial domain
+
+Note the symmetry:
+duality property of
+Fourier transform
+
+frequency domain
+
+Revisiting blurring
+Why does the Gaussian give a nice smooth image, but the square filter give edgy artifacts?
+
+Gaussian
+filter
+
+Box
+filter
+
+Gaussian blur
+
+Box blur
+
+The Nyquist-Shannon sampling theorem
+A continuous signal can be perfectly reconstructed from its discrete version using linear
+interpolation, if sampling occurred with frequency:
+
+fs / 2 is called the
+Nyquist frequency
+
+Equivalent reformulation: When downsampling, aliasing does not occur if samples are
+taken at the Nyquist frequency or higher.
+
+Gaussian pyramid
+How does the Nyquist-Shannon theorem
+relate to the Gaussian pyramid?
+
+Finding corners
+1.Compute image gradients over
+small region
+2.Subtract mean from each image
+gradient
+
+3.Compute the covariance matrix
+4.Compute eigenvectors and
+eigenvalues
+5.Use threshold on eigenvalues to
+detect corners
+
+Some mathematical background …
+
+Error function
+Change of intensity for the shift [u,v]:
+
+Error
+function
+
+Window
+function
+
+Shifted
+intensity
+
+Window function w(x,y) =
+
+Intensity
+
+or
+1 in window, 0 outside
+
+Gaussian
+
+Bilinear approximation
+For small shifts [u,v] we have a ‘bilinear approximation’:
+Change in
+appearance for a
+shift [u,v]
+
+where M is a 2×2 matrix computed from image derivatives:
+
+‘second moment’ matrix
+‘structure tensor’
+
+interpreting eigenvalues
+λ2
+corner
+
+‘horizontal’
+edge
+
+λ 2>> λ 1
+λ 1 ~ λ2
+
+flat
+
+λ 1>> λ2
+‘vertical’
+edge
+
+λ1
+
+5. Use threshold on eigenvalues to detect corners
+Λ
+(a function of )
+
+λ2
+corner
+
+Can compute this more efficiently …
+
+flat
+
+λ1
+
+Image and parameter space
+variables
+
+parameters
+
+Image space
+
+variables
+
+parameters
+
+Parameter space
+
+Image and parameter space
+variables
+
+parameters
+
+Image space
+
+variables
+
+parameters
+
+Parameter space
+
+Line Detection by Hough Transform
+Algorithm:
+1. Quantize Parameter Space
+2.Create Accumulator Array
+
+Parameter Space
+
+3.Set
+1
+
+4. For each image edge
+For each element in
+lies on the line:
+If
+Increment
+5. Find local maxima in
+
+1
+1
+
+1
+1
+
+1
+2
+
+1
+1
+1
+
+1
+1
+1
+
+Problems with parameterization
+How big does the accumulator need to be for the parameterization
+
+1
+
+1
+1
+
+1
+1
+
+1
+2
+
+1
+1
+1
+
+The space of m is huge!
+
+1
+1
+1
+
+The space of c is huge!
+
+?
+
+Better Parameterization
+Use normal form:
+
+Given points
+
+find
+Image Space
+
+Hough Space Sinusoid
+
+?
+(Finite Accumulator Array Size)
+
+Hough Space
+
+Image and parameter space
+variables
+
+parameters
+
+Image space
+
+parameters
+
+variables
+
+Parameter space
+
+Image and parameter space
+variables
+
+parameters
+
+Image space
+
+Parameter space
+
+Classification of 2D transformations
+
+Classification of 2D transformations
+
+Affine transform:
+uniform scaling + shearing
++ rotation + translation
+
+How many degrees of freedom?
+
+similarity
+
+shear
+
+Determining the homography matrix
+Write out linear equation for each correspondence:
+
+P, = H . P
+
+or
+
+Expand matrix multiplication:
+
+Divide out unknown scale factor:
+
+How do you
+rearrange terms
+to make it a
+linear system?
+
+Just rearrange the terms
+
+Determining the homography matrix
+Stack together constraints from multiple point correspondences:
+
+Homogeneous linear least squares problem
+
+Solving for H using DLT
+Given
+
+solve for H such that
+
+1. For each correspondence, create 2x9 matrix
+
+2. Concatenate into single 2n x 9 matrix
+
+3. Compute SVD of
+4. Store singular vector of the smallest singular value
+
+5. Reshape to get
+
+Estimating homography using RANSAC
+• RANSAC loop
+
+1. Get four point correspondences (randomly)
+2. Compute H using DLT
+3. Count inliers
+4. Keep H if largest number of inliers
+• Recompute H using all inliers
+
+Alternative: Multi-plane calibration
+
+Advantages:
+• Only requires a plane
+• Don’t have to know positions/orientations
+• Great code available online!
+– Matlab version: http://www.vision.caltech.edu/bouguetj/calib_doc/index.html
+– Also available on OpenCV.
+
+Disadvantage: Need to solve non-linear optimization problem.
+
+Step-by-step demonstration
+
+Step-by-step demonstration
+
+Step-by-step demonstration
+
+Step-by-step demonstration
+
+Triangulation
+
+image 1
+
+image 2
+
+Given
+
+camera 1 with matrix
+
+camera 2 with matrix
+
+Triangulation
+Which 3D points map
+to x?
+
+image 1
+
+camera 1 with matrix
+
+image 2
+
+camera 2 with matrix
+
+Triangulation
+How can you compute
+this ray?
+
+image 1
+
+camera 1 with matrix
+
+image 2
+
+camera 2 with matrix
+
+Triangulation
+Create two points on the ray:
+1) find the camera center; and
+2)apply the pseudo-inverse of P on x.
+Then connect the two points.
+This procedure is called backprojection
+
++
+Why does this
+point map to x?
+
+image 1
+
+camera 1 with matrix
+
+image 2
+
+camera 2 with matrix
+
+Triangulation
+How do we find the
+exact point on the ray?
+
++
+
+image 1
+
+camera 1 with matrix
+
+image 2
+
+camera 2 with matrix
+
+Triangulation
+Find 3D object point
+Will the lines intersect?
+
+image 1
+
+camera 1 with matrix
+
+image 2
+
+camera 2 with matrix
+
+Triangulation
+Find 3D object point
+(no single solution due to noise)
+
+image 1
+
+camera 1 with matrix
+
+image 2
+
+camera 2 with matrix
+
+Epipolar geometry
+Epipolar line
+(intersection of Epipolar
+plane and image plane)
+
+Epipolar plane
+
+Baseline
+Image plane
+
+Epipole
+(projection of o’ on the image plane)
+
+Backproject
+to a
+ray in 3D
+
+Epipolar constraint
+Epipolar line
+(intersection of Epipolar
+plane and image plane)
+
+Another way to construct the epipolar plane, this time given
+
+Epipolar constraint
+
+Potential matches for
+
+lie on the epipolar line
+
+properties of the E matrix
+Longuet-Higgins equation
+
+Epipolar lines
+
+Epipoles
+(2D points expressed in camera coordinate system)
+
+The essential matrix operates on image points expressed in
+2D coordinates expressed in the camera coordinate system
+
+camera
+point
+
+image
+point
+
+The essential matrix operates on image points expressed in
+2D coordinates expressed in the camera coordinate system
+
+camera
+point
+
+image
+point
+
+Writing out the epipolar constraint in terms of image coordinates
+
+祝大家期末顺利，考出好成绩！
+
+

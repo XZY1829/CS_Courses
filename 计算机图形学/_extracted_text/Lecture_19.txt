@@ -1,0 +1,1109 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 19:
+Cameras, Lenses and Light Fields
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Standalone topics this week
+- No related homework for lectures in this week
+• Final project ideas will be released soon
+- Note: submit your (very short) proposal on/before Apr 19,
+if you want to do something else (encouraged)
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Imaging = Synthesis + Capture
+
+What’s Happening Inside the Camera?
+
+Cross-section of Nikon D3, 14-24mm F2.8 lens
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Pinholes & Lenses Form Image on Sensor
+(փఽ࢏)
+
+London and Upton
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Shutter Exposes Sensor For Precise Duration
+(ளᳪ)
+
+The Slow Mo Guys, https://youtu.be/CmjeCchGRQo
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Sensor Accumulates Irradiance During Exposure
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Why Not Sensors Without Lenses?
+
+London and Upton
+
+Each sensor point would integrate light from all points on the
+object, so all pixel values would be similar
+i.e. the sensor records irradiance
+
+but there is computational imaging research…
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Pinhole Image Formation
+
+Pinhole Camera
+
+Mo Tzu (c. 470–c. 390 BC)
+Aristotle (384–322 BC)
+Ibn al-Haytham (965–1040)
+Shen Kuo (1031–1095)
+Roger Bacon (c. 1214–1294)
+Johannes Kepler (1571–1630)
+
+A. H. Zewail, Phil. Trans. R. Soc. A 2010;368:1191-1204
+
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Largest Pinhole Photograph
+
+legacyphotoproject.com
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Largest Pinhole Photograph
+
+legacyphotoproject.com
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Field of View (FOV)
+(ᥤ࣋)
+
+Effect of Focal Length on FOV
+(ᆌ᪗)
+
+FOV = 2 arctan
+
+✓
+
+h
+2f
+
+◆
+
+FOV = 2
+
+Lens
+
+f
+
+Focal length
+
+f
+
+h
+
+Sensor
+
+h
+
+For a fixed sensor size, decreasing the focal length increases
+✓ ◆
+the field of view.
+h
+
+FOV = 2 arctan
+
+GAMES101
+
+14
+
+2f
+
+Lingqi Yan, UC Santa Barbara
+
+Focal Length v. Field of View
+• For historical reasons, it is common to refer to
+angular field of view by focal length of a lens
+used on a 35mm-format film (36 x 24mm)
+
+• Examples of focal lengths on 35mm format:
+• 17mm is wide angle 104°
+• 50mm is a “normal” lens 47°
+• 200mm is telephoto lens 12°
+• Careful! When we say current cell phones have
+approximately 28mm “equivalent” focal
+length, this uses the above convention.
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Focal Length v. Field of View
+
+From London and Upton, and Canon EF Lens Work III
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Effect of Sensor Size on FOV
+Object
+
+APS-C
+Lens
+
+35mm Full Frame
+
+Sensor(s)
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Sensor Sizes
+
+Credit: lensvid.com
+
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Maintain FOV on Smaller Sensor?
+
+Lens
+
+Lens
+Focal length
+
+Small Sensor
+
+Shorter
+focal
+length
+
+Large Sensor
+
+To maintain FOV, decrease focal length of lens
+in proportion to width/height of sensor
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Exposure
+
+Exposure
+• H=TxE
+• Exposure = time x irradiance
+• Exposure time (T)
+- Controlled by shutter
+• Irradiance (E)
+- Power of light falling on a unit area of sensor
+- Controlled by lens aperture and focal length
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Exposure Controls in Photography
+Aperture size
+
+• Change the f-stop by opening / closing the aperture (if
+camera has iris control)
+
+Shutter speed
+
+• Change the duration the sensor pixels integrate light
+ISO gain (ఽ‫ط‬ଶ)
+
+• Change the amplification (analog and/or digital) between
+sensor values and digital image values
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Exposure: Aperture, Shutter, Gain (ISO)
+
+Photoblog Hamburg
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+ISO (Gain)
+Third variable for exposure
+Film: trade sensitivity for grain
+Digital: trade sensitivity for noise
+
+• Multiply signal before analog-to-digital conversion
+• Linear effect (ISO 200 needs half the light as ISO 100)
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+ISO Gain vs Noise in Canon T2i
+
+Credit: bobatkins.com
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+F-Number (F-Stop): Exposure Levels
+Written as FN or F/N. N is the f-number.
+Informal understanding: the inverse-diameter of a round aperture
+
+https://www.dpmag.com/how-to/tip-of-the-week/how-and-why-to-use-auto-exposure-bracketing/
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Physical Shutter (1/25 Sec Exposure)
+
+The Slow Mo Guys, https://youtu.be/CmjeCchGRQo
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Side Effect of Shutter Speed
+Motion blur: handshake, subject movement
+Doubling shutter time doubles motion blur
+
+Gavin Hoey
+http://www.gavtrain.com/?p=3960
+
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Side Effect of Shutter Speed
+Note: motion blur is not always bad!
+Tip: think about anti-aliasing
+
+London
+
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Side Effect of Shutter Speed
+Rolling shutter: different parts of photo taken at different times
+
+https://www.premiumbeat.com/blog/3-tips-for-dealing-with-rolling-shutter/
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Constant Exposure: F-Stop vs Shutter Speed
+Example: these pairs of aperture and shutter speed
+give equivalent exposure
+F-Stop
+
+1.4
+
+2.8
+
+4.0
+
+5.6
+
+8.0
+
+11.0
+
+16.0
+
+22.0
+
+32.0
+
+Shutter
+
+1/500 1/250 1/125
+
+1/60
+
+1/30
+
+1/15
+
+1/8
+
+1/4
+
+1/2
+
+1
+
+2.0
+
+If the exposure is too bright/dark, may need to adjust
+f-stop and/or shutter up/down.
+
+• Photographers must trade off depth of field (?) and motion
+blur for moving subjects
+
+GAMES101
+
+(วႮ)
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Fast and Slow Photography
+
+High-Speed Photography
+Normal exposure =
+extremely fast shutter speed x
+(large aperture and/or high ISO)
+
+Harold Edgerton
+GAMES101
+
+33
+
+Slide courtesy L. Waller
+
+Mark Watson
+
+Lingqi Yan, UC Santa Barbara
+
+High-Speed Photography
+
+GAMES101
+
+34
+
+Harold Edgerton
+
+Lingqi Yan, UC Santa Barbara
+
+Long-Exposure Photography
+
+https://www.demilked.com/best-long-exposure-photos/
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Long-Exposure Photography
+
+https://www.demilked.com/best-long-exposure-photos/
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Long-Exposure Photography
+
+https://www.demilked.com/best-long-exposure-photos/
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Thin Lens Approximation
+
+Real Lens Designs Are Highly Complex
+
+[Apple]
+
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+�i
+
+the desi
+
+provide
+
+One re
+
+where
+
+all mod
+
+some h
+
+lenses
+
+today [
+
+tremely
+
+quickly
+
+venienc
+
+aberrat
+
+making
+
+of at lea
+
+this ph
+
+aberration.
+
+Figure �.�: Spherical
+
+ried to remarkable extremes. Zoom l
+
+Real Lens Elements Are Not Ideal – Aberrations
+
+Real plano-convex lens (spherical surface shape).
+Lens does not converge rays to a point anywhere.
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Ideal Thin Lens – Focal Point
+Focal
+(ᆌᅩ)
+Point
+
+Focal
+Length
+
+Credit: Karen Watson
+
+(1) All parallel rays entering a lens pass through its focal point.
+(2) All rays through a focal point will be in parallel after passing the lens.
+(3) Focal length can be arbitrarily changed (in reality, yes!).
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+The Thin Lens Equation
+
+zo
+
+f
+f
+
+(zo
+z o zi
+
+f )(zi
+
+f
+
+=
+
+zi
+2
+ff) = f
+2
+
+zo zi )f + f = f
+(zo +
+
+f
+f
+
+2
+
+zi
+
+zo zi = (zo + zi )f
+1
+1
+1
+=
++
+f
+zi
+zo
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Gauss’ Ray Diagrams
+Parallel Ray
+Chief Ray
+
+Focal Ray
+
+Object
+
+GAMES101
+
+Image
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Gauss’ Ray Tracing Construction
+
+f
+
+f
+
+zo
+
+zi
+
+What is the relationship between conjugate depths zo , zi ?
+
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Gauss’ Ray Tracing Construction
+
+ho
+ho
+zo
+
+hi
+=
+f
+f
+
+f
+
+ho
+
+hi
+=
+f
+f
+
+zo
+GAMES101
+
+ho
+hi
+
+ho
+hi
+=
+f
+zi f
+f
+
+hi
+
+ho
+hi
+=
+f
+zi f
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Gauss’ Ray Tracing Construction
+ho
+hi
+=
+f
+zi f
+ho
+f
+=
+hi
+zi f
+
+ho
+zo
+
+hi
+=
+f
+f
+ho
+zo f
+=
+hi
+f
+zo
+
+f
+f
+
+(zo
+z o zi
+
+f )(zi
+
+f
+
+=
+
+zi
+2
+f) = f
+2
+
+(zo + zi )f + f = f
+
+f
+
+46
+
+Newtonian Thin Lens Equation
+
+2
+
+zo zi = (zo + zi )f
+1
+1
+1
+=
++
+f
+zi
+zo
+GAMES101
+
+Object / image heights
+factor out - applies to all rays
+
+Gaussian Thin Lens Equation
+
+Lingqi Yan, UC Santa Barbara
+
+Thin Lens Demonstration
+
+http://graphics.stanford.edu/courses/cs178-10/applets/gaussian.html
+
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Defocus Blur
+
+Computing Circle of Confusion (CoC) Size
+0
+zs
+
+zs
+
+zo
+
+zi
+
+d!
+
+A
+
+Object
+
+Focal Plane
+
+Image Sensor Plane
+
+Circle of confusion is proportional
+to the size of the aperture
+
+GAMES101
+
+C
+
+49
+
+0
+
+C
+d
+|zs zi |
+=
+=
+A
+zi
+zi
+Lingqi Yan, UC Santa Barbara
+
+CoC vs. Aperture Size
+
+A side note: hilarious
+Google translate…
+
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+Revisiting F-Number (a.k.a. F-Stop)
+• Formal definition: The f-number of a lens is defined as
+
+the focal length divided by the diameter of the aperture
+
+• Common f-stops on real lenses:
+
+1.4, 2, 2.8, 4.0, 5.6, 8, 11, 16, 22, 32
+
+• An f-stop of 2 is sometimes written f/2, reflecting the fact that
+
+the absolute aperture diameter (A) can be computed by dividing
+focal length (f) by the relative aperture (N).
+
+GAMES101
+
+51
+
+Lingqi Yan, UC Santa Barbara
+
+Example F-Stop Calculations
+D = 50 mm
+f = 100 mm
+N = f /D = 2
+D = 100 mm
+f = 200 mm
+N = f /D = 2
+D = 100 mm
+f = 400 mm
+N = f /D = 4
+
+GAMES101
+
+52
+
+Lingqi Yan, UC Santa Barbara
+
+Size of CoC is Inversely Proportional to F-Stop
+R. Berdan, canadiannaturephotographer.com
+
+C=A
+GAMES101
+
+|zs
+
+zi
+
+zi |
+53
+
+f |zs zi |
+=
+N
+zi
+Lingqi Yan, UC Santa Barbara
+
+Ray Tracing Ideal Thin Lenses
+
+Examples of Renderings with Lens Focus
+
+Pharr and Humphreys
+
+GAMES101
+
+55
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Tracing for Defocus Blur (Thin Lens)
+x’’
+x’
+x’’’
+Sensor
+
+zo
+
+Subject plane
+
+zi
+
+(One possible) Setup:
+• Choose sensor size, lens focal length and aperture size
+• Choose depth of subject of interest zo
+• Calculate corresponding depth of sensor zi
+from thin lens equation
+GAMES101
+
+56
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Tracing for Defocus Blur (Thin Lens)
+x’’
+x’
+x’’’
+Sensor
+
+zo
+
+Subject plane
+
+zi
+
+Rendering:
+• For each pixel x’ on the sensor (actually, film (ᚂᇆ))
+• Sample random points x’’ on lens plane
+• You know the ray passing through the lens will hit x’’’
+(because x’’’ is in focus, consider virtual ray (x’, center of the lens))
+• Estimate radiance on ray x’’ -> x’’’
+GAMES101
+
+57
+
+Lingqi Yan, UC Santa Barbara
+
+Depth of Field
+
+Depth of Field
+• Depth of field is the range of object depths that are rendered
+with acceptable sharpness in an image
+
+From London and Upton
+
+Set circle of confusion as the maximum permissible blur spot
+on the image plane that will appear sharp under final viewing
+conditions
+GAMES101
+
+59
+
+Lingqi Yan, UC Santa Barbara
+
+The area in
+subject in w
+Circle
+of
+Confusion
+for
+Depth
+of
+Field
+Figure-15 Relationship Between the Ideal Focal
+appears shar
+Point and the Permissible Circle of
+sharpness t
+Confusion and Depth of Field
+subject whe
+i.e. depth range in a scene where
+the corresponding CoC is considered
+plane falls
+small enough
+permissible
+field varies
+length, ape
+distance, so
+Ideal focal point
+Lens
+rough estim
+Fro
+calculated
+u
+nt
+of de
+fie pth
+ld
+Front
+dep
+Re
+ar
+De
+of de
+pth
+fie pth
+Rear
+dept
+ld
+of
+foc
+us
+f: focal len
+Permissible circle of confusion
+circle of c
+a: subject
+converge at a point in the focal plane.
+
+[Canon, EF Lens Work III]
+
+GAMES101
+
+60
+
+Lingqi Yan, UC Santa Barbara
+
+Depth of Field (FYI)
+dN
+
+A
+Depth of field
+
+Depth of focus
+Circle of confusion, C
+
+f
+
+f
+dF
+dS
+dN
+
+DF
+DS
+DN
+
+DOF = DF
+2
+
+DF =
+GAMES101
+
+f2
+
+DS f
+N C(DS
+
+dS
+
+C
+=
+dN
+A
+dS dF
+C
+=
+dF
+A
+f
+N=
+N
+D
+A
+1
+1
+1
++
+=
+DF
+dF
+f
+1
+1
+1
++
+=
+DS
+dS
+f
+1
+1
+1
++
+=
+DN
+dN
+f
+
+DN
+2
+
+DS f
+DN = 2
+f + N C(DS
+
+f)
+61
+
+f)
+Lingqi Yan, UC Santa Barbara
+
+DOF Demonstration (FYI)
+
+http://graphics.stanford.edu/courses/cs178/applets/dof.html
+
+GAMES101
+
+62
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ren Ng for many of the slides!)
+
+

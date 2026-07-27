@@ -1,0 +1,829 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 11:
+Geometry 2 (Curves and Surfaces)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 3 deadline has been extended
+- To Thursday 23:59PM, Beijing time
+
+• COVID-19 is getting worse in the US
+- Be careful, dude
+- Have to stream at home, network & lighting are worse
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lecture
+• Introduction to geometry
+- Examples of geometry
+- Various representations of geometry
+- Implicit
+- Explicit
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Explicit Representations
+• Curves
+- Bezier curves
+- De Casteljau’s algorithm
+- B-splines, etc.
+
+• Surfaces
+- Bezier surfaces
+- Triangles & quads
+- Subdivision, simplification, regularization
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Explicit Representations in
+Computer Graphics
+
+Many Explicit Representations in Graphics
+triangle meshes
+Bezier surfaces
+subdivision surfaces
+NURBS
+point clouds
+...
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Point Cloud (Explicit)
+Easiest representation: list of points (x,y,z)
+Easily represent any kind of geometry
+Useful for LARGE datasets (>>1 point/pixel)
+Often converted into polygon mesh
+Difficult to draw in undersampled regions
+
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Polygon Mesh (Explicit)
+Store vertices & polygons (often triangles or quads)
+Easier to do processing / simulation, adaptive sampling
+More complicated data structures
+Perhaps most common representation in graphics
+
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+The Wavefront Object File (.obj) Format
+Commonly used in Graphics research
+Just a text file that specifies vertices, normals, texture
+coordinates and their connectivities
+
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Curves
+
+Camera Paths
+
+Flythrough of proposed Perth Citylink subway, https://youtu.be/rIJMuQPwr3E
+
+Animation Curves
+
+Maya Animation Tutorial: https://youtu.be/b-o5wtZlJPc
+
+Vector Fonts
+
+The Quick Brown
+Fox Jumps Over
+The Lazy Dog
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz 0123456789
+credit: Randall Branding
+
+Baskerville font - represented as piecewise cubic Bézier curves
+
+Bézier Curves
+(⻉塞尔曲线)
+
+Defining Cubic Bézier Curve With Tangents
+t0 = 3(p1
+
+p0 )
+
+p2
+
+p1
+p3
+
+p0
+t1 = 3(p3
+GAMES101
+
+16
+
+p2 )
+Lingqi Yan, UC Santa Barbara
+
+Evaluating Bézier Curves
+(de Casteljau Algorithm)
+
+Bézier Curves – de Casteljau Algorithm
+Consider three points (quadratic Bezier)
+
+b1
+Pierre Bézier
+1910 – 1999
+
+b0
+
+b2
+
+Paul de Casteljau
+b. 1930
+
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Bézier Curves – de Casteljau Algorithm
+Insert a point using linear interpolation
+
+b1
+(1
+
+1
+b0
+
+(1
+b0
+
+0
+
+GAMES101
+
+Pierre Bézier
+1910 – 1999
+
+t)
+
+t)
+
+b2
+t
+
+1
+
+19
+
+Paul de Casteljau
+b. 1930
+
+Lingqi Yan, UC Santa Barbara
+
+Bézier Curves – de Casteljau Algorithm
+Insert on both edges
+
+b1
+1
+b0
+
+(1
+
+t)
+
+1
+b1
+
+(1
+
+Pierre Bézier
+1910 – 1999
+
+t)
+
+b0
+
+0
+
+GAMES101
+
+b2
+t
+
+1
+
+20
+
+Paul de Casteljau
+b. 1930
+
+Lingqi Yan, UC Santa Barbara
+
+Bézier Curves – de Casteljau Algorithm
+Repeat recursively
+
+b1
+1
+b0
+
+(1
+
+1
+b1
+
+2
+b0
+
+t)
+
+(1
+
+Pierre Bézier
+1910 – 1999
+
+t)
+
+b0
+
+0
+
+GAMES101
+
+b2
+t
+
+1
+
+21
+
+Paul de Casteljau
+b. 1930
+
+Lingqi Yan, UC Santa Barbara
+
+Bézier Curves – de Casteljau Algorithm
+Run the same algorithm for every t in [0,1]
+
+b1
+2
+b0
+
+1
+b0
+
+1
+b1
+
+Pierre Bézier
+1910 – 1999
+
+b0
+
+0
+
+GAMES101
+
+b2
+t
+
+1
+
+22
+
+Paul de Casteljau
+b. 1930
+
+Lingqi Yan, UC Santa Barbara
+
+Cubic Bézier Curve – de Casteljau
+Four input points in total
+Same recursive linear interpolations
+
+0
+b1
+
+(1
+b20
+
+t)
+
+b11
+
+(1
+3
+b0
+
+GAMES101
+
+t)
+b21
+
+1
+b2
+
+b10
+
+b00
+
+b02
+
+x(t)
+
+0
+b3
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Visualizing de Casteljau Algorithm
+
+Animation: Steven Wittens, Making Things with Maths, http://acko.net
+
+Evaluating Bézier Curves
+Algebraic Formula
+
+(1
+
+Bézier Curve – Algebraic Formula
+de Casteljau algorithm gives a pyramid of coefficients
+
+x(t)
+
+b30
+b20
+b10
+
+t)
+b00
+
+(1
+
+b21
+b11
+
+b12
+
+t)
+b01
+
+b03
+
+b02
+
+Every rightward arrow is multiplication by t,
+Every leftward arrow by (1–t)
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Bézier Curve – Algebraic Formula
+Example: quadratic Bézier curve from three points
+1
+b0 (t) = (1 − t)b0 + tb1
+1
+b1 (t) = (1 − t)b1 + tb2
+
+b1
+b11
+
+b10
+
+b20
+
+b0
+
+0
+
+b2
+t
+
+1
+
+2
+b0 (t) = (1
+
+GAMES101
+
+2
+1
+1
+b0 (t) = (1 − t)b0 + tb1
+
+2
+
+t) b0 + 2t(1
+
+27
+
+2
+
+t)b1 + t b2
+
+Lingqi Yan, UC Santa Barbara
+
+Bézier Curve – General Algebraic Formula
+Bernstein form of a Bézier curve of order n:
+n
+
+b (t) = bn0 (t) =
+
+n
+!
+
+bj Bjn (t)
+
+j=0
+
+Bézier curve order n
+
+Bernstein polynomial
+
+(vector polynomial of degree n)
+
+(scalar polynomial of degree n)
+
+Bézier control points
+(vector in RN)
+
+Bernstein polynomials:
+
+! "
+n i
+n
+t (1 − t)n−i
+Bi (t) =
+i
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Bézier Curve – Algebraic Formula: Example
+Bernstein form of a Bézier curve of order n:
+n
+
+b (t) = bn0 (t) =
+
+n
+!
+
+bj Bjn (t)
+
+j=0
+
+Example: assume n = 3 and we are in R3
+i.e. we could have control points in 3D such as:
+b0 = (0, 2, 3), b1 = (2, 3, 5), b2 = (6, 7, 9), b3 = (3, 4, 5)
+These points define a Bezier curve in 3D that is a cubic
+polynomial in t:
+n
+3
+2
+2
+3
+b (t) = b0 (1 t) + b1 3t(1 t) + b2 3t (1 t) + b3 t
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Cubic Bézier Basis Functions
+Bernstein Polynomials
+
+! "
+n i
+n
+t (1 − t)n−i
+Bi (t) =
+i
+0
+1
+
+3
+B0 (t)
+
+3
+B3 (t)
+
+B13 (t)
+
+B23 (t)
+0
+
+0
+
+1
+
+0
+1
+GAMES101
+
+Sergei N. Bernstein
+1880 – 1968
+
+1
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Properties of Bézier Curves
+Interpolates endpoints
+
+• For cubic Bézier:
+
+b(0) = b0 ; b(1) = b3
+
+Tangent to end segments
+
+• Cubic case: b (0) = 3(b1
+0
+
+0
+
+b0 ); b (1) = 3(b3
+
+b2 )
+
+Affine transformation property
+
+• Transform curve by transforming control points
+Convex hull property
+
+• Curve is within convex hull of control points
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+BTW: What’s a Convex Hull
+
+[from Wikipedia]
+
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Piecewise Bézier Curves
+
+Higher-Order Bézier Curves?
+
+Very hard to control!
+Uncommon
+
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Piecewise Bézier Curves
+Instead, chain many low-order Bézier curve
+Piecewise cubic Bézier the most common technique
+
+Widely used (fonts, paths, Illustrator, Keynote, …)
+
+Demo – Piecewise Cubic Bézier Curve
+
+David Eck, http://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html
+
+Piecewise Bézier Curve – Continuity
+Two Bézier curves
+
+a : [k, k + 1] ! IR
+
+b : [k + 1, k + 2] ! IR
+
+N
+N
+
+Assuming integer partitions here,
+can generalize
+
+k
+GAMES101
+
+k+1
+37
+
+k+2
+Lingqi Yan, UC Santa Barbara
+
+Piecewise Bézier Curve – Continuity
+C0 continuity:
+
+1
+an = b0 = (an 1 + b1 )
+2
+
+k
+GAMES101
+
+k+1
+38
+
+k+2
+Lingqi Yan, UC Santa Barbara
+
+Piecewise Bézier Curve – Continuity
+C1 continuity:
+
+1
+an = b0 = (an 1 + b1 )
+2
+
+1
+
+k
+GAMES101
+
+:
+
+1
+
+k+1
+39
+
+k+2
+Lingqi Yan, UC Santa Barbara
+
+Other types of splines
+• Spline
+- a continuous curve constructed so as to pass through a given set
+of points and have a certain number of continuous derivatives.
+
+- In short, a curve under control
+
+A Real Draftsman’s Spline
+
+http://www.alatown.com/spline-history-architecture/
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Other types of splines
+• B-splines
+- Short for basis splines
+- Require more information than Bezier curves
+- Satisfy all important properties that Bézier curves have (i.e.
+superset)
+
+https://en.wikipedia.org/wiki/B-spline
+
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Important Note
+• In this course
+- We do not cover B-splines and NURBS
+- We also do not cover operations on curves
+(e.g. increasing/decreasing orders, etc.)
+
+- To learn more / deeper, you are welcome to refer to
+
+Prof. Shi-Min Hu’s course: https://www.bilibili.com/video/
+av66548502?from=search&seid=65256805876131485
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Curves
+- Bezier curves
+- De Casteljau’s algorithm
+- B-splines, etc.
+
+• Surfaces
+- Bezier surfaces
+- Subdivision surfaces (triangles & quads)
+
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Bézier Surfaces
+Extend Bézier curves to surfaces
+
+P. Rideout
+
+renderspirit.com
+
+Ed Catmull’s “Gumbo” model
+
+GAMES101
+
+Utah Teapot
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Bicubic Bézier Surface Patch
+
+Bezier surface and 4 x 4 array of control points
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Visualizing Bicubic Bézier Surface Patch
+
+Animation: Steven Wittens, Making Things with Maths, http://acko.net
+
+Evaluating Bézier Surfaces
+
+Evaluating Surface Position For Parameters (u,v)
+For bi-cubic Bezier surface patch,
+Input: 4x4 control points
+Output is 2D surface parameterized by (u,v) in [0,1]2
+
+GAMES101
+
+48
+
+Lingqi Yan, UC Santa Barbara
+
+Method: Separable 1D de Casteljau Algorithm
+Goal: Evaluate surface position corresponding to (u,v)
+(u,v)-separable application of de Casteljau algorithm
+
+• Use de Casteljau to evaluate point u on each of the 4 Bezier curves in
+u. This gives 4 control points for the “moving” Bezier curve
+
+• Use 1D de Casteljau to evaluate point v on the “moving” curve
+
+“Moving” Bezier curve
+
+Surface point (u,v)
+GAMES101
+
+49
+
+Lingqi Yan, UC Santa Barbara
+
+Method: Separable 1D de Casteljau Algorithm
+
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+Mesh Operations: Geometry Processing
+• Mesh subdivision
+• Mesh simplification
+• Mesh regularization
+
+GAMES101
+
+51
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

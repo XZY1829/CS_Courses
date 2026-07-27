@@ -1,0 +1,582 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 1:
+Overview of Computer Graphics
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Welcome!
+
+Instructor
+• Lingqi Yan (闫令琪)
+- 2018 - now: Assistant Professor @ UCSB
+- 2013 - 2018: Ph.D @ UC Berkeley
+- 2009 - 2013: B.E. @ Tsinghua University
+- Website: www.cs.ucsb.edu/~lingqi/
+- Research: Rendering in Computer Graphics
+- Hobbies: research, video games, piano,
+traveling, NBA, etc.
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Instructor’s Achievements
+
+2018: Oscar Nominee
+for Best Visual Eﬀects
+
+2019: research 2017
+widely adopted in
+Lion King HD
+
+GAMES101
+
+4
+
+2019: six APEX Champions in one evening
+(collaborated with Adobe)
+Lingqi Yan, UC Santa Barbara
+
+Course Staff
+• Teaching Assistants
+- 刘光哲（清华，lgz17@mails.tsinghua.edu.cn）
+- 史⾬宸（中科⼤，syc0412@mail.ustc.edu.cn）
+- 邓俊⾠（哈⼯⼤，1050106988@qq.com）
+
+• More will be recruited soon after this lecture
+(based on need)
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Today’s Topics
+• What is Computer Graphics?
+• Why study Computer Graphics?
+• Course Topics
+• Course Logistics
+• Linear Algebra Review
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+What is Computer Graphics?
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Today’s Topics
+• What is Computer Graphics?
+• Why study Computer Graphics?
+- Applications
+- Fundamental Intellectual Challenges
+- Technical Challenges
+
+• Course Topics
+• Course Logistics
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Video Games
+
+GAMES101
+
+9 (2019 Game of the Year) Lingqi Yan, UC Santa Barbara
+Sekiro: Shadows Die twice
+
+Video Games
+
+GAMES101
+
+10 3 (2019)
+Borderlands
+
+Lingqi Yan, UC Santa Barbara
+
+Movies
+
+The Matrix (1999)
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Movies
+
+The
+Avatar
+Matrix
+(2009)
+(1999)
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Animations
+
+Zootopia (2016)
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Animations
+
+Frozen 2 (2019)
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Design
+
+CG
+
+Photo
+Autodesk Gallary
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Design
+
+Ikea - 75% of catalog is rendered imagery
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Visualization
+
+Science, engineering, medicine, journalism, etc.
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Virtual Reality
+
+Oculus VR
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Augmented Reality
+
+Microsoft Hololens
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Digital Illustration
+
+https://www.youtube.com/watch?v=uEdRLlqdgA4
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Simulation
+
+The Dust Bowl phenomena
+
+GAMES101
+
+Black hole from Interstellar
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Graphical User Interfaces
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Typography
+The Quick Brown
+Fox Jumps Over
+The Lazy Dog
+
+The font Baskerville
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Why Study Computer Graphics?
+• Fundamental Intellectual Challenges
+- Creates and interacts with realistic virtual world
+- Requires understanding of all aspects of physical world
+- New computing methods, displays, technologies
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Why Study Computer Graphics?
+• Technical Challenges
+- Math of (perspective) projections, curves, surfaces
+- Physics of lighting and shading
+- Representing / operating shapes in 3D
+- Animation / simulation
+- 3D graphics software programming and hardware
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Why Study Computer Graphics?
+• Forget about the previous reasons
+
+Computer Graphics
+is
+AWESOME!
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Questions?
+
+Today’s Topics
+• What is Computer Graphics?
+• Why study Computer Graphics?
+• Course Topics (mainly 4 parts)
+- Rasterization
+- Curves and Meshes
+- Ray Tracing
+- Animation / Simulation
+• Course Logistics
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Rasterization
+• Project geometry primitives (3D triangles / polygons) onto the screen
+• Break projected primitives into fragments (pixels)
+• Gold standard in Video Games (Real-time Applications)
+
+https://commons.wikimedia.org/wiki/
+File:Rasterisation-triangle_example.svg
+
+http://vispy.org/modern-gl.html
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Curves and Meshes
+• How to represent geometry in Computer Graphics
+
+GAMES101
+
+Bezier Curve
+
+Catmull-Clark subdivision
+
+https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+
+https://commons.wikimedia.org/wiki/
+File:Catmull-Clark_subdivision_of_4_planes.png
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Tracing
+• Shoot rays from the camera though each pixel
+- Calculate intersection and shading
+- Continue to bounce the rays till they hit light sources
+
+• Gold standard in Animations / Movies (Oﬄine Applications)
+
+https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Animation / Simulation
+• Key frame Animation
+• Mass-spring System
+
+https://cs184.eecs.berkeley.edu/sp18/lecture/simulation/slide_010
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+GAMES101 is NOT about
+• Using OpenGL / DirectX / Vulkan
+• The syntax of Shaders
+• We learn Graphics,
+not Graphics APIs!
+
+• After this course,
+
+you’ll be able to learn these
+by yourself (I promise)
+
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+GAMES101 is NOT about
+• 3D modeling using Maya / 3DS MAX / Blender, or
+
+VR / game development using Unity / Unreal Engine
+(where can I learn them?)
+
+Modeling character animation in Maya
+
+CSGO PoV Cam set up in Unreal Engine
+
+[http://tutorials.cgrecord.net/2017/08/
+17-minute-animation-process-in-autodesk.html]
+
+[https://www.youtube.com/watch?v=3TQ18SmQSw0]
+
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+GAMES101 is NOT about
+• Computer Vision / Deep Learning topics, e.g. XYZ-GAN
+(where can I learn them?)
+
+Semantic Segmentation
+
+https://modeldepot.io/oandrienko/icnet-for-fast-segmentation
+
+GAMES101
+
+35
+
+GAN 2.0: NVIDIA’s
+face generator (both are fake)
+Lingqi Yan, UC Santa Barbara
+
+Differences?
+• Personal Understanding
+Computer Graphics
+(Rendering)
+
+MODEL
+
+IMAGE
+Computer Vision
+
+Computer Graphics
+(Modeling, Simulation)
+
+Computer Vision
+(Image Processing)
+(Not Comp. Photography)
+
+• No clear boundaries
+• And I can’t define Computer Graphics
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Questions?
+
+Today’s Topics
+• What is Computer Graphics?
+• Why study Computer Graphics?
+• Course Topics
+• Course Logistics
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+General Information
+• Modern Course
+- Comprehensive but
+
+without hardware programming!
+
+- Pace / contents subject to change
+
+X
+
+• Course Website
+- http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+- Has all the needed information
+- Syllabus, slides, reading materials, etc.
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Course Website
+• Course slides and (pre)-reading materials
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+References
+• No Required Textbooks
+- Reading materials (if any) will
+
+available online before lectures
+
+- Lecture slides will be available
+after class
+
+• Most recommended reference
+- Steve Marschner and Peter
+
+Shirley, "Fundamentals of
+Computer Graphics", 3rd or later
+edition.
+
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Q&A
+• Sign up on our BBS for discussion
+
+(http://games-cn.org/forums/forum/games-online-course-forum/)
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Assignments
+• Assignments
+- Mostly programming tasks with provided code skeletons and
+virtual machine image
+
+- Weekly (usually no more than 20 lines of code per week)
+- Language: C++
+
+• Submission
+- Submit your project by 11:59PM on/before the due dates
+(strictly enforced)
+
+- Feedback will be provided in a week
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Assignments
+• Assignment Submission Website
+
+(http://www.smartchair.org/GAMES2020Course-YLQ/)
+
+• No Exams
+• Course Project / Final Project
+- Starting midway of this course
+- References will be provided, but you decide the topic
+- Best work will be posted online for showing off
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Use An IDE!
+• IDE: Integrated Development Environment
+• Helps you parse a entire project
+- And gives hints on syntax / usages of member functions, etc.
+
+• Recommended IDEs
+- Visual Studio (Windows only) / Visual Studio Code (cross platform)
+- Qt Creator (personal)
+
+• Not Recommended IDEs (for C++ programming)
+- CLion, Eclipse
+- Sublime Text, Vi / Vim, Emacs (not even IDEs)
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Academic integrity
+• Work alone for regular assignments
+- no copy-pasting from any other sources
+
+• Do not publish your code (on Github, etc.)
+for assignments using our skeleton code
+
+• Do not post your solution online
+- Discussion / explanation is welcomed
+
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Questions?
+
+Thank you!
+
+

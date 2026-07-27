@@ -1,0 +1,171 @@
+邰颖
+南京大学
+智能科学与技术学院
+内存操作API
+进程内存使用
+在运行时，进程的内存被分配到不同的区域，包括代码（Code）、数据（Data）、栈（Stack）和
+堆（Heap）
+代码段和数据段通常不会改变——它们在加载时预先分配，不涉及运行时的分配和释放。
+栈（Stack）的变化：短生命周期的分配
+•用于存储函数参数、局部变量和返回地址。
+•内存分配和释放通过栈指针（SP，Stack Pointer）寄存器进行，依赖PUSH 和POP 指令。
+•隐式管理（Implicit Management）：编译器自动生成PUSH 和POP 指令
+堆（Heap）：长生命周期
+•显式管理（Explicit Management）：通过API 进行内存分配和释放（如malloc() 和free()）。
+•对系统和程序员都是一个挑战，因为手动管理可能导致内存泄漏（Memory Leak）等问题
+内存分配类型：栈与堆的主要区别
+内存API：malloc()
+•
+在堆上分配一块内存区域
+•参数（Argument）
+•
+size_t size：要分配的内存块大小（以字节为单位）。
+•
+size_t 是无符号整数类型。
+•返回值（Return）
+•
+成功（Success）：返回指向分配内存块的void* 指针。
+•
+失败（Fail）：返回NULL。
+man malloc()
+内存API：sizeof()
+•
+在malloc 中使用size 相关的函数和宏，而不是直接输入数值，提高可移植性
+•
+sizeof()在变量上的两种不同结果
+•
+sizeof(x) 计算的是指针本身的大小（32位系统为4；64位系统为8）
+•
+sizeof(x) 计算的是整个数组（10个int组成的内存快）的大小
+•
+分配字符串时需要额外加1以存储终止符\0: malloc(strlen(s) + 1)
+8
+40
+内存API：free()
+•
+释放malloc 分配的内存区域
+•参数（Argument）
+•
+void* ptr：指向由malloc 分配的内存块的指针。
+•返回值（Return）
+•
+无（none）。
+内存分配
+•
+栈从高地址向低地址增长，而堆从低地址向高地址增长
+•
+变量pi 是局部变量（Local Variable），存储在栈中，但未初始化
+•
+通过malloc() 分配的内存存储在堆（Heap）中
+释放内存（Freeing memory）
+常见错误1：忘记分配内存
+•
+不准确的代码
+代码：no-malloc
+常见错误1：忘记分配内存（续）
+•
+准确的代码
+代码: no-malloc-corrected
+常见错误2：分配的内存不足
+•
+错误的代码，但可以执行（即缓冲区溢出buffer overflow）
+代码: bof
+常见错误3：忘记初始化
+•
+发生未初始化的读取（uninitialized read）
+代码: uninit-read
+代码: uninit-read-corrected
+常见错误4：内存泄漏（Memory Leak）
+•
+未释放内存，导致进程最终耗尽内存并崩溃
+代码: memleak
+常见错误5：悬空指针（Dangling Pointer）
+•在你用完内存之前就释放它
+•程序尝试访问一个无效的指针
+代码: dangling
+常见错误6：双重释放（Double Free）
+•
+释放已经释放的内存
+代码: dangling
+常见错误7：无效的释放（Invalid Frees）
+•错误调用free()
+•期望接收一个由malloc() 返回的指针作为参数。
+•释放未分配的指针
+int *p; free(p);  // ❌未初始化的指针，释放未定义地址
+释放局部变量
+int x; free(&x);  // ❌试图释放栈上的变量
+重复释放（Double Free）
+int *p = (int *)malloc(sizeof(int)); free(p); free(p);  // ❌重复释放已释放的内存
+释放NULL（可以，但无意义）
+int *p = NULL; free(p);  // ✅安全，但无实际作用
+检测内存错误的工具
+•
+valgrind
+1. 开源工具，适用于Linux 和macOS。
+2. 主要组件Memcheck 可检测内存泄漏、无效访问、未初始化使用等问题。
+3. 用法示例:valgrind --leak-check=full ./your_program
+•
+purify
+1. 商业化工具（IBM Rational Purify）。
+2. 主要用于检测内存泄漏、无效访问、未初始化变量等问题。
+3. 适用于Windows 和Linux 系统，集成到调试环境中，提供详细的错误报告。
+指令：valgrind
+sudo apt install valgrind
+valgrind ./no-malloc
+指令：valgrind
+valgrind ./no-malloc-corrected
+指令：valgrind
+valgrind ./memleak
+指令：valgrind
+valgrind –leak-check=full ./memleak
+vim memleak.c +5/+8
+指令：valgrind
+diff memleak.c memleak-corrected.c
+valgrind –leak-check=full ./memleak
+与内存分配相关的系统调用：brk
+•
+malloc 库调用使用brk 系统调用（早期方式）
+•
+brk 用于改变程序的break的位置。
+• break：堆内存的终止地址。
+•
+sbrk 是brk 的一个类似调用。
+•
+程序员不应直接调用brk 或sbrk。
+与内存分配相关的系统调用: mmap
+•mmap 系统调用可以创建匿名（anonymous）内存区域，现代malloc() 实现通常会
+使用它。
+man mmap()
+其他内存API：calloc()
+•
+在堆上分配内存，并自动将分配的内存初始化为零。
+•
+参数
+•size_t num：要分配的块数
+•size_t size：每个块的大小（单位：字节）
+•
+返回值
+•成功：返回一个void* 指针，指向calloc 分配的内存块
+•失败：返回NULL
+其他内存API：realloc()
+•更改内存块的大小
+•
+realloc 返回的指针可能与ptr 相同，也可能是新的。
+•参数
+•
+void *ptr：指向由malloc、calloc 或realloc 分配的内存块。
+•
+size_t size：新的内存块大小（以字节为单位）。
+•返回值
+•
+成功：返回内存块的void* 指针。
+•
+失败：返回NULL。
+malloc()/calloc()/realloc()区别
+小结
+介绍了常见的内存API
+•
+malloc()/free()/calloc()/realloc()
+介绍了内存分配和释放
+介绍了内存分配常见的7种错误
+介绍了检测内存错误的工具和使用方式

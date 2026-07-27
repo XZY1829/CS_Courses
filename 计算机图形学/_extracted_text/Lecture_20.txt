@@ -1,0 +1,1257 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 20:
+Color and Perception
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 6: 239 submissions, still pretty good
+• Homework 7: 20 submissions so far
+- Make sure that the indirect ray returns 0 when it hits light
+sources (already calculated in direct illumination)
+
+• Homework 8: Rope Simulator using Mass-Spring System
+• Final project
+- Let us know if you want to do your own project ASAP
+- You need to submit a 2-minute presentation in video
+format with voice-over (how?)
+
+- …
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Announcements
+• Final project
+- …
+- Aesthetics is extremely important (why?)
+- Report (a 1-page write-up) is enough
+- Other questions?
+• How to record a video with voice-over?
+- Just record your rehearsal using PowerPoint / Keynote
+• How to do screen recording of my demo?
+- In Linux, I recommend SimpleScreenRecorder
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+Finishing up light field / lumigraph
+Color
+
+• What is color
+• Color perception
+• Color reproduction / matching
+• Color space
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Light Field / Lumigraph
+(Credit of the next few slides: SIGGRAPH 2012 course on light fields)
+
+What do we see?
+3D world
+
+2D image
+
+Point of observation
+
+CS291A, Winter 2019
+
+6
+
+Lingqi Yan, UC Santa Barbara
+Figures © Stephen E. Palmer, 2002
+
+What do we see?
+3D world
+
+2D image
+
+Point of observation
+
+Painted
+backdrop
+
+CS291A, Winter 2019
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+The Plenoptic Function （全光函数）
+
+Figure by Leonard McMillan
+
+Q: What is the set of all things that we can ever see?
+A: The Plenoptic Function (Adelson & Bergen)
+Let s start with a stationary person and try to
+parameterize everything that he can see
+CS291A, Winter 2019
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Grayscale snapshot
+
+P(
+
+)
+
+is intensity of light
+• Seen from a single view point
+• At a single time
+• Averaged over the wavelengths of the visible spectrum
+
+(can also do P(x,y), but spherical coordinate are nicer)
+CS291A, Winter 2019
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Color snapshot
+
+P(
+
+)
+
+is intensity of light
+• Seen from a single view point
+• At a single time
+• As a function of wavelength
+
+CS291A, Winter 2019
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+A movie
+
+P(
+
+,t)
+
+is intensity of light
+• Seen from a single view point
+• Over time
+• As a function of wavelength
+
+CS291A, Winter 2019
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Holographic movie
+
+P(
+
+,t,VX,VY,VZ)
+
+is intensity of light
+• Seen from ANY viewpoint
+• Over time
+• As a function of wavelength
+
+CS291A, Winter 2019
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+The Plenoptic Function
+
+P(
+
+CS291A, Winter 2019
+
+,t,VX,VY,VZ)
+
+Can reconstruct every possible view, at every
+moment, from every position, at every wavelength
+Contains every photograph, every movie,
+everything that anyone has ever seen! it
+completely captures our visual reality! Not bad
+for a f nc ion
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling Plenoptic Function (top view)
+
+CS291A, Winter 2019
+
+Just lookup -- 14Quicktime VR
+
+Lingqi Yan, UC Santa Barbara
+
+Ray
+Let s not
+
+orr abo t time and color:
+
+P(
+
+5D
+
+VX,VY,VZ)
+
+3D position
+2D direction
+
+CS291A, Winter 2019
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Slide by Rick Szeliski and Michael Cohen
+
+Ray Reuse
+Infinite line
+• Assume light is constant (vacuum)
+
+4D
+• 2D direction
+• 2D position
+• non-dispersive medium
+
+CS291A, Winter 2019
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Slide by Rick Szeliski and Michael Cohen
+
+Only need plenoptic surface
+
+CS291A, Winter 2019
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Synthesizing novel views
+
+CS291A, Winter 2019
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Slide by Rick Szeliski and Michael Cohen
+
+Lumigraph / Lightfield
+Outside convex space
+
+Empty
+
+Stuff
+
+4D
+
+CS291A, Winter 2019
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Slide by Rick Szeliski and Michael Cohen
+
+Lumigraph - Organization
+2D position
+2D direction
+
+s
+
+CS291A, Winter 2019
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Slide by Rick Szeliski and Michael Cohen
+
+Lumigraph - Organization
+
+2D position
+2D position
+
+s
+
+u
+
+2 plane parameterization
+
+CS291A, Winter 2019
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Slide by Rick Szeliski and Michael Cohen
+
+Lumigraph - Organization
+
+2D position
+2D position
+
+s,t
+t
+
+u,v
+
+s,t
+
+v
+u,v
+
+2 plane parameterization
+
+s
+CS291A, Winter 2019
+
+22
+
+u
+Lingqi Yan, UC Santa Barbara
+
+Slide by Rick Szeliski and Michael Cohen
+
+Lumigraph - Organization
+
+Hold s,t constant
+Let u,v vary
+An image
+
+s,t
+CS291A, Winter 2019
+
+23
+
+u,v
+Lingqi Yan, UC Santa Barbara
+
+Slide by Rick Szeliski and Michael Cohen
+
+Lumigraph / Lightfield
+
+CS291A, Winter 2019
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Stanford camera array
+
+CS291A, Winter 2019
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+In egral Imaging ( Fl s E e Lensle s)
+
+lenslet
+
+f
+Credit: JJ Harrison
+
+sensor
+
+Spatially-multiplexed light field capture using lenslets:
+Impose fixed trade-off between spatial and angular resolution
+
+[Lippmann 1908]
+CS291A, Winter 2019
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Light Field Camera
+
+The Lytro Light Field Camera
+Lytro: founded by Prof. Ren Ng (UC Berkeley)
+Microlens design
+Most significant function
+
+• Computational Refocusing
+
+(virtually changing focal length & aperture
+size, etc. after taking the photo)
+
+Prof. Ren Ng
+GAMES101
+
+The riginal Lytro light field camera
+28
+
+Ren at Lingqi’s graduation ceremony
+
+Lytro Illum
+Lingqi Yan, UC Santa Barbara
+
+Light Field Camera
+Understanding
+
+• Each pixel (irradiance) is now stored as
+a block of pixels (radiance)
+
+• A close-up view of a picture taken
+
+One disk
+image
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Light Field Camera
+How to get a “regular” photo from the
+light field photo?
+
+• A simple case — always choose the
+pixel at the bottom of each block
+
+• Then the central ones & the top ones
+• Essentially “moving the camera
+around”
+
+Computational / digital refocusing
+
+• Same idea: visually changing focal
+length, picking the refocused ray
+directions accordingly
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Light Field Camera
+In all, all these functionalities are available
+because
+
+• The light field contains everything
+Any problems to light field cameras?
+
+• Insufficient spatial resolution
+
+(same film used for both
+spatial and directional information)
+
+• High cost
+
+(intricate designation of microlenses)
+
+• Computer Graphics is about
+trade-offs
+
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Physical Basis of Color
+
+The Fundamental Components of Light
+
+• Newton showed sunlight can be subdivided into a rainbow with a
+prism
+• Resulting light cannot be further subdivided with a second prism
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+The Visible Spectrum of Light
+（光谱）
+
+Electromagnetic radiation
+
+• Oscillations of different frequencies (wavelengths)
+
+Visible electromagnetic spectrum
+
+Image credit: Licensed under CC BY-SA 3.0 via Commons
+https://commons.wikimedia.org/wiki/File:EM_spectrum.svg#/media/File:EM_spectrum.svg
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Spectral Power Distribution (SPD)
+（谱功率密度）
+
+Salient property in measuring light
+
+• The amount of light present at each wavelength
+• Units:
+• radiometric units / nanometer (e.g. watts / nm)
+• Can also be unit-less
+• Often use “relative units” scaled to maximum wavelength
+
+for comparison across wavelengths when absolute units are
+not important
+
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Daylight Spectral Power Distributions Vary
+
+GAMES101
+
+Solar disk
+
+42
+
+[Brian Wandell]
+
+Blue sky
+
+Lingqi Yan, UC Santa Barbara
+
+Spectral Power Distribution of Light Sources
+Describes distribution of energy by wavelength
+
+Figure credit:
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Linearity of Spectral Power Distributions
+
+[Brian Wandell]
+
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+What is Color?
+• Color is a phenomenon of human perception; it is not a
+universal property of light
+
+• Different wavelengths of light are not “colors”
+
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Biological Basis of Color
+
+Anatomy of The Human Eye
+
+（视⽹膜）
+
+（瞳孔）
+
+（晶状体）
+
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Retinal Photoreceptor Cells: Rods and Cones
+（感光细胞）
+Rods are primary receptors in very
+low light (“scotopic” conditions),
+e.g. dim moonlight
+
+Rod cells
+
+Cone cells
+
+• ~120 million rods in eye
+• Perceive only shades of gray,
+no color
+
+Cones are primary receptors in
+typical light levels (“photopic”)
+
+• ~6-7 million cones in eye
+• Three types of cones, each
+with different spectral
+sensitivity
+
+• Provide sensation of color
+
+GAMES101
+
+http://ebooks.bfwpub.com/life.php Figure 45.18
+
+48
+
+Lingqi Yan, UC Santa Barbara
+
+Spectral Response of Human Cone Cells
+
+Normalized response
+
+Three types of cone cells: S, M, and L (corresponding to peak
+response at short, medium, and long wavelengths)
+
+Wavelength (nm)
+GAMES101
+
+49
+
+Lingqi Yan, UC Santa Barbara
+
+Hofer, H. et al. J. Neurosci. 2005;25:9669-9679
+
+Fraction of Three Cone Cell Types Varies Widely
+
+Distribution of cone cells at edge of fovea in 12 different humans with
+normal color vision. Note high variability of percentage of different cone
+cell types. (false color image)
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+Tristimulus Theory of Color
+
+Spectral Response of Human Cone Cells
+Now we have three detectors (S, M, L cone cells),
+each with a different spectral response curve
+
+rS ( ) rM ( ) rL ( )
+<latexit sha1_base64="XCKO9LSygpv9mtDU9sdmbxu1vkg=">AAAB8nicbVBNS8NAFHypX7V+VT16WSxCeymJl+qt4EUPQgVjC00om82mXbrZhN2NUELBX+HFg4pXf403/42btgdtHVgYZubx3k6Qcqa0bX9bpbX1jc2t8nZlZ3dv/6B6ePSgkkwS6pKEJ7IXYEU5E9TVTHPaSyXFccBpNxhfFX73kUrFEnGvJyn1YzwULGIEayN5cnBb97iJh7gxqNbspj0DWiXOgtTajSco0BlUv7wwIVlMhSYcK9V37FT7OZaaEU6nFS9TNMVkjIe0b6jAMVV+Prt5is6MEqIokeYJjWbq74kcx0pN4sAkY6xHatkrxP+8fqajCz9nIs00FWS+KMo40gkqCkAhk5RoPjEEE8nMrYiMsMREm5oqpgRn+curxD1vXjbtO1PGDcxRhhM4hTo40II2XEMHXCCQwjO8wpuVWS/Wu/Uxj5asxcwx/IH1+QPXGpHd</latexit>
+
+<latexit sha1_base64="DSBcDilXdsDN8Zn3/L3UUooJZvk=">AAAB8nicbVBNS8NAFHypX7V+VT16WSxCeymJl+qt4EXBQwVjC00om82mXbrZhN2NUELBX+HFg4pXf403/42btgdtHVgYZubx3k6Qcqa0bX9bpbX1jc2t8nZlZ3dv/6B6ePSgkkwS6pKEJ7IXYEU5E9TVTHPaSyXFccBpNxhfFX73kUrFEnGvJyn1YzwULGIEayN5cnBb97iJh7gxqNbspj0DWiXOgtTajSco0BlUv7wwIVlMhSYcK9V37FT7OZaaEU6nFS9TNMVkjIe0b6jAMVV+Prt5is6MEqIokeYJjWbq74kcx0pN4sAkY6xHatkrxP+8fqajCz9nIs00FWS+KMo40gkqCkAhk5RoPjEEE8nMrYiMsMREm5oqpgRn+curxD1vXjbtO1PGDcxRhhM4hTo40II2XEMHXCCQwjO8wpuVWS/Wu/Uxj5asxcwx/IH1+QPVjpHc</latexit>
+
+Normalized response
+
+<latexit sha1_base64="qSOhER+8qJVFYltFzk2K/XXWQeM=">AAAB8nicbVBNS8NAFHypX7V+VT16WSxCeymJl+qt4EVvFY0tNKFsNpt26WYTdjdCCQV/hRcPKl79Nd78N27aHrR1YGGYmcd7O0HKmdK2/W2V1tY3NrfK25Wd3b39g+rh0YNKMkmoSxKeyF6AFeVMUFczzWkvlRTHAafdYHxV+N1HKhVLxL2epNSP8VCwiBGsjeTJwV3d4yYe4sagWrOb9gxolTgLUms3nqBAZ1D98sKEZDEVmnCsVN+xU+3nWGpGOJ1WvEzRFJMxHtK+oQLHVPn57OYpOjNKiKJEmic0mqm/J3IcKzWJA5OMsR6pZa8Q//P6mY4u/JyJNNNUkPmiKONIJ6goAIVMUqL5xBBMJDO3IjLCEhNtaqqYEpzlL68S97x52bRvTRk3MEcZTuAU6uBAC9pwDR1wgUAKz/AKb1ZmvVjv1sc8WrIWM8fwB9bnD+BikeM=</latexit>
+
+Wavelength (nm)
+
+GAMES101
+
+52
+
+Lingqi Yan, UC Santa Barbara
+
+The Human Visual System
+• Human eye does not measure and
+
+brain does not receive information about each wavelength of light
+
+• Rather, the eye “sees” only three response values (S, M, L), and
+this is only info available to brain
+
+Kayvon Fatahalian
+
+GAMES101
+
+53
+
+Lingqi Yan, UC Santa Barbara
+
+Metamerism
+（同⾊异谱）
+
+Metamers
+Metamers are two different spectra (∞-dim) that project to the
+same (S,M,L) (3-dim) response.
+
+• These will appear to have the same color to a human
+The existence of metamers is critical to color reproduction
+
+• Don’t have to reproduce the full spectrum of a real world
+scene
+
+• Example: A metamer can reproduce the perceived color of
+a real-world scene on a display with pixels of only three
+colors
+
+GAMES101
+
+55
+
+Lingqi Yan, UC Santa Barbara
+
+Metamerism is a Big Effect
+
+Brian Wandell
+
+GAMES101
+
+56
+
+Lingqi Yan, UC Santa Barbara
+
+Metamerism
+The theory behind color matching
+
+Brian Wandell
+
+GAMES101
+
+57
+
+Lingqi Yan, UC Santa Barbara
+
+Color Reproduction / Matching
+
+Additive Color
+• Given a set of primary lights, each
+
+with its own spectral distribution (e.g.
+R,G,B display pixels):
+
+sR ( ), sG ( ), sB ( )
+<latexit sha1_base64="2TN4Zj751gDoyyKNGnIOmORk2Ec=">AAACinicbVFdT9RAFJ2tqLCKLvrIywRiAkSbFkOE+ELUBHhD4wrJtmlup3fZCfPRzEyRtWniT/DX+Kp/g3/DdHdj2MWTTHLuuffMx5m8FNy6KLrpBA+WHj56vLzSffJ09dnz3tqLb1ZXhmGfaaHNeQ4WBVfYd9wJPC8NgswFnuWXH9v+2RUay7X66sYlphIuFB9yBs5LWW/HZl+2EuENBWy/TqjNjubLD//KrLcZhdEE9D6JZ2TzcPsnaXGarXVOkkKzSqJyTIC1gzgqXVqDcZwJbLpJZbEEdgkXOPBUgUSb1pNHNfSVVwo61MYv5ehEvevw2xgYN/OStHYsc2+W4EZ2sdeK/+sNKjfcT2uuysqhYtOzh5WgTtM2NFpwg8yJsSfADPfXp2wEBpjz0XYThd+ZlhJUsVMnPm2Xg2nqxFQCB29ivE7rKNwrXVPvhnt43TQLjpE2P+442pl0NjozNl0ffrwY9X3S3w0Pwuiz/4QTMsUyWScbZIvE5B05JMfklPQJI7/Ib/KH/A1Wg7fBQfB+Ohp0Zp6XZA7Bp1vLhscC</latexit>
+
+• Adjust the brightness of these lights
+and add them together:
+
+R s R ( ) + G sG ( ) + B s B ( )
+<latexit sha1_base64="LVQIOiqJL9Q+qlLtKnelhba/mrM=">AAAClHicbZHLahRBFIZr2lscbxOzyMJNYRASTZruYFAXgZAgMRuJwTGB6aaprj6TKVKXpuq0ZtI0+Bw+jVt9A9/G6plBJhMPFPx85/x1+SsvpXAYRX86wa3bd+7eW7rfffDw0eMnveWnX5ypLIc+N9LYs5w5kEJDHwVKOCstMJVLOM0vDtr+6VewThj9GcclpIqdazEUnKFHWe/1SbJJXXaynkhvKtgGfUUPk02XHc6T/Zbs/yNZby0Ko0nRmyKeibW9je+kreNsuXOUFIZXCjRyyZwbxFGJac0sCi6h6SaVg5LxC3YOAy81U+DSevK8hr7wpKBDY/3SSCd03uG3sWzcXEfKubHKvVkxHLnFXgv/1xtUOHyb1kKXFYLm07OHlaRoaBsfLYQFjnLsBeNW+OtTPmKWcfQhdxMN37hRiuniZZ343DFntqkTW0kYbMVwmdZRuFNiU2+HO3DZNAuOkbFXc452Jp2NzoxN14cfL0Z9U/S3w3dh9Ml/whGZ1hJ5Rp6TdRKTN2SPfCDHpE84+UF+kl/kd7Aa7AYHwfvpaNCZeVbItQo+/gXhesl/</latexit>
+
+• The color is now described by the
+scalar values:
+
+R, G, B
+<latexit sha1_base64="QByaFQdX/vzs2ihQ1+egrnL8uh0=">AAAB8HicbVBNSwMxEJ31s9avqkcvwSJ4KGVXBPVW9KDeqri22C4lm2bb0CS7JFmhLP0XXjyoePXnePPfmLZ70NYHA4/3ZpiZFyacaeO6387C4tLyymphrbi+sbm1XdrZfdBxqgj1Scxj1QyxppxJ6htmOG0mimIRctoIB5djv/FElWaxvDfDhAYC9ySLGMHGSo93lXblyha66JTKbtWdAM0TLydlyFHvlL7a3ZikgkpDONa65bmJCTKsDCOcjortVNMEkwHu0ZalEguqg2xy8QgdWqWLoljZkgZN1N8TGRZaD0VoOwU2fT3rjcX/vFZqorMgYzJJDZVkuihKOTIxGr+PukxRYvjQEkwUs7ci0scKE2NDKtoQvNmX54l/XD2vurcn5dpNnkYB9uEAjsCDU6jBNdTBBwISnuEV3hztvDjvzse0dcHJZ/bgD5zPH5SVjxs=</latexit>
+
+GAMES101
+
+59
+
+Lingqi Yan, UC Santa Barbara
+
+Additive Color Matching Experiment
+
+Slide courtesy of Prof. Ren Ng, UC Berkeley
+CS180, Winter 2020
+
+60
+
+Lingqi Yan, UC Santa Barbara
+
+Example Experiment
+
+Slide from Durand
+and Freeman 06
+
+GAMES101
+
+61
+
+Lingqi Yan, UC Santa Barbara
+
+Example Experiment
+
+p1 p2
+
+p3
+
+Slide from Durand
+and Freeman 06
+
+GAMES101
+
+62
+
+Lingqi Yan, UC Santa Barbara
+
+Example Experiment
+
+p1 p2
+
+p3
+
+Slide from Durand
+and Freeman 06
+
+GAMES101
+
+63
+
+Lingqi Yan, UC Santa Barbara
+
+Example Experiment
+The primary color
+amounts needed
+for a match
+
+p1 p2
+
+p3
+
+Slide from Durand
+and Freeman 06
+
+GAMES101
+
+64
+
+Lingqi Yan, UC Santa Barbara
+
+Experiment 2
+
+Slide from Durand
+and Freeman 06
+
+GAMES101
+
+65
+
+Lingqi Yan, UC Santa Barbara
+
+Experiment 2
+
+p1 p2
+
+p3
+
+Slide from Durand
+and Freeman 06
+
+GAMES101
+
+66
+
+Lingqi Yan, UC Santa Barbara
+
+Experiment 2
+
+p1 p2
+
+p3
+
+Slide from Durand
+and Freeman 06
+
+GAMES101
+
+67
+
+Lingqi Yan, UC Santa Barbara
+
+Experiment 2
+The primary color
+amounts needed
+for a match:
+
+We say a
+“negative”
+amount of p2
+was needed to
+make the match,
+because we
+added it to the
+test color’s side.
+
+p1 p2
+
+p3
+
+p1 p2
+
+p3
+
+p1 p2
+
+p3
+
+Slide from Durand
+and Freeman 06
+
+GAMES101
+
+68
+
+Lingqi Yan, UC Santa Barbara
+
+CIE RGB Color Matching Experiment
+Same setup as additive color matching before,
+but primaries are monochromatic light (single wavelength)
+
+Kayvon Fatahalian
+
+The test light is also a monochromatic light
+
+GAMES101
+
+69
+
+Lingqi Yan, UC Santa Barbara
+
+CIE RGB Color Matching Functions
+Graph plots how much of each CIE RGB primary light must be combined
+to match a monochromatic light of wavelength given on x-axis
+Careful: these are not response curves or spectra!
+
+b̄( )
+
+r̄( )
+ḡ( )
+
+GAMES101
+
+70
+
+Lingqi Yan, UC Santa Barbara
+
+Color Reproduction with Matching Functions
+For any spectrum s, the perceived color is matched by the following
+formulas for scaling the CIE RGB primaries
+
+RCIE RGB =
+GCIE RGB =
+BCIE RGB =
+<latexit sha1_base64="wnhAn9lzt/JFUZULH/+lt/GLTj4=">AAADRXicnVJNb9QwEHXCVwlfWzhysViBCipRAq2AA1LVCpUVl1KxtNI6ihzHu2vVdlLbgW4t/z/+Aj+AKyfEFZxthNotvXQkS09v5j3bM1PUnGmTJN+D8MrVa9dvLN2Mbt2+c/deb/n+Z101itAhqXil9gusKWeSDg0znO7XimJRcLpXHGy1+b0vVGlWyU9mVtNM4IlkY0aw8VTe+7GbI4HNVAm7NXiHVne3Nx188hYiJk2OuDcqMdQrHXoKUYGVVe4fgVbLDiIUbV/Ca3KB1+YlvIoLvKK810/iZB7wPEg70Add7OTLwQCVFWkElYZwrPUoTWqTWawMI5y6CDWa1pgc4AkdeSixoDqz83k4+NgzJRxXyh9p4Jw9rfA2Cs/cWUpoPROFF7ff1ou5lvxfbtSY8evMMlk3hkpycve44dBUsJ03LJmixPCZB5go5p8PyRQrTIzfighJ+pVUQmBZPrPIL4rxfXQWqYbT0fOUHmU2iddr4+zLeJ0eObegmFbq+JSircm60k7o2uani60+D4Yv4jdx8nGtvzHoprAEHoJHYAWk4BXYAO/BDhgCEnwIDoPjwIbfwp/hr/D3SWkYdJoH4EyEf/4C0WAKoA==</latexit>
+
+Z
+Z
+Z
+
+b̄( )
+
+s( )r̄( ) d
+
+r̄( )
+ḡ( )
+
+s( )ḡ( ) d
+s( )b̄( ) d
+
+Careful: these are not response curves or primary spectra!
+
+GAMES101
+
+71
+
+Lingqi Yan, UC Santa Barbara
+
+Color Spaces
+
+Standard Color Spaces
+Standardized RGB (sRGB)
+
+• makes a particular monitor RGB standard
+• other color devices simulate that monitor by calibration
+• widely adopted today
+• gamut (?) is limited
+(⾊域)
+
+GAMES101
+
+73
+
+Lingqi Yan, UC Santa Barbara
+
+A Universal Color Space: CIE XYZ
+Imaginary set of standard color
+primaries X, Y, Z
+
+• Primary colors with these
+
+CIE XYZ color matching functions
+
+matching functions do not
+exist
+
+• Y is luminance (brightness
+regardless of color)
+
+(亮度)
+
+Designed such that
+
+• Matching functions are
+strictly positive
+
+• Span all observable colors
+GAMES101
+
+74
+
+Lingqi Yan, UC Santa Barbara
+
+Separating Luminance, Chromaticity
+Luminance: Y
+Chromaticity: x, y, z, defined as
+(⾊度)
+
+• since x + y + z = 1, we only need to record two of the three
+• usually choose x and y, leading to (x, y) coords
+at a specific brightness Y
+
+GAMES101
+
+75
+
+Lingqi Yan, UC Santa Barbara
+
+CIE Chromaticity Diagram
+The curved boundary
+
+Pure (saturated) spectral colors
+around the edge of the plot
+
+• named spectral locus
+• corresponds to
+
+monochromatic light
+(each point representing a
+pure color of a single
+wavelength)
+
+Less pure (desaturated) colors
+in the interior of the plot
+
+Any color inside is less pure
+
+• i.e. mixed
+White at the centroid of
+the plot (1/3, 1/3)
+
+GAMES101
+
+76
+
+Lingqi Yan, UC Santa Barbara
+
+Gamut (⾊域)
+Gamut is the set of chromaticities generated by a set of color
+primaries
+Different color spaces represent different ranges of colors
+So they have different gamuts, i.e.
+they cover different regions on the chromaticity diagram
+
+GAMES101
+
+77
+
+Lingqi Yan, UC Santa Barbara
+
+Gamut
+
+sRGB is a common
+color space used
+throughout the
+internet
+
+GAMES101
+
+78
+
+Lingqi Yan, UC Santa Barbara
+
+Perceptually Organized
+Color Spaces
+
+HSV Color Space (Hue-Saturation-Value)
+Axes correspond to artistic characteristics of color
+Widely used in a “color picker”
+
+GAMES101
+
+80
+
+Lingqi Yan, UC Santa Barbara
+
+Perceptual Dimensions of Color
+Hue (⾊调)
+
+• the “kind” of color, regardless of attributes
+• colorimetric correlate: dominant wavelength
+• artist’s correlate: the chosen pigment color
+Saturation (饱和度)
+
+• the “colorfulness”
+• colorimetric correlate: purity
+• artist’s correlate: fraction of paint from the colored tube
+Lightness (or value) (亮度)
+
+• the overall amount of light
+• colorimetric correlate: luminance
+• artist’s correlate: tints are lighter, shades are darker
+GAMES101
+
+81
+
+Lingqi Yan, UC Santa Barbara
+
+CIELAB Space (AKA L*a*b*)
+A commonly used color space that strives for perceptual
+uniformity
+
+• L* is lightness (brightness)
+• a* and b* are color-opponent pairs
+• a* is red-green
+• b* is blue-yellow
+
+GAMES101
+
+82
+
+Lingqi Yan, UC Santa Barbara
+
+Opponent Color Theory
+(互补⾊)
+
+There’s a good neurological basis for the color space dimensions in CIE
+LAB
+
+• the brain seems to encode color early on using three axes:
+• white — black, red — green, yellow — blue
+• the white — black axis is lightness; the others determine hue and
+
+GAMES101
+
+slide credit: Steve Marschner
+
+saturation
+
+83
+
+Lingqi Yan, UC Santa Barbara
+
+Opponent Color Theory
+• one piece of evidence: you can have a light green, a dark green, a
+
+yellow-green, or a blue-green, but you can’t have a reddish green (just
+doesn’t make sense)
+
+• thus red is the opponent to green
+• another piece of evidence: afterimages (following slides)
+slide credit: Steve Marschner
+
+GAMES101
+
+84
+
+Lingqi Yan, UC Santa Barbara
+
+Adapt
+
+CS184/284A
+
+Ren Ng
+
+Everything is Relative
+
+GAMES101
+
+89
+
+Lingqi Yan, UC Santa Barbara
+
+Everything is Relative
+
+GAMES101
+
+90
+
+Lingqi Yan, UC Santa Barbara
+
+Everything is Relative
+
+GAMES101
+
+91
+
+Lingqi Yan, UC Santa Barbara
+
+Everything is Relative
+
+GAMES101
+
+92
+
+Lingqi Yan, UC Santa Barbara
+
+Everything is Relative
+
+GAMES101
+
+93
+
+Lingqi Yan, UC Santa Barbara
+
+Everything is Relative
+
+GAMES101
+
+94
+
+Lingqi Yan, UC Santa Barbara
+
+Everything is Relative
+
+GAMES101
+
+95
+
+Lingqi Yan, UC Santa Barbara
+
+Everything is Relative
+
+GAMES101
+
+96
+
+Lingqi Yan, UC Santa Barbara
+
+CMYK: A Subtractive Color Space
+Subtractive color model
+
+• The more you mix,
+
+the darker it will be
+
+Cyan, Magenta, Yellow, and Key
+Widely used in printing
+Question:
+
+• If mixing C, M and Y gives K,
+why do you need K?
+
+GAMES101
+
+97
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ren Ng for many of the slides!)
+
+

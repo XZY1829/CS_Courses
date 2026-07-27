@@ -1,0 +1,1379 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 18:
+Advanced Topics in Rendering
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 7 will be released soon
+• Final project timeline
+- [Apr 14] Ideas will be released next Tuesday
+- [Apr 19] Submit your proposal one week later
+- [May 5] Submit your work
+• Final project logistics
+- Work on Graphics topics, write code on your own
+• Today’s lecture
+- Advanced (?) light transport and materials
+- A lot, but extremely high-level. Mostly FYI.
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Advanced Light Transport
+
+Advanced Light Transport
+• Unbiased light transport methods
+- Bidirectional path tracing (BDPT)
+- Metropolis light transport (MLT)
+• Biased light transport methods
+- Photon mapping
+- Vertex connection and merging (VCM)
+• Instant radiosity (VPL / many light methods)
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Biased vs. Unbiased Monte Carlo Estimators
+• An unbiased Monte Carlo technique does not have any
+systematic error
+
+- The expected value of an unbiased estimator will always be
+the correct value, no matter how many samples are used
+
+• Otherwise, biased
+- One special case, the expected value converges to the
+
+correct value as infinite #samples are used — consistent
+
+• We’ll look again at this page after introducing Photon
+Mapping
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Bidirectional Path Tracing (BDPT)
+• Recall: a path connects the camera and the light
+• BDPT
+- Traces sub-paths from both the camera and the light
+- Connects the end points from both sub-paths
+
+[Veach 1997]
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Bidirectional Path Tracing (BDPT)
+• Suitable if the light transport is complex on the light’s side
+• Difficult to implement & quite slow
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Metropolis Light Transport (MLT)
+• A Markov Chain Monte Carlo (MCMC) application
+- Jumping from the current sample to the next
+with some PDF
+
+• Very good at locally exploring difficult light paths
+• Key idea
+- Locally perturb an existing path to get a new path
+
+[image courtesy of Shuang Zhao]
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Metropolis Light Transport (MLT) — Pros
+• Works great with difficult light paths
+• Also unbiased
+
+BDPT
+
+MLT
+
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Metropolis Light Transport (MLT) — Cons
+• Difficult to estimate the convergence rate
+• Does not guarantee equal convergence rate per pixel
+• So, usually produces “dirty” results
+• Therefore, usually not used to render animations
+
+GAMES101
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Photon Mapping
+• A biased approach & A two-stage method
+• Very good at handling Specular-Diffuse-Specular (SDS)
+paths and generating caustics
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Photon Mapping — Approach (variations apply)
+• Stage 1 — photon tracing
+- Emitting photons from the light source, bouncing them
+around, then recording photons on diffuse surfaces
+
+[image courtesy of
+Henrik Wann Jensen]
+
+Stage 1
+
+• Stage 2 — photon collection (final gathering)
+- Shoot sub-paths from the camera, bouncing them
+around, until they hit diffuse surfaces
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Photon Mapping
+• Calculation — local density estimation
+- Idea: areas with more photons should be brighter
+- For each shading point, find the nearest N photons. Take
+the surface area they over
+
+[image courtesy of
+Henrik Wann Jensen]
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Photon Mapping
+• Why biased?
+• Local Density estimation
+
+Small N <-> noisy
+
+dN / dA != ΔN / ΔA
+
+• But in the sense of limit
+- More photons emitted ->
+- the same N photons
+covers a smaller ΔA ->
+
+- ΔA is closer to dA
+• So, biased but consistent!
+large N <-> blurry
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Photon Mapping
+• An easier understanding bias in rendering
+- Biased == blurry
+- Consistent == not blurry with infinite #samples
+• Why not do a “const range” search for density estimation?
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Vertex Connection and Merging
+• A combination of BDPT and Photon Mapping
+• Key idea
+- Let’s not waste the sub-paths in BDPT if their end points
+cannot be connected but can be merged
+
+- Use photon mapping to handle the merging of nearby
+“photons”
+
+[Georgiev et al. 2012]
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Instant Radiosity (IR)
+• Sometimes also called many-light approaches
+• Key idea
+- Lit surfaces can be treated as light sources
+• Approach
+- Shoot light sub-paths and assume the end point of each
+sub-path is a Virtual Point Light (VPL)
+
+- Render the scene as usual using these VPLs
+[image
+courtesy of
+Derek N.]
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Instant Radiosity
+• Pros: fast and usually gives good results on diffuse scenes
+• Cons
+- Spikes will emerge when VPLs are close to shading points
+- Cannot handle glossy materials
+
+[Liu et al. 2019] (many-light rendering, not IR)
+GAMES101
+
+18
+
+[Rendered using Mitsuba]
+Lingqi Yan, UC Santa Barbara
+
+Advanced Appearance Modeling
+
+Advanced Appearance Modeling
+• Non-surface models
+- Participating media
+- Hair / fur / fiber (BCSDF)
+- Granular material
+• Surface models
+- Translucent material (BSSRDF)
+- Cloth
+- Detailed material (non-statistical BRDF)
+• Procedural appearance
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Non-Surface Models
+
+Participating Media: Fog
+
+GAMES101
+
+[Novák et al. 2012]
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Participating Media: Cloud
+
+GAMES101
+
+23
+[by thephotographer0]
+
+Lingqi Yan, UC Santa Barbara
+
+Participating Media
+▪ At any point as light travels through a participating medium, it can
+be (partially) absorbed and scattered.
+
+[Wojciech Jarosz]
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Participating Media
+▪ Use Phase Function to describe the angular distribution of light
+scattering at any point x within participating media.
+
+[Wojciech Jarosz]
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Participating Media: Rendering
+▪ Randomly choose a direction to bounce
+▪ Randomly choose a distance to go straight
+▪ At each ‘shading point’, connect to the light
+
+[Derek Nowrouzezahrai]
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Participating Media: Application
+
+[Big Hero 6, 2014 Disney]
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Participating Media: Application
+
+[Assassin’s Creed Syndicate. 2015 Ubisoft]
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Participating Media: Demo
+
+[Stomakhin et al. 2014]
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Hair Appearance
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Kajiya-Kay Model
+
+[Image courtesy of Chiwei Tseng]
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Kajiya-Kay Model
+
+[Yuksel et al. 2008]
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Marschner Model
+
+[Image courtesy of Chiwei Tseng]
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Marschner Model
+•
+
+• Glass-like cylinder
+
+3 types of light interactions:
+R, TT, TRT
+(R: reflection, T: transmission)
+
+R
+
+cortex
+(absorbs)
+
+TRT
+
+cuticle
+
+TT
+GAMES101
+
+[Marschner et al. 2003]
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Marschner model
+
+[Marschner et al. 2003]
+
+GAMES101
+
+[d’Eon et al. 2011]
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Hair Appearance Model: Application
+
+[Final Fantasy XV. 2016 Square Enix]
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Hair Appearance Model: Application
+
+[Zootopia. 2016 Disney]
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Fur Appearance — As Human Hair
+• Cannot represent diffusive and saturated appearance
+
+Rendered as human hair
+[Marschner et al. 2003]
+
+GAMES101
+
+Rendered as animal fur
+[Yan et al. 2015]
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Human Hair vs Animal Fur
+Human
+
+Cortex
+• Contains pigments
+• Absorbs light
+Medulla
+• Complex structure
+
+Cuticle
+• Covered with scales
+Cuticle
+
+Common for
+hair/fur fibers
+
+GAMES101
+
+Cortex
+Medulla
+
+39
+
+Cougar
+
+• Scatters light
+
+Difference between
+hair/fur fibers
+Lingqi Yan, UC Santa Barbara
+
+Importance of Medulla
+
+Increasing medulla size
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Importance of Medulla
+
+Without medulla
+
+GAMES101
+
+With medulla (15%)
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Double Cylinder Model
+Cortex
+(absorbs)
+
+Cortex
+(absorbs)
+
+Multi
+layered
+
+Medulla
+(scatters)
+
+Single
+layered
+Marschner Model
+
+Double Cylinder
+Model
+[Yan et al. 2015, 2017]
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Double Cylinder Model — Lobes
+R
+
+TRT
+TRTs
+
+medulla
+cortex
+
+TRTs
+TRT
+
+medulla
+cortex
+
+TTs
+
+R
+
+TT
+
+GAMES101
+
+TTs
+TT
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Double Cylinder Model — Lobes
+
+=
+All
+GAMES101
+
+R
+
+TT
+44
+
+TRT
+
+s
+TT
+
+TRTs
+
+Lingqi Yan, UC Santa Barbara
+
+600,000 fur fibers
+Double
+Cylinder
+Model:
+Rendering
+1024 samples / pixel
+Hamster
+36.9 min / frame
+Changing medulla’s size
+
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Double Cylinder Model: Application
+
+[War for the Planet of the Apes. 2017 movie] (2018 Oscar Nominee for Best Visual Effects)
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Double Cylinder Model: Application
+
+[The Lion King (HD). 2017 movie] (2019 Oscar Nominee for Best Visual Effects)
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Granular Material
+▪ What is granular material?
+
+[Meng et al. 2015]
+GAMES101
+
+48
+
+Lingqi Yan, UC Santa Barbara
+
+Granular Material
+▪ Can we avoid explicit modeling of all granules?
+- Yes with procedural definition.
+
+[Meng et al. 2015]
+GAMES101
+
+49
+
+Lingqi Yan, UC Santa Barbara
+
+Granular Material
+
+[Meng et al. 2015]
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+Granular Material: Application
+
+[Piper. 2016 Pixar]
+GAMES101
+
+51
+
+Lingqi Yan, UC Santa Barbara
+
+Surface Models
+
+Translucent Material: Jade
+
+GAMES101
+
+53
+
+Lingqi Yan, UC Santa Barbara
+
+Translucent Material: Jellyfish
+
+GAMES101
+
+54
+
+Lingqi Yan, UC Santa Barbara
+
+Subsurface Scattering
+Visual characteristics of many surfaces
+caused by light exiting at different
+points than it enters
+
+• Violates a fundamental assumption
+
+[Jensen et al 2001]
+
+of the BRDF
+
+[Donner et al 2008]
+GAMES101
+
+55
+
+Lingqi Yan, UC Santa Barbara
+
+Scattering Functions
+▪ BSSRDF: generalization of BRDF; exitant radiance at one point
+due to incident differential irradiance at another point:
+
+S(xi , !i , xo , !o )
+
+▪ Generalization of rendering equation: integrating over all points
+on the surface and all directions (!)
+
+L(xo , !o ) =
+
+Z Z
+A
+
+S(xi , !i , xo , !o ) Li (xi , !i ) cos ✓i d!i dA
+H2
+
+BRDF
+
+BSSRDF
+[Jensen et al. 2001]
+
+GAMES101
+
+56
+
+Lingqi Yan, UC Santa Barbara
+
+Dipole Approximation [Jensen et al. 2001]
+▪ Approximate light diffusion by introducing two point sources.
+
+virtual
+source
+
++-
+
+Real
+real source
+source
+
+semi-inﬁnite medium
+
+57
+
+[image from Habel et al. 2013]
+
+GAMES101
+
+57
+
+Lingqi Yan, UC Santa Barbara
+
+BRDF
+
+GAMES101
+
+58
+
+[Jensen et al. 2001]
+
+Lingqi Yan, UC Santa Barbara
+
+BSSRDF
+
+GAMES101
+
+59
+
+[Jensen et al. 2001]
+
+Lingqi Yan, UC Santa Barbara
+
+BRDF vs BSSRDF
+
+[Jensen et al. 2001]
+
+GAMES101
+
+60
+
+Lingqi Yan, UC Santa Barbara
+
+BSSRDF: Demo
+
+GAMES101
+
+61
+
+Lingqi Yan, UC Santa Barbara
+
+BSSRDF: Application
+
+[Artist: Teruyuki and Yuka]
+
+[Artist: Dan Roarty]
+[Artist: Hyun Kyung]
+
+https://cgelves.com/10-most-realistic-human-3d-models-that-will-wow-you/
+GAMES101
+
+62
+
+Lingqi Yan, UC Santa Barbara
+
+Cloth
+• A collection of twisted fibers!
+• Two levels of twist
+
+• Woven or knitted
+
+GAMES101
+
+63
+
+Lingqi Yan, UC Santa Barbara
+
+Cloth: Render as Surface
+• Given the weaving pattern,
+
+calculate the overall behavior
+
+• Render using a BRDF
+
+[Sadeghi et al. 2013]
+GAMES101
+
+64
+
+Lingqi Yan, UC Santa Barbara
+
+Render as Surface — Limitation
+
+[Westin et al. 1992]
+
+GAMES101
+
+[Westin et al. 1992]
+65
+
+Lingqi Yan, UC Santa Barbara
+
+Cloth: Render as Participating Media
+• Properties of individual fibers & their distribution ->
+scattering parameters
+
+• Render as a participating medium
+
+[Jakob et al. 2010]
+
+GAMES101
+
+[Schroder et al. 2011]
+
+66
+
+Lingqi Yan, UC Santa Barbara
+
+Cloth: Render as Actual Fibers
+
+• Render every fiber explicitly!
+
+[Kai Schroder]
+GAMES101
+
+67
+
+Lingqi Yan, UC Santa Barbara
+
+Cloth: Demo
+
+[Shuang et al. 2012]
+GAMES101
+
+68
+
+Lingqi Yan, UC Santa Barbara
+
+Cloth: Application
+
+[The BFG. 2016 Disney]
+GAMES101
+
+69
+
+Lingqi Yan, UC Santa Barbara
+
+Detailed Appearance: Motivation
+• Not looking realistic, why?
+
+[Mouse rendered in
+Autodesk 3DS Max]
+
+[Car rendered in NVIDIA Iray]
+
+GAMES101
+
+70
+
+Lingqi Yan, UC Santa Barbara
+
+Real world is more complicated
+
+[Real photograph of a car]
+
+GAMES101
+
+[Real video of a mouse]
+
+71
+
+Lingqi Yan, UC Santa Barbara
+
+Why details?
+
+GAMES101
+
+Microfacet
+model
+
+72
+
+Lingqi Yan, UC Santa Barbara
+
+Why details?
+
+GAMES101
+
+[Yan et al.
+2014, 2016]
+
+73
+
+Lingqi Yan, UC Santa Barbara
+
+Why details?
+
+GAMES101
+
+[Yan et al.
+2014, 2016]
+
+74
+
+Lingqi Yan, UC Santa Barbara
+
+Recap: Microfacet BRDF
+h : half
+vector
+
+i
+o
+
+Surface = Specular microfacets + statistical normals
+
+F(i, h)G(i, o, h)D(h)
+f (i, o) =
+4(n, i)(n, o)
+GAMES101
+
+75
+
+NDF: Normal
+Distribution
+Function
+
+Lingqi Yan, UC Santa Barbara
+
+Statistical NDF vs. Actual NDF
+
+GAMES101
+
+probability
+
+probability
+
+Distribution of Normals (NDF)
+
+normal
+
+normal
+
+What we have
+(microfacet — statistical)
+
+What we want
+
+76
+
+Lingqi Yan, UC Santa Barbara
+
+Define details
+
+isotropic noise
+normal map
+
+Normal map
+resolution:
+≈ 200K x 200K
+GAMES101
+
+77
+
+Lingqi Yan, UC Santa Barbara
+
+Define details
+
+GAMES101
+
+78
+
+Lingqi Yan, UC Santa Barbara
+
+Different details
+
+Metallic flakes
+
+GAMES101
+
+79
+
+Lingqi Yan, UC Santa Barbara
+
+Rendering? Too difficult!
+
+our result
+
+GAMES101
+
+zoom of
+a single pixel
+
+80
+
+naive sampling (2h)
+(≫ 21.3 days to converge)
+
+Lingqi Yan, UC Santa Barbara
+
+Difficult path sampling problem
+pinhole camera
+
+lightsource
+miss
+miss
+
+bumpy specular surface
+
+GAMES101
+
+81
+
+Lingqi Yan, UC Santa Barbara
+
+Solution: BRDF over a pixel
+pinhole camera
+
+half vector h
+light source
+
+P-NDF
+
+patch P
+GAMES101
+
+82
+
+Lingqi Yan, UC Santa Barbara
+
+p-NDFs have sharp features
+
+normal map
+GAMES101
+
+P-NDFs
+83
+
+Lingqi Yan, UC Santa Barbara
+
+p-NDF shapes
+
+P-NDFs
+
+normal maps
+GAMES101
+
+84
+
+Lingqi Yan, UC Santa Barbara
+
+p-NDF
+Blendershapes
+brushed metal
+
+ellipsoid bumps
+
+GAMES101
+
+85
+
+Lingqi Yan, UC Santa Barbara
+
+p-NDF
+Blender:shapes
+Zoom
+brushed metal
+
+ellipsoid bumps
+
+GAMES101
+
+86
+
+Lingqi Yan, UC Santa Barbara
+
+p-NDF shapes
+
+Ocean waves
+
+GAMES101
+
+87
+
+Lingqi Yan, UC Santa Barbara
+
+Detailed / Glinty Material: Application
+
+GAMES101
+
+[Rise of the Tomb Raider. 2016 Square Enix]
+88
+
+Lingqi Yan, UC Santa Barbara
+
+Recent Trend: Wave Optics
+
+compact disk (CD)
+
+metallic film
+
+phone screen
+
+[Cuypers 11]
+
+[Laurent 17]
+
+[Toisoul 17]
+
+GAMES101
+
+89
+
+Lingqi Yan, UC Santa Barbara
+
+Observations
+
+photos of scratched metal
+
+GAMES101
+
+90
+
+Lingqi Yan, UC Santa Barbara
+
+Observations
+
+photo of a Macbook
+
+GAMES101
+
+photo of an aluminum patch
+
+91
+
+Lingqi Yan, UC Santa Barbara
+
+Heightfields
+
+Detailed Material under Wave Optics
+
+brushed
+
+scratched
+
+BRDFs
+
+isotropic
+
+geometric
+
+GAMES101
+
+wave
+
+geometric
+
+92
+
+wave
+
+geometric
+
+wave
+
+Lingqi Yan, UC Santa Barbara
+
+Detailed Material under Wave Optics
+Body Level One
+
+• Body Level Two
+⼀些背景——phase delay之类的
+• Body Level Three
+• Body Level Four
+• Body Level Five
+
+MacBook rendered using wave optics
+[Yan et al. 2018]
+GAMES101
+
+93
+
+Lingqi Yan, UC Santa Barbara
+
+What is it about?
+
+Latest
+Work
+on
+Wave
+Optics
+Body Level One
+(submitted)
+Body
+Level
+Two
+•
+⼀些背景——phase delay之类的
+
+• Body Level Three
+• Body Level Four
+• Body Level Five
+
+GAMES101
+
+94
+
+Lingqi Yan, UC Santa Barbara
+
+What is it about?
+
+Latest
+Work
+on
+Wave
+Optics
+Body Level One
+(submitted)
+Body
+Level
+Two
+•
+⼀些背景——phase delay之类的
+
+• Body Level Three
+• Body Level Four
+• Body Level Five
+
+GAMES101
+
+95
+
+Lingqi Yan, UC Santa Barbara
+
+What is it about?
+Body Level One
+
+• Body Level Two
+• Body Level Three
+• Body Level Four
+• Body Level Five
+
+GAMES101
+
+96
+
+Lingqi Yan, UC Santa Barbara
+
+Procedural Appearance
+
+Procedural Appearance
+▪ Can we define details without textures?
+- Yes! Compute a noise function on the fly.
+
+[Lagae et al. 2009]
+GAMES101
+
+98
+
+Lingqi Yan, UC Santa Barbara
+
+Procedural Appearance
+▪ Can we define details without textures?
+- Yes! Compute a noise function on the fly.
+- 3D noise ->
+
+internal structure
+if cut or broken
+
+[Lagae et al. 2009]
+GAMES101
+
+99
+
+Lingqi Yan, UC Santa Barbara
+
+Procedural Appearance
+▪ Can we define details without textures?
+- Yes! Compute a noise function on the fly.
+- Thresholding
+
+(noise -> binary noise)
+Example:
+if noise(x, y, z) > threshold:
+reflectance = 1
+else:
+reflectance = 0
+
+GAMES101
+
+[Lagae et al. 2009]
+100
+
+Lingqi Yan, UC Santa Barbara
+
+Procedural Appearance
+▪ Complex noise functions can be very powerful.
+
+GAMES101
+
+101
+
+Lingqi Yan, UC Santa Barbara
+
+Procedural Appearance
+▪ Complex noise functions can be very powerful.
+
+[Steve Worley]
+GAMES101
+
+102
+
+Lingqi Yan, UC Santa Barbara
+
+Procedural Appearance
+▪ Complex noise functions can be very powerful.
+
+[Liu et al. 2016]
+GAMES101
+
+103
+
+Lingqi Yan, UC Santa Barbara
+
+Procedural Appearance
+▪ Complex noise functions can be very powerful.
+
+[Liu et al. 2016]
+GAMES101
+
+104
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ren Ng for many of the slides!)
+
+

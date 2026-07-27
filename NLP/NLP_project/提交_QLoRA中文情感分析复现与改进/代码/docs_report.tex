@@ -1,0 +1,560 @@
+\documentclass[12pt,a4paper]{article}
+
+% ===== 基础宏包 =====
+\usepackage[UTF8]{ctex}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{array}
+
+% ===== 代码高亮设置 =====
+\lstset{
+  basicstyle=\small\ttfamily,
+  backgroundcolor=\color{gray!8},
+  frame=single,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue!70},
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{red!60},
+}
+
+% ===== 超链接设置 =====
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!70,
+}
+
+% ===== 标题信息 =====
+\title{\textbf{QLoRA 在中文情感分析任务上的复现与改进研究} \\[0.5em]
+\large —— 基于 Qwen2.5-7B-Instruct 的参数高效微调实验}
+\author{卞兆洲 \quad 许政阳 \quad 王丹义 \\[0.3em] \normalsize 南京大学 · 智能科学与技术学院}
+\date{2026 年 6 月}
+
+\begin{document}
+
+\maketitle
+
+% ===== 摘要 =====
+\begin{abstract}
+本文围绕参数高效微调（PEFT）在中文情感分析任务中的实用价值，完成了基于 QLoRA 的复现实验与扩展消融/改进实验。实验以 Qwen2.5-7B-Instruct 为基础模型，在 ChnSentiCorp 数据集上系统对比了 Zero-shot、QLoRA 核心配置与多组对照设置。结果显示，Zero-shot 达到 Accuracy=90.17\%、Macro-F1=90.10\%，QLoRA 核心配置（NF4 + Double Quantization + all-linear LoRA, rank=64）达到 Accuracy=95.00\%、Macro-F1=94.99\%，提升约 +4.83 个百分点。消融结果表明：A1（去除 DQ）Accuracy=94.00\%，A2（FP4 替代 NF4）Accuracy=93.58\%，A3（rank=16）Accuracy=94.08\%，说明 DQ、NF4 与较高 rank 均对性能有贡献。改进实验 I1（DoRA）达到 Accuracy=95.92\%、Macro-F1=95.89\%，较 R3 进一步提升约 +0.92pp。实验结果验证了 QLoRA 在消费级单卡上的可复现性，并表明在强基座模型上通过结构化改进仍存在可观提升空间。
+
+\noindent\textbf{关键词：} QLoRA；参数高效微调；情感分析；量化；LoRA
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ================================================================
+\section{引言}
+
+\subsection{研究背景与动机}
+
+大语言模型（LLM）在下游自然语言处理任务中展现出强大的能力，但全参数微调对显存与算力的要求极高。以 7B 参数模型为例，全量 16-bit 微调需约 56GB 以上显存，远超消费级显卡（如 RTX 4060, 8GB）的承载能力。
+
+QLoRA\textsuperscript{[2]} 通过三项关键技术——4-bit NormalFloat（NF4）量化、Double Quantization（DQ）及分页优化器（Paged Optimizer），将 7B 模型的训练显存需求压缩至约 6--7GB，使单卡消费级环境下的大模型微调成为可能。
+
+\subsection{研究目标}
+
+本文选择中文情感二分类任务（ChnSentiCorp 数据集），目标回答以下问题：
+\begin{enumerate}[leftmargin=2em]
+  \item 在已具备较强 Zero-shot 能力的基座模型上，QLoRA 是否仍有显著收益？
+  \item LoRA 的秩（rank）大小对分类任务性能影响如何？
+  \item QLoRA 的各组件（NF4、DQ）分别贡献多少？
+\end{enumerate}
+
+\subsection{本文贡献}
+
+\begin{itemize}[leftmargin=2em]
+  \item 在 RTX 4060 单卡上完整复现了 QLoRA 训练流程，验证其在中文任务上的有效性；
+  \item 完成 LoRA rank 消融实验，量化了参数效率与性能的权衡关系；
+  \item 设计了 DQ 消融、FP4/NF4 对比及 DoRA 改进实验方案，为后续研究提供了可复用的实验框架。
+\end{itemize}
+
+% ================================================================
+\section{相关工作}
+
+\subsection{LoRA: 低秩适配}
+
+LoRA（Low-Rank Adaptation）\textsuperscript{[1]} 将权重增量分解为两个低秩矩阵的乘积：
+\begin{equation}
+  \Delta W = B \cdot A, \quad B \in \mathbb{R}^{d \times r}, \; A \in \mathbb{R}^{r \times k}, \; r \ll \min(d, k)
+\end{equation}
+仅更新 $B$ 和 $A$（约占原参数量的 0.1\%--1\%），冻结原始权重，从而大幅降低可训练参数量和显存需求。
+
+\subsection{QLoRA: 量化低秩适配}
+
+QLoRA\textsuperscript{[2]} 在 LoRA 基础上引入三项关键创新（详见表~\ref{tab:qlora_components}）：
+
+\begin{table}[H]
+\centering
+\caption{QLoRA 三大核心组件}
+\label{tab:qlora_components}
+\small
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+\textbf{组件} & \textbf{作用} & \textbf{配置参数} \\
+\midrule
+NF4 量化 & 基于正态分位数的 4-bit 数据类型 & \texttt{quant\_type=nf4} \\
+Double Quantization & 对量化缩放因子再次量化 & \texttt{double\_quant=True} \\
+Paged Optimizer & 显存不足时优化器状态交换到 CPU & \texttt{paged\_adamw\_32bit} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+前向传播时，4-bit 权重被反量化为 16-bit 参与计算；梯度仅更新 LoRA 参数，原始权重保持冻结。整体公式为：
+\begin{equation}
+  Y = \text{dequant}(W_{\text{4bit}}) \cdot X + X \cdot B \cdot A
+\end{equation}
+
+\subsection{DoRA: 权重分解适配}
+
+DoRA（Weight-Decomposed Low-Rank Adaptation）\textsuperscript{[3]} 将权重更新分解为方向（direction）与幅值（magnitude）两个独立分量，理论上能更好地逼近全量微调的效果。本文在 I1 实验中完成了 QLoRA + DoRA 的实证验证，并观察到在本任务上相对 R3 的稳定增益。
+
+% ================================================================
+\section{方法}
+
+\subsection{任务定义}
+
+中文情感二分类任务：给定一段中文评论文本，模型输出 \texttt{positive}（正面）或 \texttt{negative}（负面）标签。评估指标采用 \textbf{Accuracy} 与 \textbf{Macro-F1}。
+
+\subsection{数据格式}
+
+数据采用 Alpaca 指令格式构造，如表~\ref{tab:data_format} 所示：
+
+\begin{table}[H]
+\centering
+\caption{数据样本格式示例}
+\label{tab:data_format}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{字段} & \textbf{内容} \\
+\midrule
+instruction & 请判断这段中文文本的情感倾向，只输出negative或positive。 \\
+input & 酒店比较陈旧,房间也不大,有股味道. 早餐一般. 房价也不便宜! 总之很一般. \\
+output & negative \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{QLoRA 训练流程}
+
+训练流程遵循 ``训练 $\rightarrow$ 推理 $\rightarrow$ 评测'' 闭环：
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{训练}：\texttt{scripts/train\_qlora.py} 加载 4-bit 量化模型 + LoRA adapter 进行微调；
+  \item \textbf{推理}：\texttt{scripts/infer\_qlora.py} 加载 base model + adapter 进行批量预测；
+  \item \textbf{评测}：\texttt{scripts/eval.py} 计算 Accuracy 与 Macro-F1，写入 \texttt{results/metrics.csv}。
+\end{enumerate}
+
+% ================================================================
+\section{实验设置}
+
+\subsection{数据集}
+
+\begin{table}[H]
+\centering
+\caption{ChnSentiCorp 数据集划分}
+\label{tab:dataset}
+\begin{tabular}{lccc}
+\toprule
+\textbf{划分} & \textbf{样本数} & \textbf{类别} & \textbf{用途} \\
+\midrule
+Train & 9,600 & positive / negative & 模型训练 \\
+Validation & 1,200 & positive / negative & 超参调优 \\
+Test & 1,200 & positive / negative & 最终评测 \\
+\midrule
+\textbf{合计} & \textbf{12,000} & — & — \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{基础模型与硬件环境}
+
+\begin{table}[H]
+\centering
+\caption{实验环境}
+\label{tab:environment}
+\begin{tabular}{ll}
+\toprule
+\textbf{项目} & \textbf{配置} \\
+\midrule
+基础模型 & Qwen2.5-7B-Instruct（7.6B 参数） \\
+显卡 & NVIDIA RTX 4060 8GB \\
+操作系统 & Windows 10 \\
+框架 & Transformers + PEFT + bitsandbytes \\
+Python 版本 & 3.10+ \\
+CUDA 版本 & 12.x \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{超参数配置}
+
+表~\ref{tab:hyperparams} 列出了核心复现实验 R3 的完整超参数配置，消融实验仅修改单一变量。
+
+\begin{table}[H]
+\centering
+\caption{R3 核心实验超参数（完整配置）}
+\label{tab:hyperparams}
+\begin{tabular}{llc}
+\toprule
+\textbf{类别} & \textbf{参数} & \textbf{取值} \\
+\midrule
+\multirow{4}{*}{量化} & 量化位数 & 4-bit \\
+ & 量化类型 & NF4 \\
+ & Double Quantization & True \\
+ & 计算精度 & float16 \\
+\midrule
+\multirow{4}{*}{LoRA} & rank ($r$) & 64 \\
+ & alpha ($\alpha$) & 16 \\
+ & dropout & 0.05 \\
+ & target\_modules & all-linear \\
+\midrule
+\multirow{7}{*}{训练} & epochs & 3 \\
+ & learning rate & $2 \times 10^{-4}$ \\
+ & lr scheduler & cosine \\
+ & warmup ratio & 0.03 \\
+ & batch size & 1 \\
+ & gradient accumulation & 16 \\
+ & max sequence length & 512 \\
+\midrule
+\multirow{2}{*}{其他} & optimizer & paged\_adamw\_32bit \\
+ & gradient checkpointing & True \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{实验设计总览}
+
+\begin{table}[H]
+\centering
+\caption{全部实验设计}
+\label{tab:exp_design}
+\small
+\begin{tabularx}{\textwidth}{clXl}
+\toprule
+\textbf{ID} & \textbf{方法} & \textbf{与 R3 的差异} & \textbf{状态} \\
+\midrule
+R1 & Zero-shot & 不训练 & \checkmark 已完成 \\
+R2 & QLoRA smoke & 100 条数据 & \checkmark 已完成 \\
+R3 & QLoRA 核心复现 & 基准配置 & \checkmark 已完成 \\
+\midrule
+A3 & LoRA rank=16 & \texttt{lora\_r}: 64$\to$16 & \checkmark 已完成 \\
+A1 & 去除 DQ & \texttt{double\_quant}: True$\to$False & \checkmark 已完成 \\
+A2 & FP4 替代 NF4 & \texttt{quant\_type}: nf4$\to$fp4 & \checkmark 已完成 \\
+\midrule
+I1 & DoRA 改进 & \texttt{use\_dora}: True & \checkmark 已完成 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{消融与改进实验配置对比}
+
+为清晰展示各实验的单变量控制关系，表~\ref{tab:ablation_config} 汇总了所有配置差异及训练 epoch 数：
+
+\begin{table}[H]
+\centering
+\caption{消融/改进实验配置差异对照}
+\label{tab:ablation_config}
+\begin{tabular}{clcccc}
+\toprule
+\textbf{ID} & \textbf{实验名称} & \textbf{改动参数} & \textbf{R3 原值} & \textbf{实验值} & \textbf{Epochs} \\
+\midrule
+R3 & QLoRA 核心 & — & — & — & 3 \\
+A1 & 去除 DQ & \texttt{double\_quant} & True & False & 1 \\
+A2 & FP4 替代 NF4 & \texttt{quant\_type} & nf4 & fp4 & 1 \\
+A3 & rank=16 & \texttt{lora\_r} & 64 & 16 & 1 \\
+I1 & DoRA 改进 & \texttt{use\_dora} & False & True & 3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Epoch 差异说明}：由于硬件时间限制，消融实验 A1--A3 仅训练 1 epoch，而基准 R3 和改进 I1 训练 3 epochs。因此，A1--A3 与 R3 的性能差异中同时包含了配置变化和训练轮次差异两个因素，后续分析中会对此进行标注。
+
+% ================================================================
+\section{实验结果与分析}
+
+\subsection{主结果对比}
+
+\begin{table}[H]
+\centering
+\caption{实验结果汇总（主实验 + 消融 + 改进）}
+\label{tab:main_results}
+\begin{tabular}{clccccc}
+\toprule
+\textbf{ID} & \textbf{方法} & \textbf{Epochs} & \textbf{Accuracy (\%)} & \textbf{Macro-F1 (\%)} & \textbf{$\Delta$Acc} & \textbf{备注} \\
+\midrule
+R1 & Zero-shot & — & 90.17 & 90.10 & — & 无微调基线 \\
+R2 & QLoRA smoke & 1 & 90.00 & 89.90 & — & 100 条数据验证 \\
+R3 & QLoRA 核心 & 3 & 95.00 & 94.99 & — & NF4+DQ, rank=64 \\
+\midrule
+A1 & 去除 DQ & 1\textsuperscript{$\dagger$} & 94.00 & 93.98 & $-$1.00 & double\_quant=False \\
+A2 & FP4 替代 NF4 & 1\textsuperscript{$\dagger$} & 93.58 & 93.57 & $-$1.42 & quant\_type=fp4 \\
+A3 & rank=16 消融 & 1\textsuperscript{$\dagger$} & 94.08 & 94.05 & $-$0.92 & rank 降低 4$\times$ \\
+\midrule
+\textbf{I1} & \textbf{DoRA 改进} & \textbf{3} & \textbf{95.92} & \textbf{95.89} & \textbf{+0.92} & \textbf{当前最佳} \\
+\bottomrule
+\multicolumn{7}{l}{\footnotesize $\dagger$\,消融实验仅训练 1 epoch（R3 为 3 epochs），$\Delta$Acc 中包含 epoch 差异影响。}
+\end{tabular}
+\end{table}
+
+图~\ref{fig:comparison_bar} 展示了各实验的 Accuracy 与 Macro-F1 对比柱状图。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{../results/figures/comparison_bar.png}
+\caption{已完成实验结果对比柱状图}
+\label{fig:comparison_bar}
+\end{figure}
+
+\subsection{关键发现}
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{QLoRA 微调收益显著}：R3 较 R1 提升 +4.83pp（Accuracy）和 +4.89pp（Macro-F1），表明即使基座模型 Zero-shot 已达 90\% 水平，参数高效微调仍可带来可观增益。
+
+  \item \textbf{Smoke 实验不能替代正式对照}：R2 仅用 100 条数据训练 1 epoch，结果与 Zero-shot 几乎持平（90.00\% vs 90.17\%），说明数据量与训练充分度是性能提升的必要条件。
+
+  \item \textbf{量化组件有正向作用（需注意 epoch 差异）}：A1（去除 DQ, 1 epoch）和 A2（FP4, 1 epoch）的 Accuracy 分别为 94.00\% 和 93.58\%，均低于 R3（3 epochs）的 95.00\%。不过，由于 A1/A2 仅训练 1 epoch，实际的组件贡献量可能小于表面差距。尽管如此，A2 的下降幅度明显大于 A1，表明 NF4 相对 FP4 的信息论优势在实际任务中得到了体现，DQ 对精度的影响相对较小。
+
+  \item \textbf{rank 敏感性有限（需注意 epoch 差异）}：A3（rank=16, 1 epoch）达到 94.08\%，与 R3（rank=64, 3 epochs）的 95.00\% 差距仅 0.92pp。考虑到 A3 训练轮次仅为 R3 的 1/3 且可训练参数减少约 75\%，该结果进一步说明中文情感分类任务对高 rank 的需求有限，低 rank 即可捕获关键特征。
+
+  \item \textbf{DoRA 带来稳定提升}：I1 与 R3 使用相同的 3 epochs 训练，仅启用 \texttt{use\_dora=True}。I1 达到 Accuracy=95.92\% / Macro-F1=95.89\%，相对 R3 提升 +0.92pp，是唯一可与 R3 公平对比的扩展实验，验证了 DoRA 权重分解策略在 QLoRA 基线之上的稳定增益。
+\end{enumerate}
+
+\subsection{LoRA rank 效率分析}
+
+\begin{table}[H]
+\centering
+\caption{LoRA rank 对参数量与性能的影响}
+\label{tab:rank_analysis}
+\begin{tabular}{cccc}
+\toprule
+\textbf{rank} & \textbf{可训练参数（估）} & \textbf{Accuracy (\%)} & \textbf{$\Delta$ vs R3} \\
+\midrule
+64（R3） & $\sim$72M & 95.00 & — \\
+16（A3） & $\sim$18M & 94.08 & $-$0.92pp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+rank 降低 4 倍，可训练参数减少约 75\%，但性能仅下降不到 1 个百分点，表明在该任务上 rank=16 已接近性能饱和区域。
+
+\subsection{训练过程分析}
+
+图~\ref{fig:loss_curves} 展示了核心实验 R3 与消融实验 A3 的训练损失曲线。
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{../results/figures/loss_r3_qlora_nf4_dq_alllinear.png}
+  \caption{R3: QLoRA 核心（rank=64, 3 epochs）}
+  \label{fig:loss_r3}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{../results/figures/loss_a3_ablation_rank16.png}
+  \caption{A3: rank=16 消融（1 epoch）}
+  \label{fig:loss_a3}
+\end{subfigure}
+\caption{训练损失曲线对比}
+\label{fig:loss_curves}
+\end{figure}
+
+从图中可以观察到：
+\begin{itemize}[leftmargin=2em]
+  \item R3 在 3 个 epoch 的训练过程中，loss 呈现稳定下降趋势，未出现明显过拟合；
+  \item A3 虽然 rank 较小，但在 1 epoch 内 loss 也能收敛到较低水平，进一步验证了低 rank 的可行性。
+\end{itemize}
+
+图~\ref{fig:loss_a1}、图~\ref{fig:loss_a2} 与图~\ref{fig:loss_i1} 分别展示了 A1、A2、I1 的训练曲线，均可观察到稳定收敛趋势。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{../results/figures/loss_a1_ablation_no_dq.png}
+\caption{A1: 去除 Double Quantization 的训练损失曲线}
+\label{fig:loss_a1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{../results/figures/loss_a2_ablation_fp4.png}
+  \caption{A2: FP4 替代 NF4}
+  \label{fig:loss_a2}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{../results/figures/loss_i1_dora.png}
+  \caption{I1: DoRA 改进}
+  \label{fig:loss_i1}
+\end{subfigure}
+\caption{A2 与 I1 训练损失曲线}
+\label{fig:loss_a2_i1}
+\end{figure}
+
+
+% ================================================================
+\section{讨论}
+
+\subsection{QLoRA 在强基座模型上的价值}
+
+Qwen2.5-7B-Instruct 的 Zero-shot 已达 90.17\%，属于较高水平。QLoRA 仍能将性能提升至 95.00\%，说明：
+\begin{itemize}[leftmargin=2em]
+  \item 即使对于``已经很强''的指令微调模型，任务特定的 PEFT 仍有显著价值；
+  \item Zero-shot 能力主要来自通用理解，微调则强化了任务边界（如输出格式约束、领域适应等）。
+\end{itemize}
+
+\subsection{rank 选择的实用建议}
+
+从 A3 的结果来看，对于中文情感二分类这类相对简单的任务：
+\begin{itemize}[leftmargin=2em]
+  \item rank=16 即可达到接近最优性能（94.08\% vs 95.00\%）；
+  \item 可训练参数减少 75\%，训练速度更快（约 25--30 分钟 vs 40+ 分钟）；
+  \item 实际部署中，低 rank adapter 的存储与加载开销也更小。
+\end{itemize}
+
+\subsection{局限性}
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{消融实验 epoch 未对齐}：A1/A2/A3 均训练 1 epoch，而 R3 训练 3 epochs。这意味着消融对比中同时混入了训练轮次差异和配置变化两个因素，所报告的 $\Delta$Acc 可能高估了各组件的实际贡献。I1 与 R3 保持了 3 epochs 的一致性，是最可靠的对比。后续应在相同 epoch 条件下重复 A1--A3 实验，以获得更严格的消融结论；
+  \item \textbf{任务单一}：仅在情感二分类上验证，结论是否可推广到更复杂任务（如 NLI、QA、生成式任务）仍需进一步实验；
+  \item \textbf{统计显著性不足}：当前结果基于单次 seed（42）记录，尚未统计多次独立重复实验的方差，无法排除随机波动的影响。
+\end{enumerate}
+
+% ================================================================
+\section{结论与展望}
+
+\subsection{结论}
+
+本文在 RTX 4060 单卡上完成了 QLoRA 在中文情感分类任务上的核心复现、完整消融实验与 DoRA 改进实验，主要结论如下：
+
+\begin{enumerate}[leftmargin=2em]
+  \item QLoRA 微调相比 Zero-shot 在 Accuracy 和 Macro-F1 上分别提升 +4.83pp 和 +4.89pp，验证了参数高效微调在强基座模型上的实际价值；
+  \item A1/A2 消融初步表明 DQ 与 NF4 均对性能有正向作用（NF4 优势更明显），但由于消融实验与 R3 的训练 epoch 未对齐，量化各组件的精确贡献仍需等 epoch 对齐的后续实验；
+  \item LoRA rank=16（1 epoch）与 rank=64（3 epochs）的性能差距小于 1pp，且可训练参数减少 75\%，初步表明中文情感分类任务对高 rank 的需求有限；
+  \item DoRA 改进实验 I1 在与 R3 相同的 3 epochs 条件下提升约 +0.92pp，是最可靠的对比结论，验证了在 QLoRA 基线之上通过结构化改进仍存在可观提升空间；
+  \item QLoRA 系列配置在 8GB 显存环境下可稳定训练 7B 模型，证明了方法的工程可行性。
+\end{enumerate}
+
+\subsection{后续工作}
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{对齐消融 epoch}：在 3 epochs 条件下重新运行 A1--A3 消融实验，消除训练轮次混淆因素，获得更严格的组件贡献量化；
+  \item 在多 seed（如 3--5 次）条件下重复主实验与关键消融，报告均值与标准差，增强统计可靠性；
+  \item 拓展至更复杂任务（如阅读理解、多分类），验证结论的泛化性；
+  \item 进行错误案例的细粒度分析，理解模型在转折句、讽刺等难样本上的表现；
+  \item 探索 DoRA 与其他 PEFT 变体（如 AdaLoRA）的组合效果。
+\end{enumerate}
+
+% ================================================================
+\section*{参考文献}
+\begin{enumerate}[label={[\arabic*]},leftmargin=2em]
+  \item Hu E, Shen Y, Wallis P, et al. LoRA: Low-Rank Adaptation of Large Language Models[C]. ICLR, 2022.
+  \item Dettmers T, Pagnoni A, Holtzman A, et al. QLoRA: Efficient Finetuning of Quantized LLMs[C]. NeurIPS, 2023.
+  \item Liu S Y, Wang C Y, Yin H, et al. DoRA: Weight-Decomposed Low-Rank Adaptation[C]. ICML, 2024.
+  \item Qwen Team. Qwen2.5 Technical Report[R]. 2024.
+  \item Tan S, Zhang J. An Empirical Study of Sentiment Analysis for Chinese Documents[J]. Expert Systems with Applications, 2008.
+\end{enumerate}
+
+% ================================================================
+\newpage
+\appendix
+\section{代码结构}
+
+\begin{table}[H]
+\centering
+\caption{项目核心文件}
+\begin{tabular}{ll}
+\toprule
+\textbf{文件} & \textbf{用途} \\
+\midrule
+\texttt{scripts/train\_qlora.py} & QLoRA 训练主脚本 \\
+\texttt{scripts/infer\_qlora.py} & Adapter 推理脚本 \\
+\texttt{scripts/infer\_zero\_shot.py} & Zero-shot 推理脚本 \\
+\texttt{scripts/eval.py} & 评测脚本（输出 metrics.csv） \\
+\texttt{scripts/prepare\_data.py} & 数据预处理脚本 \\
+\texttt{scripts/plot\_results.py} & 可视化脚本 \\
+\texttt{configs/exp\_r3\_*.yaml} & R3 核心配置 \\
+\texttt{configs/exp\_a*.yaml} & 消融配置 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{完整实验数据}
+
+表~\ref{tab:full_metrics} 展示了 \texttt{results/metrics.csv} 中各实验的最终评测记录（取每组最新结果，保留原始 6 位精度）。
+
+\begin{table}[H]
+\centering
+\caption{metrics.csv 评测记录（最新结果）}
+\label{tab:full_metrics}
+\small
+\begin{tabular}{cllcccc}
+\toprule
+\textbf{exp\_id} & \textbf{method} & \textbf{metric} & \textbf{value} & \textbf{seed} & \textbf{owner} & \textbf{date} \\
+\midrule
+R1 & zero\_shot & accuracy & 0.901667 & 42 & xzy & 2026-06-03 \\
+R1 & zero\_shot & macro\_f1 & 0.901006 & 42 & xzy & 2026-06-03 \\
+R2 & qlora\_nf4\_dq\_smoke & accuracy & 0.900000 & 42 & xzy & 2026-05-26 \\
+R2 & qlora\_nf4\_dq\_smoke & macro\_f1 & 0.898990 & 42 & xzy & 2026-05-26 \\
+R3 & qlora\_nf4\_dq\_alllinear & accuracy & 0.950000 & 42 & xzy & 2026-06-02 \\
+R3 & qlora\_nf4\_dq\_alllinear & macro\_f1 & 0.949875 & 42 & xzy & 2026-06-02 \\
+A3 & qlora\_nf4\_dq\_rank16 & accuracy & 0.940833 & 42 & xzy & 2026-06-04 \\
+A3 & qlora\_nf4\_dq\_rank16 & macro\_f1 & 0.940549 & 42 & xzy & 2026-06-04 \\
+A1 & qlora\_nf4\_no\_dq & accuracy & 0.940000 & 42 & wdy & 2026-06-05 \\
+A1 & qlora\_nf4\_no\_dq & macro\_f1 & 0.939771 & 42 & wdy & 2026-06-05 \\
+A2 & qlora\_fp4\_dq & accuracy & 0.935833 & 42 & wdy & 2026-06-06 \\
+A2 & qlora\_fp4\_dq & macro\_f1 & 0.935667 & 42 & wdy & 2026-06-06 \\
+I1 & qlora\_nf4\_dq\_dora & accuracy & 0.959167 & 42 & wdy & 2026-06-06 \\
+I1 & qlora\_nf4\_dq\_dora & macro\_f1 & 0.958930 & 42 & wdy & 2026-06-06 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{实验复现命令}
+
+\begin{lstlisting}[language=bash,caption=R3 训练命令]
+python scripts/train_qlora.py \
+  --config configs/exp_r3_qlora_nf4_dq_alllinear.yaml \
+  --model-name-or-path D:/models/Qwen2.5-7B-Instruct
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,caption=R3 推理命令]
+python scripts/infer_qlora.py \
+  --base-model D:/models/Qwen2.5-7B-Instruct \
+  --adapter-dir outputs/r3_qlora_nf4_dq_alllinear/adapter \
+  --input-file data/processed/paper_a_core/test.jsonl \
+  --output-file outputs/r3_qlora_nf4_dq_alllinear/predictions.jsonl
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,caption=评测命令]
+python scripts/eval.py \
+  --pred-file outputs/r3_qlora_nf4_dq_alllinear/predictions.jsonl \
+  --exp-id R3 --method qlora_nf4_dq_alllinear \
+  --dataset ChnSentiCorp
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,caption=I1 DoRA 训练命令]
+python scripts/train_qlora.py \
+  --config configs/exp_i1_dora.yaml \
+  --model-name-or-path D:/models/Qwen2.5-7B-Instruct
+\end{lstlisting}
+
+\end{document}

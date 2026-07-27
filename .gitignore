@@ -1,0 +1,91 @@
+# 编辑器与本地状态
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.vscode/
+.idea/
+
+# 环境变量与本地凭据
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.ovpn
+
+# Python、Jupyter 与虚拟环境
+.venv/
+**/.venv/
+venv/
+**/venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# 构建与编辑器缓存
+**/build/
+**/dist/
+**/.cache/
+**/.vs/
+**/x64/
+**/Debug/
+**/Release/
+*.obj
+*.pdb
+*.idb
+*.ilk
+*.exe
+
+# 模型、训练产物和大型数据
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+**/outputs/
+**/runs/
+**/runs_*/
+**/checkpoints/
+**/wandb/
+**/glove.*.txt
+**/embeddings/*.bin
+*.npy
+*.npz
+*.pkl
+
+# 课件、教材、压缩包与安装包
+*.pdf
+*.pptx
+*.7z
+*.zip
+*.tar.gz
+*.rar
+*.rpm
+*.deb
+*.msi
+*.mp4
+
+# 图片和系统文件
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.ico
+*.svg
+*.webp
+*.tiff
+*.tif
+Thumbs.db
+.DS_Store
+
+# 临时与备份文件
+*.tmp
+*.bak
+*.base
+~$*

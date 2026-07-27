@@ -1,0 +1,152 @@
+% 编译建议: XeLaTeX 或 LuaLaTeX（中文）
+% xelatex experiment_report.tex
+\documentclass[UTF8,a4paper]{ctexart}
+
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\title{基于 BiLSTM-CRF 的 CoNLL-2003 命名实体识别实验报告}
+\author{（填写姓名 / 学号）}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+本文报告在英文 CoNLL-2003 数据集上实现的序列标注实验：基线为 BiLSTM 结合线性链条件随机场（CRF），改进模型在词向量与双向 LSTM 之上引入字符级卷积（CharCNN），并可选 POS/Chunk 辅助任务与集成解码。实验采用实体级 Precision / Recall / F1 作为主要评测指标，汇报单次完整训练、多随机种子复现及多数投票集成的测试集结果。
+\end{abstract}
+
+\section{评测指标与文件含义}
+
+\subsection{Precision（精确率）}
+在所有\textbf{模型预测的实体}中，有多大比例与标注完全一致（类型与边界均匹配）。偏高通常表示模型「宁可少报」，漏检风险上升。
+
+\subsection{Recall（召回率）}
+在所有\textbf{人工标注的实体}中，有多大比例被模型正确检出。偏高通常表示模型「宁可多报」，误报风险上升。
+
+\subsection{F1 分数}
+Precision 与 Recall 的调和平均：
+\begin{equation}
+  F1 = \frac{2PR}{P+R}.
+\end{equation}
+任务常用的\textbf{主指标}，平衡「查准」与「查全」。本项目通过 \texttt{seqeval} 在\textbf{实体边界与类型}层面上计算（CoNLL NER 惯例），而非单纯 token 准确率。
+
+\subsection{本项目输出文件（节选）}
+\begin{itemize}
+  \item \texttt{test\_metrics.json}：测试集上的实体级 $P$, $R$, $F1$（小数形式）。
+  \item \texttt{test\_report.txt}：各类实体（PER / LOC / ORG / MISC）上的分类报告及 micro/macro/weighted 平均。
+  \item \texttt{dataset\_stats.json}：样本数、词表规模、预训练词向量覆盖率（hits / target vocab）等。
+  \item \texttt{history.json}：每个 epoch 的训练损失与验证集（dev）指标，用于观察收敛与早停。
+  \item \texttt{multiseed\_summary.json}：多种子训练中各次的最佳验证 F1 及对应测试 F1，用于评估随机性。
+  \item \texttt{ensemble\_metrics.json}：多数投票集成后成员模型与集成整体的测试集指标。
+\end{itemize}
+
+\section{实验设置概要}
+
+数据集划分与仓库脚本一致：训练 14041 句，验证 3250 句，测试 3453 句（CoNLL-2003 英文标准划分）。
+改进模型配置要点（单次完整训练 \texttt{outputs/full\_charcnn/config\_resolved.json}）：GloVe 6B 100 维、BiLSTM 隐层 256、CharCNN、BIO 约束 CRF、POS/Chunk 辅助损失权重 $0.2$、cosine 学习率调度与 warmup、混合精度训练（AMP）、EMA（训练中更新；评估配置中以原始权重为准时需对照 \texttt{config\_resolved.json}）、验证集监控早停（patience=6）、最大 30 epoch。
+
+\section{结果是否「全」与是否「正常」}
+
+\textbf{完整性：}当前产物已包含\textbf{主实验}（单次 seed=42 完整训练）、\textbf{稳定性分析}（五种子）、\textbf{集成}（取开发集表现最优的 3 个种子做测试集成）、以及\textbf{数据集与词向量统计}，足以支撑课程级正式报告。若需更「论文式」完备性，可补充：不同随机种子下的\textbf{均值$\pm$标准差}表格、与 BiLSTM-CRF 基线在\textbf{完全相同训练预算与硬件}下的消融（仅关闭 CharCNN / 辅助任务）、以及误差案例分析句。
+
+\textbf{合理性：}测试集实体级 F1 约 $87\%\sim88\%$ 处于 BiLSTM-CRF + 预训练词向量 + 字符增强的典型区间；验证集 F1 高于测试集属常见现象（轻微过拟合或划分难度差异）。多随机种子间测试 F1 波动在约 1 个百分点内，规模合理。
+
+\section{主要数值结果}
+
+\subsection{单次完整训练（seed=42）}
+表~\ref{tab:single} 数据来自 \texttt{outputs/full\_charcnn/}。
+
+\begin{table}[htbp]
+  \centering
+  \caption{CoNLL-2003 测试集：BiLSTM-CRF + CharCNN（完整训练，seed=42）}
+  \label{tab:single}
+  \begin{tabular}{lccc}
+    \toprule
+    模型 & Precision & Recall & F1 \\
+    \midrule
+    本文完整配置 & 87.91 & 86.90 & 87.40 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{多随机种子（测试集）}
+表~\ref{tab:multiseed} 数据来自 \texttt{outputs/full\_multiseed/multiseed\_summary.json}。
+
+\begin{table}[htbp]
+  \centering
+  \caption{多种子单次训练：测试集实体级指标（配置同 \texttt{bilstm\_crf\_charcnn.yaml}；百分比）}
+  \label{tab:multiseed}
+  \begin{tabular}{cccccc}
+    \toprule
+    Seed & 最佳验证 F1 & $P$ & $R$ & $F1$ \\
+    \midrule
+    46 & 0.9244 & 87.90 & 86.95 & 87.42 \\
+    44 & 0.9238 & 88.02 & 86.63 & 87.32 \\
+    45 & 0.9235 & 88.18 & 87.16 & 87.67 \\
+    42 & 0.9216 & 87.91 & 86.90 & 87.40 \\
+    43 & 0.9211 & 87.34 & 86.00 & 86.66 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\noindent 数据来源：各 \texttt{outputs/full\_multiseed/seed\_*/test\_metrics.json} 与 \texttt{multiseed\_summary.json}。
+
+\subsection{集成（多数投票，测试集）}
+表~\ref{tab:ensemble} 数据来自 \texttt{outputs/full\_ensemble/ensemble\_metrics.json} 与 \texttt{ensemble\_summary.md}。
+
+\begin{table}[htbp]
+  \centering
+  \caption{取开发集表现最优的三个种子（46, 44, 45）进行实体级多数投票}
+  \label{tab:ensemble}
+  \begin{tabular}{lccc}
+    \toprule
+    设置 & Precision & Recall & F1 \\
+    \midrule
+    成员 seed 46 & 88.10 & 87.02 & 87.56 \\
+    成员 seed 44 & 88.27 & 87.13 & 87.69 \\
+    成员 seed 45 & 88.56 & 87.48 & 88.02 \\
+    \textbf{集成（majority vote）} & \textbf{88.48} & \textbf{87.55} & \textbf{88.01} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+集成相对单模型（如 seed 42 的 87.40\%）带来约 0.6 个百分点的 F1 提升，与集成学习常见收益量级一致。
+
+\subsection{实体类型细粒度表现（seed=42 完整模型）}
+表~\ref{tab:pertype} 摘自 \texttt{outputs/full\_charcnn/test\_report.txt}。PER 与 LOC 通常较易；MISC 与 ORG 相对更难。
+
+\begin{table}[htbp]
+  \centering
+  \caption{各类实体 F1（测试集）}
+  \label{tab:pertype}
+  \begin{tabular}{lrrrr}
+    \toprule
+    类型 & Precision & Recall & F1 & Support（实体数） \\
+    \midrule
+    LOC & 0.899 & 0.911 & 0.905 & 1668 \\
+    MISC & 0.782 & 0.818 & 0.799 & 702 \\
+    ORG & 0.855 & 0.819 & 0.836 & 1661 \\
+    PER & 0.927 & 0.899 & 0.913 & 1617 \\
+    micro avg & 0.879 & 0.869 & 0.874 & 5648 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{与仓库内早期基线快照对比（可选）}
+\texttt{outputs/final\_bilstm} 与 \texttt{outputs/final\_charcnn} 为另一组运行快照（README 中 CPU 示例）：BiLSTM-CRF 测试 F1 约 79.0\%，加入 CharCNN 后约 85.1\%，体现字符级特征带来明显提升。与本次 GPU 完整实验相比，训练环境与超参可能不同，\textbf{不宜混为同一表格的主结论}，可作为「迭代改进过程」叙述。
+
+\section{小结}
+
+\begin{itemize}
+  \item 指标采用实体级 $P/R/F1$，符合 CoNLL-2003 NER 惯例。
+  \item 单次完整训练测试 F1 约 87.4\%；三种子集成可达约 88.0\%，结果合理。
+  \item 数据集统计、训练曲线、多种子及集成材料齐备；如需更严谨可依课程要求补误差分析与消融表。
+\end{itemize}
+
+\end{document}

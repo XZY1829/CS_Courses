@@ -1,0 +1,937 @@
+Advertisement
+• Prof. Qi Sun from NYU
+- VR / AR / perception / RT graphics, http://qisun.me
+• Fall 2020 - Spring 2021 (remote is fine)
+- 2-3 research interns
+- 1 postdoc / visiting scholar
+• See details on GAMES website / WeChat group
+• Send resume to qisun@nyu.edu now!
+
+GAMES101
+
+1
+
+Lingqi Yan, UC Santa Barbara
+
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 16:
+Ray Tracing 4
+(Monte Carlo Path Tracing)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Regarding the difficulty of the last lecture
+- Modern Graphics does require it
+• We are working on final project ideas
+- But again, welcome to come up with your own
+• Today’s lecture is easy normal a little bit hard
+(Next lectures will be much easier!)
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lecture
+• Radiometry cont.
+• Light transport
+- The reflection equation
+- The rendering equation
+
+• Global illumination
+• Probability review
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• A Brief Review
+• Monte Carlo Integration
+• Path Tracing
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Review - The Rendering Equation
+• Describing the light transport
+Lo (p, !o ) = Le (p, !o ) +
+<latexit sha1_base64="qlfUq4ICI/tSbeFv8C0BB6pS6pQ=">AAACZXicbVFNaxsxENVuvxy3aZ005JJDRU3BISHslkJ7KYTmkoOhKdRJwOsKrXbWEdHHIs0WzNZ/srdee+nfiNZxEzfpgODNe/PQ6CmvlPSYJL+i+MHDR4+fdNa6T5+tP3/R29g89bZ2AkbCKuvOc+5BSQMjlKjgvHLAda7gLL88avWz7+C8tOYrziqYaD41spSCY6BY78eQ2UG1n1kNU87s7schg9V+L5MGWZN9bvtve/Mhk7ey3C2ZW2lvbXRgMlFYpDeT2X6mOV443RTzvyTr9ZODZFH0PkiXoE+WdcJ6P7PCilqDQaG49+M0qXDScIdSKJh3s9pDxcUln8I4QMM1+EmzSGlO3wSmoKV14RikC3bV0XDt/UznYbLd1N/VWvJ/2rjG8sOkkaaqEYy4vqisFUVL28hpIR0IVLMAuHAy7ErFBXdcYPiYbgghvfvk++D07UEa8Jd3/cNPyzg6ZIe8JgOSkvfkkByTEzIigvyOOtFGtBn9idfjrXj7ejSOlp6X5J+KX10B7g+3Lg==</latexit>
+
+GAMES101
+
+Z
+
+⌦+
+
+Li (p, !i )fr (p, !i , !o )(n · !i ) d!i
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Review - Probabilities
+• Continuous Variable and Probability Density Functions
+X ⇠ p(x)
+
+• Understanding: randomly pick an X -> more likely to be a
+number closer to 0 (in this case)
+
+Conditions on p(x):
+Expected value of X:
+GAMES101
+
+p(x)
+
+Z
+
+0 and
+p(x) dx = 1
+Z
+E[X] = x p(x) dx
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Monte Carlo Integration
+
+Monte Carlo Integration
+Why: we want to solve an integral, but it can be too difficult
+to solve analytically.
+
+f (x)
+
+Z b
+
+f (x)dx = F (b)
+
+F (a)
+
+a
+
+x0 = a
+GAMES101
+
+xi
+
+x4 = b
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Monte Carlo Integration
+What & How: estimate the integral of a function by
+averaging random samples of the function’s value.
+
+f (x)
+
+Z b
+
+f (x)dx = F (b)
+
+F (a)
+
+a
+
+x0 = a
+GAMES101
+
+xi
+
+x4 = b
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Monte Carlo Integration
+Z bCarlo estimator for the definite
+Let us define the Monte
+integral of given function f (x)dx
+a
+
+Z b
+
+Definite integral
+
+f (x)dx
+
+a
+
+1
+
+Random variable
+
+Xi ⇠ p(x) =
+
+Monte Carlo estimator
+
+Yi = f (XN
+i)
+1 X f (Xi )
+FN =
+N i=1 p(Xi )
+
+GAMES101
+
+11
+
+b
+
+a
+
+Lingqi Yan, UC Santa Barbara
+
+Example: Uniform Monte Carlo Estimator
+Uniform random variable
+
+f (x)
+
+Z b
+
+f (x)dx = F (b)
+
+F (a)
+
+a
+
+Xi ⇠ p(x) = C (constant)
+Z b
+p(x) dx = 1
+
+x0 = a
+
+a
+
+=)
+
+Z b
+
+GAMES101
+
+xi
+
+x4 = b
+
+<latexit sha1_base64="i+ZbUDqk9xvQm6nWy3FRypWL+4A=">AAAB6nicbVBNS8NAEJ3Ur1q/qh69LBahXkoignorevFYwdhCG8pmu2mX7m7C7kYsoX/BiwcVr/4ib/4bN20O2vpg4PHeDDPzwoQzbVz32ymtrK6tb5Q3K1vbO7t71f2DBx2nilCfxDxWnRBrypmkvmGG006iKBYhp+1wfJP77UeqNIvlvZkkNBB4KFnECDa5lNSfTvvVmttwZ0DLxCtIDQq0+tWv3iAmqaDSEI617npuYoIMK8MIp9NKL9U0wWSMh7RrqcSC6iCb3TpFJ1YZoChWtqRBM/X3RIaF1hMR2k6BzUgvern4n9dNTXQZZEwmqaGSzBdFKUcmRvnjaMAUJYZPLMFEMXsrIiOsMDE2nooNwVt8eZn4Z42rhnt3XmteF2mU4QiOoQ4eXEATbqEFPhAYwTO8wpsjnBfn3fmYt5acYuYQ/sD5/AHo5o2u</latexit>
+
+a
+
+<latexit sha1_base64="Z70W0ninmevicTzhk+BvV8aqe4s=">AAACUXicbVFLSwMxGPy6vlsfVY9egsWioGVXBPUgCL3oTcHaQlOXbJrVYJJdkqxYlv5GQbz4Q7x4UNNa8NEOBIaZ+ciXSZQKbqzvvxa8qemZ2bn5hWJpcWl5pby6dm2STFPWoIlIdCsihgmuWMNyK1gr1YzISLBmdF8f+M0Hpg1P1JXtpawjya3iMafEOiks82or5AgbLlG6/biDTlAd42IVc2VDchMNRbzbfXRG4AzMpduKGYR+IvVJfrXuFBxrQvOgn0d7pB+WK37NHwKNk2BEKjDCRVh+xt2EZpIpSwUxph34qe3kRFtOBesXcWZYSug9uWVtRxWRzHTyYSV9tOWULooT7Y6yaKj+nsiJNKYnI5eUxN6Z/95AnOS1MxsfdXKu0swyRb8vijOBbIIG/aIu14xa0XOEUM3drojeEdeDdb9QdCUE/588Thr7teOaf3lQOT0ftTEPG7AJ2xDAIZzCGVxAAyg8wRt8wGfhpfDuged9R73CaGYd/sArfQEjbq5z</latexit>
+
+x4 = b
+
+p(x)
+
+C dx = 1
+
+=) C =
+
+xi
+
+1
+
+1
+b
+
+<latexit sha1_base64="5YmZt5vT2pp+mnPiYC0V17aR8FM=">AAAB9HicbVBNS8NAEJ3Ur1q/oh69LBbBiyURQb0VvXisYGyhjWWz3bRLN5uwu1FKyP/w4kHFqz/Gm//GTZuDtj4YeLw3w8y8IOFMacf5tipLyyura9X12sbm1vaOvbt3r+JUEuqRmMeyE2BFORPU00xz2kkkxVHAaTsYXxd++5FKxWJxpycJ9SM8FCxkBGsjPfRCiUnm5llwgvNa3647DWcKtEjcktShRKtvf/UGMUkjKjThWKmu6yTaz7DUjHCa13qpogkmYzykXUMFjqjys+nVOToyygCFsTQlNJqqvycyHCk1iQLTGWE9UvNeIf7ndVMdXvgZE0mqqSCzRWHKkY5REQEaMEmJ5hNDMJHM3IrICJsgtAmqCMGdf3mReKeNy4Zze1ZvXpVpVOEADuEYXDiHJtxACzwgIOEZXuHNerJerHfrY9ZascqZffgD6/MHTrmR7A==</latexit>
+
+a
+
+b
+
+a
+
+x0 = a
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Example: Uniform Monte Carlo Estimator
+Z Carlo
+Let us define the Monte
+estimator for the definite
+b
+integral of given function f (x)dx
+a
+
+Z b
+
+Definite integral
+
+f (x)dx
+
+a
+
+1
+
+Uniform random variable
+
+Xi ⇠ p(x) =
+
+Basic Monte Carlo estimator
+
+Yi = f (Xi ) N
+b aX
+FN =
+f (Xi )
+N i=1
+
+GAMES101
+
+13
+
+b
+
+a
+
+Lingqi Yan, UC Santa Barbara
+
+Monte Carlo Integration
+
+Z
+
+N
+X
+
+1
+f (Xi )
+f (x) dx =
+N i=1 p(Xi )
+
+Xi ⇠ p(x) =
+Yi = f (Xi )
+
+Some notes:
+• The more samples, the less variance.
+• Sample on x, integrate on x.
+
+GAMES101
+
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Path Tracing
+
+Motivation: Whitted-Style Ray Tracing
+Whitted-style ray tracing:
+
+- Always perform specular reflections / refractions
+- Stop bouncing at diffuse surfaces
+Are these simplifications reasonable?
+High level: let’s progressively improve upon Whitted-Style
+Ray Tracing and lead to our path tracing algorithm!
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Whitted-Style Ray Tracing: Problem 1
+Where should the ray be reflected for glossy materials?
+
+Glossy reflection
+
+Mirror reflection
+The Utah teapot
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Whitted-Style Ray Tracing: Problem 2
+No reflections between diffuse materials?
+
+Path traced:
+direct illumination
+
+Path traced:
+global illumination
+The Cornell box
+
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Whitted-Style Ray Tracing is Wrong
+But the rendering equation is correct
+
+Lo (p, !o ) = Le (p, !o ) +
+<latexit sha1_base64="qlfUq4ICI/tSbeFv8C0BB6pS6pQ=">AAACZXicbVFNaxsxENVuvxy3aZ005JJDRU3BISHslkJ7KYTmkoOhKdRJwOsKrXbWEdHHIs0WzNZ/srdee+nfiNZxEzfpgODNe/PQ6CmvlPSYJL+i+MHDR4+fdNa6T5+tP3/R29g89bZ2AkbCKuvOc+5BSQMjlKjgvHLAda7gLL88avWz7+C8tOYrziqYaD41spSCY6BY78eQ2UG1n1kNU87s7schg9V+L5MGWZN9bvtve/Mhk7ey3C2ZW2lvbXRgMlFYpDeT2X6mOV443RTzvyTr9ZODZFH0PkiXoE+WdcJ6P7PCilqDQaG49+M0qXDScIdSKJh3s9pDxcUln8I4QMM1+EmzSGlO3wSmoKV14RikC3bV0XDt/UznYbLd1N/VWvJ/2rjG8sOkkaaqEYy4vqisFUVL28hpIR0IVLMAuHAy7ErFBXdcYPiYbgghvfvk++D07UEa8Jd3/cNPyzg6ZIe8JgOSkvfkkByTEzIigvyOOtFGtBn9idfjrXj7ejSOlp6X5J+KX10B7g+3Lg==</latexit>
+
+Z
+
+⌦+
+
+Li (p, !i )fr (p, !i , !o )(n · !i ) d!i
+
+But it involves
+- Solving an integral over the hemisphere, and
+- Recursive execution
+How do you solve an integral numerically?
+
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+A Simple Monte Carlo Solution
+Suppose we want to render one pixel (point) in the
+following scene for direct illumination only
+
+Note: this is an area light
+
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+A Simple Monte Carlo Solution
+Abuse the concept of Reflection Equation a little bit
+
+Lo (p, !o ) =
+
+Z
+
+⌦+
+
+Li (p, !i )fr (p, !i , !o )(n · !i ) d!i
+
+(again, we assume all directions are pointing outwards)
+
+Fancy as it is, it’s still just an integration over directions
+So, of course we can solve it using
+Monte Carlo integration!
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+A Simple Monte Carlo Solution
+We want to compute the radiance at p towards the camera
+
+Lo (p, !o ) =
+
+Z
+
+⌦+
+
+Li (p, !i )fr (p, !i , !o )(n · !i ) d!i
+
+Monte Carlo integration:
+What’s our “f(x)”?
+
+Z b
+a
+
+f (x) dx ⇡
+
+N
+X
+1
+f (Xk )
+
+N
+
+k=1
+
+Xk ⇠ p(x)
+
+p(Xk )
+
+Li (p, !i )fr (p, !i , !o )(n · !i )
+
+What’s our pdf?
+
+p(!i ) = 1/2⇡
+(assume uniformly sampling the hemisphere)
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+A Simple Monte Carlo Solution
+So, in general
+
+Lo (p, !o ) =
+
+Z
+
+Li (p, !i )fr (p, !i , !o )(n · !i ) d!i
+
+⌦+
+N
+X
+
+1
+Li (p, !i )fr (p, !i , !o )(n · !i )
+⇡
+N i=1
+p(!i )
+(note: abuse notation a little bit for i)
+
+What does it mean?
+A correct shading algorithm for direct illumination!
+
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+A Simple Monte Carlo Solution
+Lo (p, !o ) ⇡
+
+N
+X
+1
+Li (p, !i )fr (p, !i , !o )(n · !i )
+
+N i=1
+
+p(!i )
+
+shade(p, wo)
+Randomly choose N directions wi~pdf
+Lo = 0.0
+For each wi
+Trace a ray r(p, wi)
+If ray r hit the light
+Lo += (1 / N) * L_i * f_r * cosine / pdf(wi)
+Return Lo
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Introducing Global Illumination
+One more step forward: what if a ray hits an object?
+
+Q
+
+P
+
+Q also reflects light to P! How much? The dir. illum. at Q!
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Introducing Global Illumination
+shade(p, wo)
+Randomly choose N directions wi~pdf
+Lo = 0.0
+For each wi
+Trace a ray r(p, wi)
+If ray r hit the light
+Lo += (1 / N) * L_i * f_r * cosine / pdf(wi)
+Else If ray r hit an object at q
+Lo += (1 / N) * shade(q, -wi) * f_r * cosine
+/ pdf(wi)
+Return Lo
+
+Is it done? No.
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Path Tracing
+Problem 1: Explosion of #rays as #bounces go up:
+#rays = N#bounces
+
+100 -> 10000
+
+10000 -> 1000000
+
+1 -> 100
+
+Key observation: #rays will not explode iff N = ???????
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Path Tracing
+From now on, we always assume that
+only 1 ray is traced at each shading point:
+shade(p, wo)
+Randomly choose ONE direction wi~pdf(w)
+Trace a ray r(p, wi)
+If ray r hit the light
+Return L_i * f_r * cosine / pdf(wi)
+Else If ray r hit an object at q
+Return shade(q, -wi) * f_r * cosine / pdf(wi)
+
+This is path tracing! (FYI, Distributed Ray Tracing if N != 1)
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Generation
+But this will be noisy!
+No problem, just trace more paths through each pixel and
+average their radiance!
+
+pixel
+
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Ray Generation
+Very similar to ray casting in ray tracing
+ray_generation(camPos, pixel)
+Uniformly choose N sample positions within the pixel
+pixel_radiance = 0.0
+For each sample in the pixel
+Shoot a ray r(camPos, cam_to_sample)
+If ray r hit the scene at p
+pixel_radiance += 1 / N * shade(p, sample_to_cam)
+Return pixel_radiance
+
+GAMES101
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Path Tracing
+Now are we good? Any other problems in shade()?
+shade(p, wo)
+Randomly choose ONE direction wi~pdf(w)
+Trace a ray r(p, wi)
+If ray r hit the light
+Return L_i * f_r * cosine / pdf(wi)
+Else If ray r hit an object at q
+Return shade(q, -wi) * f_r * cosine / pdf(wi)
+
+Problem 2: The recursive algorithm will never stop!
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Path Tracing
+Dilemma: the light does not stop bouncing indeed!
+Cutting #bounces == cutting energy!
+
+3 bounces
+
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Path Tracing
+Dilemma: the light does not stop bouncing indeed!
+Cutting #bounces == cutting energy!
+
+17 bounces
+
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Solution: Russian Roulette (RR)
+（俄罗斯轮盘赌）
+
+Russian Roulette is all about probability
+With probability 0 < P < 1, you are fine
+With probability 1 - P, otherwise
+
+Example: two bullets,
+Survival probability P = 4 / 6
+
+GAMES101
+
+34
+
+Lingqi Yan, UC Santa Barbara
+
+Solution: Russian Roulette (RR)
+Previously, we always shoot a ray at a shading point
+and get the shading result Lo
+Suppose we manually set a probability P (0 < P < 1)
+With probability P, shoot a ray and
+return the shading result divided by P: Lo / P
+With probability 1-P, don’t shoot a ray and you’ll get 0
+In this way, you can still expect to get Lo!:
+E = P * (Lo / P) + (1 - P) * 0 = Lo
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Solution: Russian Roulette (RR)
+shade(p, wo)
+Manually specify a probability P_RR
+Randomly select ksi in a uniform dist. in [0, 1]
+If (ksi > P_RR) return 0.0;
+
+Randomly choose ONE direction wi~pdf(w)
+Trace a ray r(p, wi)
+If ray r hit the light
+Return L_i * f_r * cosine / pdf(wi) / P_RR
+Else If ray r hit an object at q
+Return shade(q, -wi) * f_r * cosine / pdf(wi) / P_RR
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Path Tracing
+Now we already have a correct version of path tracing!
+But it’s not really efficient.
+
+Low SPP (samples per pixel)
+noisy results
+GAMES101
+
+High SPP
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling the Light
+Understanding the reason of being inefficient
+
+Every 5 rays,
+
+500 rays,
+
+50000 rays,
+
+there will be 1 ray hitting the light. So a lot of rays are “wasted”
+if we uniformly sample the hemisphere at the shading point.
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling the Light (pure math)
+Monte Carlo methods allows any sampling methods, so
+we can sample the light (therefore no rays are “wasted”)
+Assume uniformly sampling on the light:
+pdf = 1 / A (because ∫pdf dA = 1)
+But the rendering equation integrates
+on the solid angle: Lo = ∫Li fr cos dω.
+Recall Monte Carlo Integration:
+Sample on x & integrate on x
+Since we sample on the light, can we integrate on the light?
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling the Light
+Need to make the rendering equation as an integral of dA
+Need the relationship between dω and dA
+Easy! Recall the alternative def. of solid angle:
+Projected area on the unit sphere
+
+(Note: θ’, not θ)
+
+GAMES101
+
+40
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling the Light
+Then we can rewrite the rendering equation as
+Z
+Lo (x, !o ) =
+Li (x, !i )fr (x, !i , !o ) cos ✓ d!i
+⌦+
+Z
+cos ✓ cos ✓0
+=
+Li (x, !i )fr (x, !i , !o ) 0
+dA
+2
+kx
+xk
+A
+Now an integration on the light!
+Monte Carlo integration:
+“f(x)”: everything inside
+Pdf: 1 / A
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling the Light
+Previously, we assume the light is “accidentally” shot by
+uniform hemisphere sampling
+Now we consider the radiance coming from two parts:
+1. light source (direct, no need to have RR)
+2. other reflectors (indirect, RR)
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling the Light
+shade(p, wo)
+# Contribution from the light source.
+Uniformly sample the light at x’ (pdf_light = 1 / A)
+L_dir = L_i * f_r * cos θ * cos θ’ / |x’ - p|^2 / pdf_light
+
+# Contribution from other reflectors.
+L_indir = 0.0
+Test Russian Roulette with probability P_RR
+Uniformly sample the hemisphere toward wi (pdf_hemi = 1 / 2pi)
+Trace a ray r(p, wi)
+If ray r hit a non-emitting object at q
+L_indir = shade(q, -wi) * f_r * cos θ / pdf_hemi / P_RR
+
+Return L_dir + L_indir
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling the Light
+One final thing: how do we know if the sample on the light is
+not blocked or not?
+# Contribution from the light source.
+L_dir = 0.0
+Uniformly sample the light at x’ (pdf_light = 1 / A)
+Shoot a ray from p to x’
+If the ray is not blocked in the middle
+L_dir = …
+
+Now path tracing is finally done!
+p
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Some Side Notes
+• Path tracing (PT) is indeed difficult
+- Consider it the most challenging in undergrad CS
+- Why: physics, probability, calculus, coding
+- Learning PT will help you understand deeper in these
+• Is it still “Introductory”?
+- Not really, but it’s “modern" :)
+- And so learning it will be rewarding also because …
+
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Is Path Tracing Correct?
+Yes, almost 100% correct, a.k.a. PHOTO-REALISTIC
+
+Path traced:
+global illumination
+
+Photo
+
+The Cornell box — http://www.graphics.cornell.edu/online/box/compare.html
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Ray tracing: Previous vs. Modern Concepts
+• Previous
+- Ray tracing == Whitted-style ray tracing
+• Modern (my own definition)
+- The general solution of light transport, including
+- (Unidirectional & bidirectional) path tracing
+- Photon mapping
+- Metropolis light transport
+- VCM / UPBP…
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Things we haven’t covered / won’t cover
+• Uniformly sampling the hemisphere
+- How? And in general, how to sample any function?
+(sampling)
+• Monte Carlo integration allows arbitrary pdfs
+- What's the best choice? (importance sampling)
+• Do random numbers matter?
+- Yes! (low discrepancy sequences)
+
+GAMES101
+
+48
+
+Lingqi Yan, UC Santa Barbara
+
+Things we haven’t covered / won’t cover
+• I can sample the hemisphere and the light
+- Can I combine them? Yes! (multiple imp. sampling)
+• The radiance of a pixel is the average of radiance on all
+paths passing through it
+- Why? (pixel reconstruction filter)
+• Is the radiance of a pixel the color of a pixel?
+- No. (gamma correction, curves, color space)
+• Asking again, is path tracing still “Introductory”?
+- This time, yes. Fear the science, my friends.
+GAMES101
+
+49
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

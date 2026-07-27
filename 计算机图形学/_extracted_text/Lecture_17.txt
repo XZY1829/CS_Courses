@@ -1,0 +1,638 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 17:
+Materials and Appearances
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 6: 82 submissions so far (note: 1.5 weeks for it)
+• New assignment on path tracing has been worked out!
+- Followed the pseudocode in the last lecture
+as much as possible
+- Will be released this Friday
+• Final project ideas: to be released soon
+• From today: the lectures will be much easier!
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+The Appearance of Natural Materials
+
+[Courtesy of Prof. Henrik Wann Jensen, UCSD]
+
+What is Material in Computer Graphics?
+
+3D coffee mug model
+
+Rendered
+
+[From TurboSquid, created by artist 3dror]
+
+Rendered
+
+Material == BRDF
+
+What is this material?
+
+Diffuse / Lambertian
+Material (BRDF)
+[Mitsuba renderer, Wenzel Jakob, 2010]
+
+Uniform colored diffuse BRDF
+
+GAMES101
+
+Textured diffuse BRDF
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+Diffuse / Lambertian Material
+Light is equally reflected in each output direction
+Suppose the incident lighting is uniform:
+
+Lo (!o ) =
+
+Z
+
+fr Li (!i ) cos ✓i d!i
+H2
+Z
+= fr Li
+(!i ) cos ✓i d!i
+H2
+
+fr = c
+
+= ⇡fr Li
+
+⇢
+fr =
+⇡
+
+GAMES101
+
+— albedo (color)
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+What is this material?
+
+Glossy material (BRDF)
+[Mitsuba renderer, Wenzel Jakob, 2010]
+
+Copper
+
+GAMES101
+
+Aluminum
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+What is this material?
+
+Ideal reflective / refractive
+material (BSDF*)
+[Mitsuba renderer, Wenzel Jakob, 2010]
+
+Air <-> glass interface
+(with absorption)
+
+Air <-> water interface
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Perfect Specular Reflection
+
+[Zátonyi Sándor]
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Perfect Specular Reflection
+Top-down view
+(looking down on surface)
+
+!i
+
+~n
+
+!o
+i
+
+✓i ✓o
+
+✓ = ✓o = ✓i
+
+o
+
+o = ( i + ⇡)mod 2⇡
+
+!o + !i = 2 cos ✓ ~n = 2(!i · ~n)~n
+!o =
+GAMES101
+
+!i + 2(!i · ~n)~n
+14
+
+Lingqi Yan, UC Santa Barbara
+
+Perfect Specular Reflection BRDF
+
+PBRT
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Specular Refraction
+In addition to reflecting off surface, light
+may be transmitted through surface.
+Light refracts when it enters a new
+medium.
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Snell’s Law
+Transmitted angle depends on
+index of refraction (IOR) for incident ray
+index of refraction (IOR) for exiting ray
+
+~n
+
+!i
+
+Medium
+
+⌘*
+
+Vacuum
+
+1.0
+
+Air (sea level) 1.00029
+Water (20°C)
+
+1.333
+
+Glass
+
+1.5-1.6
+
+Diamond
+
+2.42
+
+* index of refraction is
+wavelength dependent
+(these are averages)
+
+!t
+⌘i sin ✓i = ⌘t sin ✓t
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Law of Refraction
+!i
+
+~n
+
+!t
+
+⌘i sin ✓i = ⌘t sin ✓t
+q
+cos ✓t = 1 sin2 ✓t
+s
+✓ ◆2
+⌘i
+2
+= 1
+sin ✓i
+⌘t
+s
+✓ ◆2
+⌘i
+= 1
+(1 cos2 ✓i )
+⌘t
+
+Total internal reflection:
+
+1
+
+When light is moving from a more optically dense
+medium to a less optically dense medium:
+
+⌘i
+>1
+⌘t
+
+Light incident on boundary from large enough angle will
+not exit medium.
+
+✓
+
+⌘i
+⌘t
+
+◆2
+
+(1
+
+cos2 ✓i ) < 0
+
+Snell’s Window / Circle
+Total internal reflection
+
+[Livingston and Lynch]
+
+GAMES101
+
+19
+
+Lingqi Yan, UC Santa Barbara
+
+Fresnel Reflection / Term
+（菲涅⽿项）
+
+Reflectance depends on incident angle (and polarization of light)
+
+This example: reflectance increases with grazing angle
+[Lafortune et al. 1997]
+
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Fresnel Term (Dielectric, ⌘ =1.5)
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Fresnel Term (Conductor)
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Fresnel Term — Formulae
+Accurate: need to consider polarization
+
+Approximate: Schlick’s approximation
+
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Microfacet Material
+
+Microfacet Material: Motivation
+
+https://twitter.com/Cmdr_Hadfield/status/318986491063828480/photo/1
+
+Microfacet Theory
+Rough surface
+• Macroscale: flat & rough
+• Microscale: bumpy & specular
+Individual elements of surface act like mirrors
+• Known as Microfacets
+• Each microfacet has its own normal
+microsurface
+
+macrosurface
+
+Air
+
+Material
+CS184/284A
+
+Ren Ng
+
+Microfacet BRDF
+• Key: the distribution of microfacets’ normals
+• Concentrated <==> glossy
+
+• Spread <==> diffuse
+
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Microfacet BRDF
+• What kind of microfacets reflect wi to wo?
+(hint: microfacets are mirrors)
+half vector h
+
+wi
+wo
+
+shadowingmasking
+term
+
+Fresnel
+term
+
+distribution
+of
+normals
+
+F(i, h)G(i, o, h)D(h)
+f (i, o) =
+4(n, i)(n, o)
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Microfacet BRDF: Examples
+
+[Autodesk Fusion 360]
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Isotropic / Anisotropic Materials (BRDFs)
+
+Inside an elevator
+
+Slide courtesy of Prof. Ren Ng, UC Berkeley
+CS180, Winter 2020
+
+30
+
+Lingqi Yan, UC Santa Barbara
+
+Isotropic / Anisotropic Materials (BRDFs)
+• Key: directionality of underlying surface
+Isotropic
+
+Anisotropic
+
+Surface (normals)
+GAMES101
+
+31
+
+BRDF (fix wi, vary wo)
+Lingqi Yan, UC Santa Barbara
+
+Anisotropic BRDFs
+Reflection depends on azimuthal angle
+
+fr (✓i ,
+
+i ; ✓r ,
+
+/
+
+r ) = fr (✓i , ✓r ,
+
+i)
+
+r
+
+Results from oriented microstructure of
+surface, e.g., brushed metal
+
+CS180, Winter 2020
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Anisotropic BRDF: Brushed Metal
+• How is the pan brushed?
+
+[VRay renderer]
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Anisotropic BRDF: Nylon
+
+[Westin et al. 1992]
+
+Anisotropic BRDF: Velvet
+
+[Westin et al. 1992]
+
+Anisotropic BRDF: Velvet
+
+[https://www.youtube.com/watch?v=2hjoW8TYTd4]
+[Westin et al. 1992]
+
+Properties of BRDFs
+• Non-negativity
+fr (!i ! !r )
+
+• Linearity
+Lr (p, !r ) =
+
+Z
+
+H2
+
+0
+
+fr (p, !i ! !r ) Li (p, !i ) cos ✓i d!i
+
+[Sillion et al. 1990]
+
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Properties of BRDFs
+• Reciprocity principle
+fr (!r ! !i ) = fr (!i ! !r )
+
+• Energy conservation
+8!r
+GAMES101
+
+Z
+
+H2
+
+fr (!i ! !r ) cos ✓i d!i  1
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Properties of BRDFs
+• Isotropic vs. anisotropic
+• If isotropic, fr (✓i , i ; ✓r , r ) = fr (✓i , ✓r , r
+• Then, from reciprocity,
+fr (✓i , ✓r ,
+
+GAMES101
+
+r
+
+i ) = fr (✓r , ✓i ,
+
+39
+
+i
+
+i)
+
+r ) = fr (✓i , ✓r , | r
+
+i |)
+
+Lingqi Yan, UC Santa Barbara
+
+Measuring BRDFs
+
+Measuring BRDFs: Motivation
+Avoid need to develop / derive models
+
+• Automatically includes all of the scattering effects present
+Can accurately render with real-world materials
+
+• Useful for product design, special effects, ...
+Theory vs. practice:
+
+[Bagher et al. 2012]
+
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Image-Based BRDF Measurement
+
+[Marschner et al. 1999]
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Measuring BRDFs: gonioreflectometer
+
+Spherical gantry at UCSD
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Measuring BRDFs
+General approach:
+foreach outgoing direction wo
+move light to illuminate surface with a thin beam from wo
+for each incoming direction wi
+move sensor to be at direction wi from surface
+measure incident radiance
+
+Improving efficiency:
+
+• Isotropic surfaces reduce dimensionality from 4D to 3D
+• Reciprocity reduces # of measurements by half
+• Clever optical systems…
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Challenges in Measuring BRDFs
+• Accurate measurements at grazing angles
+• Important due to Fresnel effects
+• Measuring with dense enough sampling to capture high
+frequency specularities
+
+• Retro-reflection
+• Spatially-varying reflectance, ...
+
+GAMES101
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Representing Measured BRDFs
+Desirable qualities
+
+• Compact representation
+• Accurate representation of measured data
+• Efficient evaluation for arbitrary pairs of directions
+• Good distributions available for importance sampling
+
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Tabular Representation
+Store regularly-spaced samples in
+
+(✓i , ✓o , | i
+o |)
+• Better: reparameterize angles
+to better match specularities
+
+Generally need to resample
+measured values to table
+Very high storage requirements
+
+MERL BRDF Database
+[Matusik et al. 2004]
+90 * 90 * 180 measurements
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

@@ -1,0 +1,194 @@
+邰颖
+南京大学
+智能科学与技术学院
+并发：锁
+锁（Locks）：基本思想
+•确保任何临界区的执行看起来都是一个单独的原子指令（atomic instruction）
+•举例说明：对一个共享变量的经典更新操作：
+•需要在临界区周围添加一些代码：
+锁（Locks）：基本思想
+•锁变量保存着锁的当前状态：
+•
+可用状态（available）：也称未锁定（unlocked）或自由状态（free）：
+• 此时没有任何线程占用锁。
+•
+占用状态（acquired）：也称已锁定（locked）或持有状态（held）：
+• 此时有且仅有一个线程占用锁，并假设该线程正处于临界区内。
+lock()的语义
+•lock()
+•
+尝试获取锁
+•
+如果没有其他线程持有该锁，则当前线程会获得该锁
+•
+进入临界区
+• 当前线程被称为锁的持有者
+•
+当第一个线程持有锁并进入临界区时，其他线程将被禁止进入该临界区
+Pthread锁- mutex
+•
+POSIX线程库中锁称为mutex（互斥锁）
+•
+mutex用于线程之间实现互斥：
+•
+可以使用不同的锁来保护不同的共享变量，从而提高并发性(concurrency)，
+这是一个更细粒度（fine-grained）的方法。
+实现一个锁
+•高效的锁能够以较低的代价提供互斥访问
+•构建有效的锁机制通常需要硬件（hardware）和操作系统（OS）的支持。
+评价锁- 基本标准
+•
+互斥性（Mutual exclusion）
+•锁是否能够正确有效地工作，防止多个线程同时进入临界区（critical section）？
+•
+公平性（Fairness）
+•每个竞争锁的线程，在锁释放后，是否都有公平的机会获得锁？（避免线程饥
+饿问题，Starvation）
+•
+性能（Performance）
+•使用锁带来的额外时间开销是多少？（没有竞争、存在竞争等场景）
+实现锁方法一：控制中断（Controlling Interrupts ）
+•
+在临界区禁用中断（Disable Interrupts）
+•这是实现互斥（mutual exclusion）的最早期解决方案之一。
+•最初设计用于单处理器（single-processor）系统，例如x86架构的STI（启用
+中断）和CLI（禁用中断）指令。
+实现锁方法一：控制中断（续）
+•
+存在的问题：
+1.过度信任应用程序（trust）
+•
+如果程序是贪婪（greedy）或恶意（malicious）的，就可能完全占用
+处理器资源。
+2.无法用于多处理器（multiprocessors）系统
+3.禁用或启用中断的代码在现代CPU上执行效率很低（slowly）
+为什么需要硬件支持？
+•
+第一次尝试：使用一个标志（flag）来表示锁是否被持有（held）。
+为什么需要硬件支持？（续）
+•
+问题1：无法实现真正的互斥（假设初始flag=0）
+•
+问题2：自旋等待（Spin-waiting）会浪费大量的CPU时间
+•
+因此，我们需要硬件提供支持的原子指令：
+•测试并设置（test-and-set）指令，也称为原子交换（atomic exchange）指令。
+Peterson算法
+•
+每个线程都有一个表示意图的标志（flag），通过轮流判断来决定谁能够进入临界区
+// 记录轮到哪个线程
+// 初始轮次由线程0开始
+// 表示当前线程想进入临界区
+// 设置轮到另一个线程进入临界区
+硬件支持1 - Test-and-Set（原子交换）
+•一条支持创建简单锁的指令
+•返回（return）：测试ptr指向的旧值
+•同时更新（Simultaneously update）：将值设置为new
+•这个操作序列是原子执行的
+使用Test-and-Set实现的简单自旋锁
+注意：为了在单处理器环境下正确工作，它需要一个抢占式（preemptive）调度器
+// 初始化锁，设置锁为可用状态（flag=0）
+// 如果锁已被占用，则进入自旋等待状态
+// 将锁标记为可用状态
+prodcon_race.c
+prodcon_race.c（续）
+gcc -o prodcon_race -g prodcon_race.c -Wall –pthread
+./prodcon_race
+prodcon_tas.c
+prodcon_tas.c（续）
+gcc -o prodcon_tas -g prodcon_tas.c -Wall –pthread
+./prodcon_tas
+评估自旋锁（Spin Locks）
+正确性（Correctness）：是，满足互斥性要求
+•自旋锁只允许一个线程进入临界区
+公平性（Fairness）：否
+•自旋锁不提供任何公平性保证
+•实际上，一个线程可能会永远地自旋，导致饿死
+性能（Performance）：
+•在单核CPU上，性能开销可能非常痛苦
+•
+例：如果持有锁的线程在临界区内被抢占，其他线程调度时只会执行
+“自旋”代码
+•如果线程数大致等于CPU数，自旋锁工作得相当不错
+•
+例：若等待锁的线程运行在与持锁线程不同的CPU上，且临界区较短，
+则不会有问题
+硬件支持2：比较并交换Compare-and-Swap
+•测试地址(ptr) 所指向的值是否等于expected
+•
+如果相等，更新ptr指向的内存值为new
+•
+无论是否更新，返回该内存位置的实际值
+prodcon_cas.c
+prodcon_cas.c（续）
+gcc -o prodcon_cas -g prodcon_cas.c -Wall –pthread
+./prodcon_cas
+Compare-and-Swap（续）
+•CAS：C可调用的X86版本
+硬件支持3：链接的加载和条件式存储指令
+•条件式存储只有上一次加载的地址在期间都没有更新时，才会成功
+•Success: 返回1，将ptr的值更新为value
+•Fail：返回0，不更新ptr的值
+链接的加载和条件式存储指令
+硬件支持4：获取并增加（Fetch-And-Add）
+•原子地返回特定地址的旧值，并且让该值自增一
+Ticket锁：一种公平的自旋锁
+•Ticket锁可以通过Fetch-And-Add建立
+•
+确保所有线程中的程序（不像自旋锁）- 〉公平
+// ticket: 下一个线程可以领取的票号
+// turn: 当前允许进入临界区的票号
+// 原子地领取ticket票号
+//原子地增加turn，允许下一票号进入
+自旋过多：需要操作系统的支持
+•基于硬件的自旋锁是简单的，有效的
+•在一些例子中，这些方案可能非常低效
+•任何时间一个线程在自旋，它浪费一整个时间片，不做任何事，仅仅检查值
+如何避免自旋？我们也需要操作系统的支持！
+一个简单的方法：放弃CPU
+•在要自旋时，放弃CPU，让其他线程执行
+•操作系统可以通过yield()系统调用，将运行（running）态变为就绪（ready）态
+•多线程场景，上下文切换的损失是显著的；同时饿死问题仍然存在
+使用队列：休眠代替自旋
+•使用队列保持跟踪那些在等待进入锁的线程
+•避免自旋过多、或者立刻放弃CPU
+• park()
+•让调用线程休眠（sleep）
+• unpark(threadID)
+•唤醒threadID 标识的特定线程
+使用队列：休眠代替自旋
+使用队列：休眠代替自旋
+唤醒/等待竞争
+•线程A 在释放锁后，线程B 可能会进入park()，等待获取锁。
+•如果线程A 在调用park() 之前释放锁，线程B 可能因无法被唤醒而一直处于休眠状态
+• Solaris通过一个第三方系统调用setpark()解决该问题：
+•在调用park() 之前，线程可以指示它即将进入休眠状态。
+•如果线程在调用park() 之前被中断，另一个线程可能会在park() 被实际调用之前
+调用unpark()，从而导致随后的park() 操作立即返回，而不会让线程进入休眠。
+futex in Linux：不同OS，不同实现
+•Linux提供futex，类似于Solaris 的接口park/unpark，但提供了更多内核功能
+• futex_wait(address, expected)
+•将调用线程休眠（sleep）
+•如果address 处的值等于expected，就会让调线程睡眠。否则，调用立刻返回
+• futex_wake(address)
+•唤醒等待队列中的一个线程
+futex（续）
+•这段代码来自nptl 库（gnu libc 库的一部分）中lowlevellock.h
+•利用一个整数，记录锁是否被持有（整数的最高位）
+•其他所有位：等待者的个数
+futex（续）
+两阶段锁
+•两阶段锁意识到自旋可能很有用，尤其在很快就要释放锁的场景
+•第一阶段
+•先自旋一段时间，希望它可以获取锁
+•如果第一个自旋阶段没有获得锁，进入第二阶段
+•第二阶段
+•调用者会睡眠（sleep）
+•调用者直到锁可用时醒来（woken up）
+小结
+•介绍了锁的基本思想、互斥锁
+•介绍了构建锁的机制、对锁的评估
+•介绍了基于软件的方法（基于一个标志的方法，Peterson方法）
+•介绍了硬件支持的方法（test-and-set、Compare-and-Swap、load-linked and stored-
+conditional、fetch-and-add等）
+•介绍了操作系统支持（例如Solaris 的park()和unpark()原语，Linux 的futex）

@@ -1,0 +1,735 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 10:
+Geometry 1 (Introduction)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 3
+- The framework has been updated
+- Together with an “FAQ” section in the BBS
+
+• New TAs
+- Peng Yu (ᐴỨ)҅BUAA҅y2505418927@gmail.com
+- Wenxian Guo (᮳෈Ẍ)҅ZJU҅wxguojlu@hotmail.com
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lectures
+• Shading 1 & 2
+- Blinn-Phong reflectance model
+- Shading models / frequencies
+- Graphics Pipeline
+- Texture mapping
+
+• Shading 3
+- Barycentric coordinates
+- Texture antialiasing (MIPMAP)
+- Applications of textures
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lectures
+
+today
+
+Today
+• Applications of textures
+• Introduction to geometry (2nd part of this course!)
+- Examples of geometry
+- Various representations of geometry
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Applications of Textures
+
+Many, Many Uses for Texturing
+In modern GPUs, texture = memory + range query (filtering)
+
+• General method to bring data to fragment calculations
+Many applications
+
+• Environment lighting
+• Store microgeometry
+• Procedural textures
+• Solid modeling
+• Volume rendering
+•…
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+[Blinn & Newell 1976]
+
+Environment Map
+
+Light from the environment
+
+GAMES101
+
+Rendering with the environment
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Environmental Lighting
+
+Environment map (left) used to render realistic lighting
+
+GAMES101
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Spherical Environment Map
+
+Hand with Reflecting Sphere. M. C. Escher, 1935. lithograph
+
+GAMES101
+
+Light Probes, Paul Debevec
+
+10
+
+Lingqi Yan, UC Santa Barbara
+
+Spherical Map — Problem
+
+Prone to distortion (top and bottom parts)!
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Cube Map
+(u, v) = (1, 1)
+x=y=z
+
+right face has
+x > |y| and
+x > |z|
+
+(u, v) = (0, 0)
+x = –y = –z
+
+A vector maps to cube point along that direction.
+The cube is textured with 6 square texture maps.
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+[Emil Persson]
+
+Much less distortion!
+CS184/284A
+
+Need dir->face computation
+Ren Ng
+
+In an earlier paper 121, the author described
+This effect might be desirable for some
+the effect of aliasing on images made with color
+applications but undesirable for others. A scale
+texture mapping. The same problems can arise with
+invariant perturbation, D', must scale at the same
+this new form. That is, undesirable artifacts can
+An
+obvious
+choice
+for
+this
+is
+rate as N.
+enter the image in regions where the texture
+pattern maps into a small screen region. The
+D' = a D INI/IDI
+solution applied to color textures was to average
+the texture pattern over the region corresponding
+ID’1 = a INI
+to each picture element in the final image.
+The
+50
+bump texture definition function, however, does
+where a is independent of scales in P. The value
+not have a linear relationship to the intensity of
+of a is then the tangent of the effective rotation
+the final image. If the bump texture is averaged
+angle.
+the effect will be to smooth out the bumps rather
+than average
+the
+intensities.
+The correct
+What
+if
+it
+stores
+the
+height
+/
+normal?
+tan+' = ID'l/lNl = a
+solution to this problem would be to compute the
+intensities at some high sub-pixel resolution and
+One simple
+This can be defined in various ways.
+average them. Simply filtering the bump function
+choice is a generalization
+from themapping
+simple, flat
+Bump / normal
+can,
+however,
+reduce the more offensive artifacts
+-.
+unit square patch
+o f aliasing.
+Figure 10 shows the result of such
+an operation.
+
+Textures can affect shading!
+
+• Textures doesn’t have to only represent colors
+- Fake the detailed geometry
+
+8 Drawn
+FigureFigure
+A- Hand
+Bump Funtions
+Hand Drawn
+Functio
+height -> normal -> shading
+
+Relative height to the
+Before surface
+underlying
+:
+GAMES101
+
+After
+14
+
+Figure 10 - Filtering Bump Texture
+
+Lingqi Yan, UC Santa Barbara
+
+Bump Mapping
+Adding surface detail without adding more triangles
+
+• Perturb surface normal per pixel
+(for shading computations only)
+
+• “Height shift” per texel defined by a texture
+• How to modify normal vector?
+n=?
+
+p
+
+Bump texture
+b(u,v)
+
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+How to perturb the normal (in flatland)
+• Original surface normal n(p) = (0, 1)
+• Derivative at p is dp = c * [h(p+1) - h(p)]
+• Perturbed normal is then n(p) = (-dp, 1).normalized()
+
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+How to perturb the normal (in 3D)
+• Original surface normal n(p) = (0, 0, 1)
+• Derivatives at p are
+- dp/du = c1 * [h(u+1) - h(u)]
+- dp/dv = c2 * [h(v+1) - h(v)]
+• Perturbed normal is n = (-dp/du, -dp/dv, 1).normalized()
+• Note that this is in local coordinate!
+More will be elaborated in FAQ of HW3
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Textures can affect shading!
+• Displacement mapping — a more advanced approach
+- Uses the same texture as in bumping mapping
+- Actually moves the vertices
+
+Bump / Normal mapping
+GAMES101
+
+18
+
+Displacement mapping
+Lingqi Yan, UC Santa Barbara
+
+Ken Perlin
+
+GAMES101
+
+19
+
+Perlin noise, Ken Perlin
+
+3D Procedural Noise + Solid Modeling
+
+Lingqi Yan, UC Santa Barbara
+
+Provide Precomputed Shading
+
+Autodesk
+
+Simple
+shading
+GAMES101
+
+Ambient occlusion
+texture map
+20
+
+With ambient
+occlusion
+Lingqi Yan, UC Santa Barbara
+
+Marc Levoy
+
+3D Textures and Volume Rendering
+
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Shading 3
+- Applications of textures
+
+• Introduction to geometry
+- Examples of geometry
+- Various representations of geometry
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Examples of Geometry
+
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Examples of Geometry
+
+NetCarShow.com
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Examples of Geometry
+
+GAMES101
+
+25
+
+Lingqi Yan, UC Santa Barbara
+
+Examples of Geometry
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Examples of Geometry
+
+GAMES101
+
+27
+
+Lingqi Yan, UC Santa Barbara
+
+Examples of Geometry
+
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Examples of Geometry
+
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Examples of Geometry
+
+COVID-19
+GAMES101
+
+30
+
+I will call it
+“Trump Virus”
+forever.
+Lingqi Yan, UC Santa Barbara
+
+Adriana Franco, National Geographic
+
+Examples of Geometry
+
+GAMES101
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Many Ways to Represent Geometry
+Implicit
+
+• algebraic surface
+• level sets
+• distance functions
+• ...
+Explicit
+
+• point cloud
+• polygon mesh
+• subdivision, NURBS
+• ...
+Each choice best suited to a different task/type of geometry
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+“Implicit” Representations of Geometry
+Based on classifying points
+
+• Points satisfy some specified relationship
+E.g. sphere: all points in 3D, where x2+y2+z2 = 1
+
+f(x,y)
++1
+
+More generally, f(x,y,z) = 0
+f=0
+
+0
+
+-1
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Implicit Surface – Sampling Can Be Hard
+f (x, y, z) = (2
+
+p
+
+2
+2
+2
+2
+x +y ) +z
+
+What points lie on f(x,y,z) = 0?
+
+1
+
+y
+
+z
+Some tasks are hard with implicit representations
+
+x
+
+Implicit Surface – Inside/Outside Tests Easy
+2
+
+2
+
+f (x, y, z) = x + y + z
+Is (3/4, 1/2, 1/4) inside?
+
+2
+
+1
+
+y
+
+Just plug it in:
+f(x,y,z) = –1/8 < 0
+
+( 3/4, 1/2, 1/4 )
+
+Yes, inside.
+
+z
+Implicit representations make some tasks easy
+
+x
+
+“Explicit” Representations of Geometry
+All points are given directly or via parameter mapping
+Generally:
+
+Explicit Surface – Sampling Is Easy
+f (u, v) = ((2 + cos u) cos v, (2 + cos u) sin v, sin u)
+What points lie on this surface?
+
+y
+
+Just plug in (u,v) values!
+
+z
+Explicit representations make some tasks easy
+
+x
+
+Explicit Surface – Inside/Outside Test Hard
+f (u, v) = (cos u sin v, sin u sin v, cos v)
+Is (3/4, 1/2, 1/4) inside?
+
+y
+
+( 3/4, 1/2, 1/4 )
+
+z
+Some tasks are hard with explicit representations
+
+x
+
+No “Best” Representation – Geometry is Hard!
+
+“I hate meshes.
+I cannot believe how hard this is.
+Geometry is hard.”
+— David Baraff
+
+Senior Research Scientist
+Pixar Animation Studios
+
+Slide cribbed from Keenan Crane, cribbed from Jeff Erickson.
+
+Best Representation
+Depends on the Task!
+
+More Implicit Representations in
+Computer Graphics
+
+Many Implicit Representations in Graphics
+Algebraic surfaces
+Constructive solid geometry
+Level set methods
+Fractals
+...
+
+GAMES101
+
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Algebraic Surfaces (Implicit)
+Surface is zero set of a polynomial in x, y, z
+
+More complex shapes?
+
+GAMES101
+
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Constructive Solid Geometry (Implicit)
+Combine implicit geometry via Boolean operations
+Union
+Intersection
+
+Difference
+
+Boolean expressions:
+
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Distance Functions (Implicit)
+Instead of Booleans, gradually blend surfaces together using
+Distance functions:
+giving minimum distance (could be signed distance)
+from anywhere to object
+
+Distance Functions (Implicit)
+An Example: Blending (linear interp.) a moving boundary
+
+Blending Distance Functions (Implicit)
+Can blend any two distance functions d1, d2:
+
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Scene of Pure Distance Functions
+
+See https://iquilezles.org/www/articles/raymarchingdf/raymarchingdf.htm
+
+Level Set Methods (Also implicit)
+ҁ࿜ଘᵞ҂
+
+Closed-form equations are hard to describe complex shapes
+Alternative: store a grid of values approximating function
+-.55
+
+-.45
+
+-.35
+
+-.30
+
+-.25
+
+-.30
+
+-.25
+
+-.20
+
+-.10
+
+-.10
+
+-.20
+
+-.15
+
+-.10
+
+.10
+
+.15
+
+-.05
+
+.10
+
+.05
+
+.25
+
+.35
+
+.15
+
+.20
+
+.25
+
+.55
+
+.60
+
+Surface is found where interpolated values equal zero
+Provides much more explicit control over shape (like a
+texture)
+GAMES101
+
+49
+
+Lingqi Yan, UC Santa Barbara
+
+Level Sets from Medical Data (CT, MRI, etc.)
+Level sets encode, e.g., constant tissue density
+
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+Level Sets in Physical Simulation
+Level set encodes distance to air-liquid boundary
+
+See http://physbam.stanford.edu
+
+Fractals (Implicit)
+Exhibit self-similarity, detail at all scales
+“Language” for describing natural phenomena
+Hard to control shape!
+
+GAMES101
+
+52
+
+Lingqi Yan, UC Santa Barbara
+
+Implicit Representations - Pros & Cons
+Pros:
+
+• compact description (e.g., a function)
+• certain queries easy (inside object, distance to surface)
+• good for ray-to-surface intersection (more later)
+• for simple shapes, exact description / no sampling error
+• easy to handle changes in topology (e.g., fluid)
+Cons:
+
+• difficult to model complex shapes
+GAMES101
+
+53
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+(And thank Prof. Ravi Ramamoorthi and Prof. Ren Ng for many of the slides!)
+
+

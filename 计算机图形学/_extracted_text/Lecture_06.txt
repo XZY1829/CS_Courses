@@ -1,0 +1,897 @@
+Introduction to Computer Graphics
+GAMES101, Lingqi Yan, UC Santa Barbara
+
+Lecture 6:
+
+Rasterization 2
+(Antialiasing and Z-Buﬀering)
+
+http://www.cs.ucsb.edu/~lingqi/teaching/games101.html
+
+Announcements
+• Homework 1
+- Already 49 submissions so far!
+- In general, start early
+
+• Today’s topics are not easy
+- Having knowledge on Signal Processing is appreciated
+- But no worries if you don’t
+
+GAMES101
+
+2
+
+Lingqi Yan, UC Santa Barbara
+
+Last Lectures
+• Viewing
+- View + Projection + Viewport
+
+• Rasterizing triangles
+- Point-in-triangle test
+- Aliasing
+
+GAMES101
+
+3
+
+Lingqi Yan, UC Santa Barbara
+
+Today
+• Antialiasing
+- Sampling theory
+- Antialiasing in practice
+
+• Visibility / occlusion
+- Z-buffering
+
+GAMES101
+
+4
+
+Lingqi Yan, UC Santa Barbara
+
+Recap: Testing in/out △ at pixels’ centers
+
+GAMES101
+
+5
+
+Lingqi Yan, UC Santa Barbara
+
+Pixels are uniformly-colored squares
+
+GAMES101
+
+6
+
+Lingqi Yan, UC Santa Barbara
+
+Compare: The Continuous Triangle Function
+
+GAMES101
+
+7
+
+Lingqi Yan, UC Santa Barbara
+
+What’s Wrong With This Picture?
+
+Jaggies!
+GAMES101
+
+8
+
+Lingqi Yan, UC Santa Barbara
+
+Aliasing
+
+Is this the best we can do?
+Slide courtesy of Prof. Ren Ng, UC Berkeley
+CS180, Winter 2020
+
+9
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling is Ubiquitous in
+Computer Graphics
+
+Rasterization = Sample 2D Positions
+
+GAMES101
+
+11
+
+Lingqi Yan, UC Santa Barbara
+
+Photograph = Sample Image Sensor Plane
+
+GAMES101
+
+12
+
+Lingqi Yan, UC Santa Barbara
+
+Video = Sample Time
+
+Harold Edgerton Archive, MIT
+
+GAMES101
+
+13
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling Artifacts
+(Errors / Mistakes / Inaccuracies) in
+Computer Graphics
+
+Jaggies (Staircase Pattern)
+
+This is also an example of “aliasing” – a sampling error
+GAMES101
+
+15
+
+Lingqi Yan, UC Santa Barbara
+
+Moiré Patterns in Imaging
+[mwɑ:]
+
+lystit.com
+
+Skip odd rows and columns
+GAMES101
+
+16
+
+Lingqi Yan, UC Santa Barbara
+
+Wagon Wheel Illusion (False Motion)
+
+GAMES101
+
+17
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling Artifacts in Computer Graphics
+Artifacts due to sampling - “Aliasing”
+
+• Jaggies – sampling in space
+• Moire – undersampling images
+• Wagon wheel effect – sampling in time
+• [Many more] …
+Behind the Aliasing Artifacts
+
+• Signals are changing too fast (high frequency),
+but sampled too slowly
+
+GAMES101
+
+18
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing Idea:
+Blurring (Pre-Filtering) Before
+Sampling
+
+Rasterization: Point Sampling in Space
+
+Sample
+
+Note jaggies in rasterized triangle
+where pixel values are pure red or white
+GAMES101
+
+20
+
+Lingqi Yan, UC Santa Barbara
+
+Rasterization: Antialiased Sampling
+
+Pre-Filter
+
+Sample
+
+(remove frequencies above Nyquist) (?)
+
+Note antialiased edges in rasterized triangle
+where pixel values take intermediate values
+GAMES101
+
+21
+
+Lingqi Yan, UC Santa Barbara
+
+Point Sampling
+
+GAMES101
+
+22
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing
+
+GAMES101
+
+23
+
+Lingqi Yan, UC Santa Barbara
+
+Point Sampling vs Antialiasing
+
+GAMES101
+
+24
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing vs Blurred Aliasing
+
+(Sample then filter, WRONG!)
+GAMES101
+
+(Filter then sample)
+25
+
+Lingqi Yan, UC Santa Barbara
+
+But why?
+1. Why undersampling introduces aliasing?
+2. Why pre-filtering then sampling can do antialiasing?
+Let’s dig into fundamental reasons
+And look at how to implement antialiased rasterization
+
+GAMES101
+
+26
+
+Lingqi Yan, UC Santa Barbara
+
+Frequency Domain
+
+Sines and Cosines
+
+cos 2⇡x
+
+sin 2⇡x
+GAMES101
+
+28
+
+Lingqi Yan, UC Santa Barbara
+
+Frequencies cos 2⇡f x
+
+1
+f=
+T
+
+f =1
+cos 2⇡x
+f =2
+cos 4⇡x
+
+GAMES101
+
+29
+
+Lingqi Yan, UC Santa Barbara
+
+Fourier Transform
+Represent a function as a
+weighted sum of sines and
+cosines
+
+Joseph Fourier 1768 - 1830
+
+A 2A cos(t⇥)
+f (x) = +
+2
+GAMES101
+
+2A cos(3t⇥) 2A cos(5t⇥)
++
+3
+5
+30
+
+2A cos(7t⇥)
++ ···
+7
+Lingqi Yan, UC Santa Barbara
+
+Fourier Transform Decomposes A Signal Into Frequencies
+
+⇥
+
+f (x)e
+
+⇥ spatial
+
+domain
+
+iFx
+(!) =
+
+dx
+
+f (x)e
+
+2⇡i!x
+
+dx
+
+1
+
+Fourier transform
+
+Recall
+
+Z 1
+e
+
+ix
+
+F (!)e
+
+2⇡i!x
+
+F( ) =
+frequency
+domain
+
+Inverse transform
+
+f (x) =
+
+GAMES101
+
+Z 1
+
+d!
+
+1
+
+= cos x + i sin x
+
+31
+
+Lingqi Yan, UC Santa Barbara
+
+Higher Frequencies Need Faster Sampling
+Periodic sampling locations
+
+Low-frequency signal:
+sampled adequately
+for reasonable
+reconstruction
+
+f1(x)
+
+f2(x)
+
+f3(x)
+f4(x)
+
+High-frequency signal
+is insufficiently
+sampled:
+reconstruction
+incorrectly appears to
+be from a low
+frequency signal
+
+f5(x)
+
+x
+GAMES101
+
+32
+
+Lingqi Yan, UC Santa Barbara
+
+Undersampling Creates Frequency Aliases
+
+High-frequency signal is insufficiently sampled: samples
+erroneously appear to be from a low-frequency signal
+Two frequencies that are indistinguishable at a given sampling
+rate are called “aliases”
+GAMES101
+
+33
+
+Lingqi Yan, UC Santa Barbara
+
+Filtering = Getting rid of
+certain frequency contents
+
+Visualizing Image Frequency Content
+
+GAMES101
+
+35
+
+Lingqi Yan, UC Santa Barbara
+
+Filter Out Low Frequencies Only (Edges)
+
+High-pass filter
+
+GAMES101
+
+36
+
+Lingqi Yan, UC Santa Barbara
+
+Filter Out High Frequencies (Blur)
+
+Low-pass filter
+
+GAMES101
+
+37
+
+Lingqi Yan, UC Santa Barbara
+
+Filter Out Low and High Frequencies
+
+GAMES101
+
+38
+
+Lingqi Yan, UC Santa Barbara
+
+Filter Out Low and High Frequencies
+
+GAMES101
+
+39
+
+Lingqi Yan, UC Santa Barbara
+
+Filtering = Convolution
+(= Averaging)
+
+Convolution
+Signal
+Filter
+
+1
+
+3
+
+5
+
+1/4
+
+1/2
+
+1/4
+
+3
+
+7
+
+1
+
+3
+
+8
+
+6
+
+4
+
+Point-wise local averaging in a “sliding window”
+
+GAMES101
+
+41
+
+Lingqi Yan, UC Santa Barbara
+
+Convolution
+Signal
+Filter
+
+1 3 5 3 7 1 3 8 6 4
+1/4
+
+1/2
+
+1/4
+
+1 x (1/4) + 3 x (1/2) + 5 x (1/4) = 3
+
+Result
+
+GAMES101
+
+3
+42
+
+Lingqi Yan, UC Santa Barbara
+
+Convolution
+Signal
+Filter
+
+1 3 5 3 7 1 3 8 6 4
+1/4
+
+1/2
+
+1/4
+
+3 x (1/4) + 5 x (1/2) + 3 x (1/4) = 4
+
+Result
+
+GAMES101
+
+3 4
+43
+
+Lingqi Yan, UC Santa Barbara
+
+Convolution Theorem
+Convolution in the spatial domain is equal to multiplication
+in the frequency domain, and vice versa
+Option 1:
+
+• Filter by convolution in the spatial domain
+Option 2:
+
+• Transform to frequency domain (Fourier transform)
+• Multiply by Fourier transform of convolution kernel
+• Transform back to spatial domain (inverse Fourier)
+GAMES101
+
+44
+
+Lingqi Yan, UC Santa Barbara
+
+Convolution Theorem
+Spatial
+Domain
+
+1
+
+*9
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+=
+Inv. Fourier
+Transform
+
+Fourier
+Transform
+Frequency
+Domain
+
+GAMES101
+
+=
+
+x
+
+45
+
+Lingqi Yan, UC Santa Barbara
+
+Box Filter
+
+1
+9
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+Example: 3x3 box filter
+
+GAMES101
+
+46
+
+Lingqi Yan, UC Santa Barbara
+
+Box Function = “Low Pass” Filter
+
+GAMES101
+
+47
+
+Lingqi Yan, UC Santa Barbara
+
+Wider Filter Kernel = Lower Frequencies
+
+GAMES101
+
+48
+
+Lingqi Yan, UC Santa Barbara
+
+Sampling = Repeating
+Frequency Contents
+
+Sampling = Repeating Frequency Contents
+
+https://www.researchgate.net/figure/The-evolution-of-sampling-theorem-a-The-time-domain-of-the-band-limited-signal-and-b_fig5_301556095
+
+GAMES101
+
+50
+
+Lingqi Yan, UC Santa Barbara
+
+Aliasing = Mixed Frequency Contents
+
+Dense sampling:
+
+Sparse sampling:
+
+GAMES101
+
+51
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing
+
+How Can We Reduce Aliasing Error?
+Option 1: Increase sampling rate
+
+• Essentially increasing the distance between replicas in the
+Fourier domain
+
+• Higher resolution displays, sensors, framebuffers…
+• But: costly & may need very high resolution
+Option 2: Antialiasing
+
+• Making Fourier contents “narrower” before repeating
+• i.e. Filtering out high frequencies before sampling
+GAMES101
+
+53
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing = Limiting, then repeating
+
+Filtering
+
+Then sparse sampling
+
+GAMES101
+
+54
+
+Lingqi Yan, UC Santa Barbara
+
+Regular Sampling
+
+Sample
+
+Note jaggies in rasterized triangle
+where pixel values are pure red or white
+GAMES101
+
+55
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiased Sampling
+
+Pre-Filter
+
+Sample
+
+(remove frequencies above Nyquist)
+
+Note antialiased edges in rasterized triangle
+where pixel values take intermediate values
+GAMES101
+
+56
+
+Lingqi Yan, UC Santa Barbara
+
+A Practical Pre-Filter
+A 1 pixel-width box filter (low pass, blurring)
+
+Spatial Domain
+GAMES101
+
+Frequency Domain
+57
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing By Averaging Values in Pixel Area
+Solution:
+
+• Convolve f(x,y) by a 1-pixel box-blur
+- Recall: convolving = filtering = averaging
+• Then sample at every pixel’s center
+
+GAMES101
+
+58
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing by Computing Average Pixel Value
+In rasterizing one triangle, the average value inside a pixel
+area of f(x,y) = inside(triangle,x,y) is equal to the area of the
+pixel covered by the triangle.
+Original
+
+Filtered
+1 pixel width
+GAMES101
+
+59
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing By Supersampling
+(MSAA)
+
+Supersampling
+Approximate the effect of the 1-pixel box filter by sampling
+multiple locations within a pixel and averaging their values:
+
+4x4 supersampling
+GAMES101
+
+61
+
+Lingqi Yan, UC Santa Barbara
+
+Point Sampling: One Sample Per Pixel
+
+GAMES101
+
+62
+
+Lingqi Yan, UC Santa Barbara
+
+Supersampling: Step 1
+Take NxN samples in each pixel.
+
+2x2 supersampling
+GAMES101
+
+63
+
+Lingqi Yan, UC Santa Barbara
+
+Supersampling: Step 2
+Average the NxN samples “inside” each pixel.
+
+Averaging down
+GAMES101
+
+64
+
+Lingqi Yan, UC Santa Barbara
+
+Supersampling: Step 2
+Average the NxN samples “inside” each pixel.
+
+Averaging down
+GAMES101
+
+65
+
+Lingqi Yan, UC Santa Barbara
+
+Supersampling: Step 2
+Average the NxN samples “inside” each pixel.
+
+GAMES101
+
+66
+
+Lingqi Yan, UC Santa Barbara
+
+Supersampling: Result
+This is the corresponding signal emitted by the display
+
+75%
+
+25%
+
+GAMES101
+
+100%
+
+100%
+
+50%
+
+50%
+
+50%
+
+50%
+
+67
+
+Lingqi Yan, UC Santa Barbara
+
+Point Sampling
+
+GAMES101
+
+68
+
+Lingqi Yan, UC Santa Barbara
+
+4x4 Supersampling
+
+GAMES101
+
+69
+
+Lingqi Yan, UC Santa Barbara
+
+Antialiasing Today
+No free lunch!
+
+• What’s the cost of MSAA?
+Milestones (personal idea)
+
+• FXAA (Fast Approximate AA)
+• TAA (Temporal AA)
+Super resolution / super sampling
+
+• From low resolution to high resolution
+• Essentially still “not enough samples” problem
+• DLSS (Deep Learning Super Sampling)
+GAMES101
+
+70
+
+Lingqi Yan, UC Santa Barbara
+
+Thank you!
+
+

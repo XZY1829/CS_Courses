@@ -1,0 +1,220 @@
+
+=== Slide 1 ===
+邰颖
+南京大学
+智能科学与技术学院
+抽象-进程
+
+=== Slide 2 ===
+如何制作出很多CPU的假象
+用户想要跑多个程序（Multiprogramming），但一般只有有限个CPUs（比如8个）
+
+CPU虚拟化
+OS可以促进许多虚拟CPUs存在的假象（如右图：juggling）
+
+时分共享（Time sharing）：通过让一个进程只运行一个时间片，然后切换到其他进程
+潜在的代价是性能（Performance）损失，每个进程的运行会变慢
+机制：比如上下文切换（context-switch）机制，让操作系统能够停止运行一个程序，并开始在给定的CPU 上运行另一个程序
+
+=== Slide 3 ===
+回顾机制和策略
+机制
+底层方法/协议，实现一个功能
+How?
+例子：上下文协议
+
+
+策略
+在OS中实现某些决定的算法
+Which?
+例子：调度策略，决定哪个程序先运行，哪个是后续运行
+
+=== Slide 4 ===
+进程：一个正在执行的程序
+程序本身是“lifeless”- 在磁盘上的一堆指令/数据
+
+OS为正在运行的程序提供的抽象，可以通过不同的数据结构和其使用的系统资源表征一个进程
+
+进程的构成？
+内存（地址空间address space – 一个进程可以访问的地址范围）
+指令/代码
+数据
+
+寄存器（对于小数据的高速存储，EAX累加器,EBX基地址寄存器等）
+程序计数器Program Counter（指令指针, Instruction Pointer）:程序当前正在执行哪个指令
+栈指针Stack pointer；Frame pointer：管理函数参数栈、局部变量和返回地址
+
+I/O信息（打开文件列表）
+
+=== Slide 5 ===
+进程：例子（查看进程信息） 
+Cat /proc/5139/status | less //进程信息
+0: 该进程的标准输入（stdin）
+1: 该进程的标准输出（stdout）
+2: 该进程的标准错误输出（stderr）
+
+=== Slide 6 ===
+进程：例子（hack output）
+
+=== Slide 7 ===
+进程：gdb命令
+sudo gdb –p pid
+
+=== Slide 8 ===
+进程API
+现代OS系统中都有这些APIs
+Create
+创建一个新的进程 – fork(), exec(), clone()
+
+Destroy
+Halt一个在运行的程序 – kill(pid, SIGTERM)
+
+Wait
+等待进程停止运行 – wait(pid)
+
+Miscellaneous Control
+暂停、继续进程 – kill(pid, SIGSTOP), kill(pid, SIGCONT)
+
+Status
+获取一些进程信息 – cat /proc/pid/status
+
+=== Slide 9 ===
+进程：创建
+1. 将程序代码/静态数据载入内存，进入进程的地址空间
+程序最初在磁盘中，以可执行格式（ELF-linux, PE-windows）
+OS载入进程（lazily）
+仅当程序执行需要时载入代码或数据【分页和交换】
+
+2. 为程序运行时栈（stack）分配内存
+使用栈存放：local variables, function parameters, return address
+使用参数初始化栈：main()函数中的argc, argv 
+
+=== Slide 10 ===
+进程：创建
+3. 为程序堆（heap）分配内存（lazily）
+C程序中堆用于显式请求的动态分配数据
+程序通过调用 malloc() 请求此空间，并通过调用 free() 释放该空间
+数据结构（如链表、散列表、树和其他有趣的数据结构）需要堆
+
+
+4. OS做了一些其他的初始化任务
+I/O设置
+UNIX系统中，每个进程默认有三个打开的文件描述符
+标准输入（STDIN=0），标准输出（STDOUT=1），标准错误（STDERR=2）
+
+5. 最后从main()函数启动程序运行
+操作系统将 CPU 控制权转交给新创建的进程
+
+=== Slide 11 ===
+载入：从程序到进程
+
+=== Slide 12 ===
+载入：从程序到进程（调试）
+(x86) 
+gdb ./io
+info functions
+b *main
+disas //反编译
+
+
+
+=== Slide 13 ===
+载入：从程序到进程（调试）
+(x86) 
+gdb ./io
+info functions
+b *main
+disas //反编译
+
+set disassembly-flavor intel // intel语法，更可读 
+disas
+
+调试状态
+
+=== Slide 14 ===
+载入：从程序到进程（调试）
+(x86) 
+b *main+60 // open file
+cont
+
+ni //单步执行
+
+
+cont // 继续执行
+
+
+3 文件夹通常表示进程打开的其他文件描述符
+调试结束状态
+
+=== Slide 15 ===
+进程：状态
+一个进程可以处于三种状态之一
+运行（Running）
+进程正在处理器上运行，这意味着它正在执行指令
+
+就绪（Ready）
+进程已准备好运行，但由于某种原因，操作系统选择不在此时运行
+
+阻塞（Blocked）
+一个进程执行了某种操作，并且在等待结果。
+例子：当进程向磁盘发起I/O 请求时，它会被阻塞，因此其他进程可以使用处理器
+
+还有其他一些进程可以处于的状态
+初始状态（initial）：表示进程在创建时处于的状态
+最终状态（final）：可以处于已退出但尚未清理的最终状态
+
+
+=== Slide 16 ===
+进程状态转换
+从就绪到运行意味着该进程已经被调度（scheduled）
+
+从运行转移到就绪意味着该进程已经取消调度（descheduled）
+
+一旦进程被阻塞（例如，通过发起I/O 操作），OS 将保持进程的这种状态，直到发生某种事件（例如，I/O 完成）
+
+=== Slide 17 ===
+跟踪进程状态：单CPU
+
+=== Slide 18 ===
+跟踪进程状态：CPU和I/O
+OS决定在Process0 发出I/O 时运行Process1。这样做可以通过保持CPU 繁忙来提高资源利用率
+当I/O 完成时，系统决定不切换回Process0，等待Process1完成
+
+=== Slide 19 ===
+跟踪进程状态：CPU和I/O
+man ps //查看参数代表的状态
+
+=== Slide 20 ===
+跟踪进程状态：CPU和I/O
+
+=== Slide 21 ===
+数据结构
+OS有一些关键的数据结构来跟踪各种相关的信息
+进程/任务列表
+Ready进程
+阻塞进程
+当前运行进程
+
+寄存器上下文（Register Context）：context-switch上下文切换
+当一个进程停止时，它的寄存器将被保存到这个内存位置
+通过恢复这些寄存器（将它们的值放回实际的物理寄存器中），操作系统可以恢复运行该进程
+
+进程控制块（Process Control Block，PCB）：存储关于进程的信息
+一种C结构的包含一个进程的信息
+
+=== Slide 22 ===
+Xv6 kernel register context structure
+
+=== Slide 23 ===
+Xv6 kernel proc structure definition
+
+=== Slide 24 ===
+总结
+介绍了操作系统的最基本抽象：进程
+
+进程的API、创建、状态、状态转换、数据结构等内容
+
+
+
+=== Slide 25 ===
+谢谢
