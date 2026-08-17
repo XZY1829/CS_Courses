@@ -10,3 +10,7 @@
 [submodule "design_patterns/design_patterns_me115"]
 	path = design_patterns/design_patterns_me115
 	url = https://github.com/me115/design_patterns.git
+[submodule "InterviewGuide"]
+	path = InterviewGuide
+	url = https://github.com/XZY1829/InterviewGuide.git
+	branch = master
