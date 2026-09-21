@@ -219,6 +219,9 @@ Derived 逻辑组成
 - 循环引用的核心是引用计数降不到 0；常见设计是父拥有子，子反向观察父，不要双方都用 `shared_ptr`
 - RAII：资源跟对象生命周期绑定，构造获取资源，析构释放资源；普通模块对象适合独占指针/UPtr，进入引擎对象系统的对象可能由 ObjPtr/GC 扫描管理，别把 ObjPtr 说成 shared_ptr
 - `const` 的工程价值是把只读契约写进类型系统：参数用 `const T&` 避免拷贝并表达不修改，成员函数 `const` 表示不修改逻辑状态；`const` 不是线程安全
+- `mutable` 有两个常见用法：
+  - 修饰数据成员：允许 `const` 成员函数修改该成员，常用于缓存、延迟计算或统计字段；它不等于可以修改所有对象状态。
+  - 修饰 Lambda：允许 Lambda 修改按值捕获的内部副本，不会修改外部原变量。例如 `int x = 1; auto f = [x]() mutable { ++x; }; f();` 执行后外部 `x` 仍然是 `1`。
 - 四种 cast：`static_cast` 正常类型转换；`dynamic_cast` 多态体系运行时安全下转；`const_cast` 只改 const/volatile 限定，不能安全改写本来就是 const 的对象；`reinterpret_cast` 按比特重新解释，最危险
 
 ## 碰撞检测
