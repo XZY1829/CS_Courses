@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": [
+            "ES2022",
+            "DOM"
+        ],
+        "allowJs": true,
+        "checkJs": false,
+        "noEmit": true,
+        "moduleDetection": "legacy"
+    },
+    "include": [
+        "src/**/*.js",
+        "lib/three.js",
+        "lib/OrbitControls.js",
+        "lib/OBJLoader.js",
+        "lib/MTLLoader.js",
+        "lib/dat.gui.js"
+    ],
+    "exclude": [
+        "assets/**",
+        "lib/imgui*.js",
+        "node_modules/**"
+    ]
+}

@@ -224,6 +224,211 @@ Derived 逻辑组成
   - 修饰 Lambda：允许 Lambda 修改按值捕获的内部副本，不会修改外部原变量。例如 `int x = 1; auto f = [x]() mutable { ++x; }; f();` 执行后外部 `x` 仍然是 `1`。
 - 四种 cast：`static_cast` 正常类型转换；`dynamic_cast` 多态体系运行时安全下转；`const_cast` 只改 const/volatile 限定，不能安全改写本来就是 const 的对象；`reinterpret_cast` 按比特重新解释，最危险
 
+## C++ 原子操作与内存顺序（memory_order）
+
+### 1. 原子性和同步是两个问题
+
+以 C++11/14/17 的常用规则为学习范围。memory_order 是传给原子操作的顺序选项，用来规定该操作需要提供怎样的线程间排序和同步保证，不是修改变量本身的类型。
+
+- 原子性：一次原子操作作为不可分割的操作参与并发。例如 fetch_add 将读、加、写合为一次原子读改写；两个线程分别执行一次，初值 0 的计数最终为 2（线程完成后观察）。
+- 同步：线程 A 写入普通数据后，线程 B 在什么条件下可以安全读取这些数据。对标志位使用 atomic，不代表它旁边的数据自动受到保护。
+- atomic 的 load 和 store 即使各自是原子的，先 load 再 store 仍是两个操作，组合起来可能丢失更新；即使用默认 seq_cst 也不会自动合成事务。
+
+```cpp
+std::atomic<int> count{0};
+
+// 两个线程并发执行：可能都读到 0，最后都写入 1。
+int old = count.load();
+count.store(old + 1);
+
+// 需要不可分割的计数更新时：
+count.fetch_add(1, std::memory_order_relaxed);
+```
+
+### 2. 从一次性数据发布理解 release/acquire
+
+下面是可独立运行的完整示例。数据只发布一次，发布后生产者不再修改 data，变量的生命周期覆盖两个线程。
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+int main() {
+    int data = 0;
+    std::atomic<bool> ready{false};
+
+    std::thread producer([&] {
+        data = 42;
+        ready.store(true, std::memory_order_release);
+    });
+
+    std::thread consumer([&] {
+        while (!ready.load(std::memory_order_acquire)) {
+            std::this_thread::yield();
+        }
+        std::cout << data << '\n';
+    });
+
+    producer.join();
+    consumer.join();
+}
+```
+
+消费者读到已发布的 true 并继续执行时，输出保证为 42。这里是讲解机制的自旋示例，长时间等待通常应考虑条件变量等阻塞机制；本节未编译运行示例。
+
+release 是“发布”：将该线程在这次操作之前完成的写入纳入可被接收方同步获取的范围。
+
+acquire 是“接收”：当这次 acquire 读取到同一原子变量上对应 release 写入的值时，两次操作建立 synchronizes-with 关系。此例只有一次 true 的写入，所以读到 true 就能确定对应这次发布。更复杂的规则还涉及 release sequence，本轮先限定为直接读到发布值。
+
+```text
+生产者线程                              消费者线程
+data = 42                               等待 ready
+    |                                       |
+    | 本线程顺序                            |
+    v                                       v
+ready.store(true, release) --同步--> ready.load(acquire) 读到 true
+                                            |
+                                            | 本线程顺序
+                                            v
+                                        读取 data
+
+传递得到：写入 data happens-before 读取 data
+```
+
+happens-before 是 C++ 内存模型中的先行关系，用于证明访问之间的顺序和可见性，不是拿时钟比较谁先执行。通过这条关系，普通 data 的写和读得到正确排序，因此没有数据竞争。
+
+### 3. 为什么 relaxed 不够
+
+把示例的 store 和 load 都改成 relaxed，只保证 ready 自己的原子访问和该原子对象的修改顺序，不建立上述同步关系。data 的普通写入和读取没有 happens-before 关系，构成数据竞争，属于未定义行为。
+
+- 不能只说“可能读到旧值 0，也可能读到 42”，因为有数据竞争的程序不能用这两个结果穷尽其行为。
+- 在某台机器上运行很多次都是 42，也不是正确性证明。编译器优化和不同硬件的内存模型都可能影响表现。
+- 如果把 data 也改成 atomic，并全部使用 relaxed，可以消除这个例子中对 data 的数据竞争，但仍不能仅凭 ready 为 true 就保证读到 data 的新值：跨变量的发布关系仍未建立。
+- 如果消费者是在主线程确认 producer.join() 返回以后才启动，那么 join 等其他同步关系会改变分析。不能只看某行用了 relaxed，要看整个程序是否还有其他同步路径。
+
+relaxed 适合只要求原子更新的独立统计计数，例如请求次数，不拿计数值作为访问其他普通共享数据的许可。在线程全部 join 后汇总计数，join 也提供了所需的完成同步。
+
+### 4. 常见选项与使用位置
+
+| 顺序 | 常用位置 | 保证与用途 |
+| --- | --- | --- |
+| memory_order_relaxed | load、store、原子读改写 | 保留原子性及该原子对象的修改顺序，不提供数据发布同步 |
+| memory_order_release | store、原子读改写 | 发布此前的写入，供匹配的 acquire 接收 |
+| memory_order_acquire | load、原子读改写 | 读取到对应发布值时，接收此前写入，供后续访问使用 |
+| memory_order_acq_rel | 原子读改写，如 exchange、fetch_add | 同一操作同时具有 acquire 和 release 语义 |
+| memory_order_seq_cst | load、store、原子读改写，默认值 | 具有相应 acquire/release 语义，并为 seq_cst 操作建立符合标准约束的单一总序 |
+
+- 普通 store 不使用 acquire 或 acq_rel，普通 load 不使用 release 或 acq_rel；acq_rel 用于同时读和写的原子操作，而不是“随便加到哪里都更强”。
+- C++11/14/17 还定义了基于依赖排序的 memory_order_consume，本轮不将它作为实用方案，先掌握 acquire，避免混入依赖传播的复杂规则。
+- compare_exchange 的成功和失败可以分别指定顺序，失败路径是读取，不能使用 release 或 acq_rel；具体约束与算法应另行学习，不凭表格随意组合。
+- 默认 count.load()、count.store(x)、count.fetch_add(1) 使用 seq_cst。先写出正确实现，有证据表明需要优化时再减弱顺序。
+
+### 5. seq_cst 比 release/acquire 多什么
+
+release/acquire 的重点是具体发布与接收之间建立同步。seq_cst 额外约束所有 seq_cst 操作在一个共同总序中的位置，便于推理跨多个原子变量的操作。
+
+例如 x、y 为初值 0 的原子变量，线程一执行 x.store(1) 后读取 y，线程二执行 y.store(1) 后读取 x：
+
+```text
+线程一                       线程二
+x.store(1, seq_cst)           y.store(1, seq_cst)
+r1 = y.load(seq_cst)          r2 = x.load(seq_cst)
+```
+
+在没有其他写入的这个例子中，全用 seq_cst 时不能出现 r1、r2 同时为 0。若 store 用 release、load 用 acquire，则允许同时为 0：这时两次读取都没读到对方发布的 1，未建立相应同步关系。应在线程完成后观察各自的局部结果。
+
+这不意味着 seq_cst 把所有线程、所有普通代码串行执行，也不意味着能修复任意普通变量的数据竞争，更不意味着 load+store 自动变成一个原子事务。
+
+### 6. 与 mutex、缓存和 volatile 的联系
+
+- mutex 的 unlock 与随后取得同一互斥量的 lock 建立同步。互斥锁既提供互斥，又让前一持锁线程的写入对后一持锁线程可见。
+- release/acquire 不提供临界区互斥。发布完成后生产者若继续修改 data，消费者同时读取，仍可能产生数据竞争；重复交付需要完整的协议、队列或锁。
+- acquire 不表示立即读取最新值；即使使用 seq_cst，消费者也可能先读到 false 再继续等待。例子的保证是“读到对应 true 后，随后可安全读取 data”。
+- 不要把 release 解释成“把所有缓存刷到 RAM”，也不要把 acquire 解释成“每次从 RAM 重读全部数据”。编译器按目标硬件生成满足语义的代码，有时需要屏障，有时已有指令及硬件排序就足够。
+- volatile 不提供跨线程同步，不能替代 atomic、mutex 或 memory_order。
+- 调试器手动切换线程和一次运行输出不能证明内存模型正确性；测试可以暴露问题，正确性仍需依据原子操作、同步和生命周期关系推理。
+
+### 7. 面试 30 秒版与理解检查
+
+memory_order 用来规定原子操作的内存顺序。relaxed 只要求原子性，不用来发布其他数据；生产者用 release 发布标志，消费者用 acquire 读到该发布值后，两者建立同步，使发布之前的数据写入先行于接收之后的读取。seq_cst 是默认顺序，还为 seq_cst 操作提供单一总序。原子性不等于一组操作原子，也不等于周围普通数据自动线程安全。
+
+- 问：ready 是 atomic，但全部使用 relaxed，能否安全发布普通 int data？
+- 答：仅靠它不能。没有其他同步路径时，data 的跨线程读写存在数据竞争；需要匹配的 release/acquire、互斥锁或其他有效同步机制。
+- 问：release/acquire 配对后，可以随时继续写 data 吗？
+- 答：不能。它保证匹配发布之前的写入与接收之后的读取有序，不保护之后发生的任意并发修改。
+
+## CPU 缓存行与伪共享（False Sharing）
+
+### 原理与面试回答
+
+- CPU 缓存以缓存行（cache line）为单位组织，常见缓存行大小为 64 字节，但具体取决于硬件，不能当成 C++ 标准保证。
+- 伪共享：不同核心上的线程频繁修改不同变量，但这些变量位于同一缓存行。缓存一致性通常以缓存行为粒度维护，各核心会争夺该行的写入权限，产生失效、传输等额外开销。
+- “伪”指业务上没有共享同一个变量，硬件层面却共享同一缓存行。通常需要至少一方写入，纯只读访问不会产生这种写入争用。
+- 面试 30 秒版：伪共享是多个线程访问不同数据，却因为数据落在同一缓存行而产生缓存一致性竞争的性能问题。即使使用 atomic、没有数据竞争，也可能发生。可以通过缓存行隔离、线程私有计数后汇总、减少共享写入频率优化，但应在目标硬件上测量，权衡额外空间和缓存利用率。
+
+### 原子变量也可能伪共享
+
+```cpp
+#include <atomic>
+
+struct Counters {
+    std::atomic<int> a{0};
+    std::atomic<int> b{0};
+};
+
+Counters counters;
+
+// 线程一反复执行：
+// counters.a.fetch_add(1, std::memory_order_relaxed);
+// 线程二反复执行：
+// counters.b.fetch_add(1, std::memory_order_relaxed);
+```
+
+```text
+同一缓存行：[a][b][其他字节...]
+             ^  ^
+           核心1 核心2
+```
+
+- 两个原子操作可以完全正确，但相邻的 a、b 可能位于同一缓存行，不能保证没有伪共享。
+- relaxed 减少内存顺序约束，不会取消原子性或缓存一致性需求，因此不能消除伪共享。
+- 伪共享不等于每次写入都回写 RAM；争用主要涉及缓存一致性协议和缓存行所有权转移。
+
+| 概念 | 问题本质 | 结果 |
+| --- | --- | --- |
+| 数据竞争 | 不同线程对同一内存位置存在未被适当同步排序的冲突访问，至少一次写入，且至少一次非原子 | C++ 未定义行为 |
+| 伪共享 | 不同数据位于同一缓存行，多核心访问发生写入争用 | 主要是性能下降，程序可以完全正确 |
+
+### 如何缓解
+
+下面假设已确认目标硬件缓存行为 64 字节，并且编译器、分配方式支持所需的过度对齐：
+
+```cpp
+struct alignas(64) Counter {
+    std::atomic<int> value{0};
+};
+
+struct SeparatedCounters {
+    Counter a;
+    Counter b;
+};
+
+static_assert(alignof(Counter) >= 64);
+static_assert(sizeof(Counter) % 64 == 0);
+```
+
+- 对 Counter 类型设置对齐，使它的大小也是对齐要求的整数倍，两个成员从不同的 64 字节边界开始。只给整个 SeparatedCounters 对象对齐，不会自动分开内部两个相邻的小成员。
+- C++17 提供 std::hardware_destructive_interference_size（头文件 <new>），在标准库支持时可用于表达避免破坏性干扰的推荐间距；它是实现提供的值，不是运行时探测结果，对外 ABI 中使用还需注意构建配置一致性。
+- 也可让每个线程在局部变量中累计，结束后再汇总，减少热路径上的共享写入；持续发布的线程私有槽位仍需留意是否共处一条缓存行。
+- 空间隔离会增加对象大小，不要给所有成员盲目填充。应比较相同工作量、Release 优化下的布局变体，重复测量并核对结果，必要时结合硬件性能计数器定位；本节代码是机制示例，未进行性能实测。
+
+### 本轮问答与易错点
+
+- 问：两个线程分别修改不同的 std::atomic<int>，能保证没有伪共享吗？
+- 答：不能。atomic 解决相应访问的原子性等正确性问题，不能保证两个变量位于不同缓存行；若它们共享缓存行并被不同核心频繁写入，仍可能发生伪共享。
+- 注意：不把“线程安全”等同于“性能好”，不把“不同变量”等同于“不同缓存行”，也不把 alignas(64) 当作跨所有硬件的万能方案。
+
 ## 碰撞检测
 
 - 碰撞检测 四叉树KDtree
