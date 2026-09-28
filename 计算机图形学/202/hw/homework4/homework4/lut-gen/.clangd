@@ -1,0 +1,6 @@
+CompileFlags:
+  CompilationDatabase: build/clangd-llvm
+  Remove:
+    - "-std=c++17"
+  Add:
+    - "-std=c++14"

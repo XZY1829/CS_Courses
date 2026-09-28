@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": [
+            "ES2022",
+            "DOM"
+        ],
+        "allowJs": true,
+        "checkJs": false,
+        "noEmit": true,
+        "moduleDetection": "legacy"
+    },
+    "include": [
+        "src/**/*.js",
+        "lib/sh.js",
+        "lib/three.js",
+        "lib/bvhtree.js",
+        "lib/OrbitControls.js",
+        "lib/gl-matrix-min.js",
+        "lib/RGBELoader.js",
+        "lib/math.js",
+        "lib/MTLLoader.js",
+        "lib/OBJLoader.js",
+        "lib/dat.gui.js"
+    ],
+    "exclude": [
+        "assets/**",
+        "node_modules/**"
+    ]
+}

@@ -14,12 +14,12 @@ varying highp vec4 vPositionFromLight;
 
 void main(void) {
 
-  vFragPos = (uModelMatrix * vec4(aVertexPosition, 1.0)).xyz;
-  vNormal = (uModelMatrix * vec4(aNormalPosition, 0.0)).xyz;
+    vFragPos = (uModelMatrix * vec4(aVertexPosition, 1.0)).xyz;
+    vNormal = (uModelMatrix * vec4(aNormalPosition, 0.0)).xyz;
 
-  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix *
-                vec4(aVertexPosition, 1.0);
+    gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix *
+        vec4(aVertexPosition, 1.0);
 
-  vTextureCoord = aTextureCoord;
-  vPositionFromLight = uLightMVP * vec4(aVertexPosition, 1.0);
+    vTextureCoord = aTextureCoord;
+    vPositionFromLight = uLightMVP * vec4(aVertexPosition, 1.0);
 }

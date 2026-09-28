@@ -1,0 +1,5 @@
+CompileFlags:
+  Compiler: "D:/LLVM/bin/clang++.exe"
+  Remove:
+    - "-DQT_*"
+    - "-IC:/Users/zhengyang.xu/Desktop/WorkDoc/Study/Study-2026/TogetherCinema/*"
